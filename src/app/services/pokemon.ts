@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { API_URL, NetWork } from '../../common/apiKey'
 import { axiosBaseQuery } from '../baseQuery'
 import { GET } from '../../common/contants'
+import { ReponseData } from '../../types'
 
 export const pokemonApi = createApi({
   baseQuery: axiosBaseQuery({ baseUrl: API_URL }),
@@ -9,6 +10,7 @@ export const pokemonApi = createApi({
   endpoints: (builder) => ({
     getPokemonByName: builder.query({
       query: (name: string) => ({ method: GET, url: NetWork.pokemon + `pokemon/${name}` })
+      // transformResponse: (response) => response, //Trả ra theo ý muốn nếu cần
     })
   })
 })
