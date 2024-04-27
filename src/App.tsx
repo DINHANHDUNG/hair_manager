@@ -1,11 +1,11 @@
-import './App.css'
 import { useGetPokemonByNameQuery } from './app/services/pokemon'
 import { Counter } from './components/counter'
+import './assets/app.scss'
 
 function App() {
   const { data, error, isLoading } = useGetPokemonByNameQuery('bulbasaur')
   return (
-    <div className='App'>
+    <div id='managing-worker'>
       <Counter />
 
       {error ? (
