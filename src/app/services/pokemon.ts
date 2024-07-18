@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { API_URL, NetWork } from '../../common/apiKey'
 import { axiosBaseQuery } from '../baseQuery'
 import { GET } from '../../common/contants'
-import { ReponseData } from '../../types'
+// import { ReponseData } from '../../types'
 
 export const pokemonApi = createApi({
   baseQuery: axiosBaseQuery({ baseUrl: API_URL }),

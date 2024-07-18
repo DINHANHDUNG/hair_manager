@@ -22,7 +22,7 @@ export interface ReponseData<T> extends Partial<PaginateResponse> {
   data: T
 }
 
-export interface ReponseData<T>{
+export interface ReponseData<T> {
   code: number
   error: boolean
   message: string
@@ -30,6 +30,6 @@ export interface ReponseData<T>{
 }
 
 export interface RejectValue {
-  error: string,
+  error: string
   code: number
 }
