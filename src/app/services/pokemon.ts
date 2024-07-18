@@ -5,6 +5,7 @@ import { GET } from '../../common/contants'
 // import { ReponseData } from '../../types'
 
 export const pokemonApi = createApi({
+  reducerPath: 'pokemonApi',
   baseQuery: axiosBaseQuery,
   //   tagTypes: [],
   endpoints: (builder) => ({
