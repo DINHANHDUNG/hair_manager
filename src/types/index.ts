@@ -2,6 +2,9 @@
 //   name: string
 // }
 
+import { Icon, IconProps } from '@tabler/icons-react'
+import React from 'react'
+
 // export type EditBase = Base & { id: number }
 
 export interface Paginate {
@@ -32,4 +35,16 @@ export interface ReponseData<T> {
 export interface RejectValue {
   error: string
   code: number
+}
+
+export interface MenuItem {
+  id: string
+  title?: string
+  type?: string
+  url?: string
+  icon?: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<Icon>>
+  caption?: string
+  breadcrumbs?: boolean
+  target?: boolean
+  children?: Array<MenuItem>
 }

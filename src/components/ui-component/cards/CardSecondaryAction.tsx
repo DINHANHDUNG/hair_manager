@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React, { ReactNode } from 'react'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
+// import { useTheme } from '@mui/material/styles'
 import ButtonBase from '@mui/material/ButtonBase'
-import Link from '@mui/material/Link'
+// import Link from '@mui/material/Link'
 import Tooltip from '@mui/material/Tooltip'
 
 // project imports
-import Avatar from '../extended/Avatar'
+// import Avatar from '../extended/Avatar'
 
 // Define the prop types
 interface CardSecondaryActionProps {
@@ -20,12 +20,13 @@ interface CardSecondaryActionProps {
 // ==============================|| CARD SECONDARY ACTION ||============================== //
 
 const CardSecondaryAction: React.FC<CardSecondaryActionProps> = ({ title, link, icon }) => {
-  const theme = useTheme()
+  // const theme = useTheme()
+  console.log(link, icon)
 
   return (
     <Tooltip title={title || 'Reference'} placement='left'>
       <ButtonBase disableRipple>
-        {!icon && (
+        {/* {!icon && (
           <Avatar
             component={Link}
             href={link}
@@ -71,7 +72,7 @@ const CardSecondaryAction: React.FC<CardSecondaryActionProps> = ({ title, link, 
           >
             {icon}
           </Avatar>
-        )}
+        )} */}
       </ButtonBase>
     </Tooltip>
   )

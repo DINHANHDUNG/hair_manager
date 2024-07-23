@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
@@ -24,9 +24,10 @@ import AnimateButton from '../../ui-component/extended/AnimateButton'
 
 // assets
 import { IconSettings } from '@tabler/icons-react'
-import { useAppSelector } from '../../../app/hooks'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { customTheme } from '../../../app/selectedStore'
 import { gridSpacing } from '../../../constants'
+import { setBorderRd, setFontFa } from '../../../app/features/customization/customizationSlice'
 
 // concat 'px'
 function valueText(value: number) {
@@ -37,7 +38,7 @@ function valueText(value: number) {
 
 const Customization = () => {
   const theme = useTheme()
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch()
   const customization = useAppSelector(customTheme)
 
   // drawer on/off
@@ -48,17 +49,17 @@ const Customization = () => {
 
   // state - border radius
   const [borderRadius, setBorderRadius] = useState(customization.borderRadius)
-  const handleBorderRadius = (event: Event, newValue: number | Array<number>) => {
+  const handleBorderRadius = (event: Event, newValue: number | number[]) => {
     // setBorderRadius(newValue);
     console.log('====================================')
     console.log(event, newValue)
     console.log('====================================')
-    setBorderRadius(12)
+    setBorderRadius(newValue as number)
   }
 
-  // useEffect(() => {
-  //   dispatch({ type: SET_BORDER_RADIUS, borderRadius });
-  // }, [dispatch, borderRadius]);
+  useEffect(() => {
+    dispatch(setBorderRd({ borderRadius }))
+  }, [dispatch, borderRadius])
 
   let initialFont
   switch (customization.fontFamily) {
@@ -76,22 +77,22 @@ const Customization = () => {
 
   // state - font family
   const [fontFamily, setFontFamily] = useState(initialFont)
-  // useEffect(() => {
-  //   let newFont;
-  //   switch (fontFamily) {
-  //     case 'Inter':
-  //       newFont = `'Inter', sans-serif`;
-  //       break;
-  //     case 'Poppins':
-  //       newFont = `'Poppins', sans-serif`;
-  //       break;
-  //     case 'Roboto':
-  //     default:
-  //       newFont = `'Roboto', sans-serif`;
-  //       break;
-  //   }
-  //   dispatch({ type: SET_FONT_FAMILY, fontFamily: newFont });
-  // }, [dispatch, fontFamily]);
+  useEffect(() => {
+    let newFont
+    switch (fontFamily) {
+      case 'Inter':
+        newFont = `'Inter', sans-serif`
+        break
+      case 'Poppins':
+        newFont = `'Poppins', sans-serif`
+        break
+      case 'Roboto':
+      default:
+        newFont = `'Roboto', sans-serif`
+        break
+    }
+    dispatch(setFontFa({ fontFamily: newFont }))
+  }, [dispatch, fontFamily])
 
   return (
     <>

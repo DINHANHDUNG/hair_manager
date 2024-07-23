@@ -13,7 +13,7 @@ import themeTypography from './typography'
  * @param {JsonObject} customization customization parameter object
  */
 
-export const theme = (customization) => {
+export const theme = (customization: any) => {
   const color = colors
 
   const themeOption = {
@@ -44,7 +44,7 @@ export const theme = (customization) => {
       }
     },
     typography: themeTypography(themeOption)
-  }
+  } as any
 
   const themes = createTheme(themeOptions)
   themes.components = componentStyleOverrides(themeOption)
