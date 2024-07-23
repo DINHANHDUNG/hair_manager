@@ -6,9 +6,8 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import useMediaQuery from '@mui/material/useMediaQuery'
-
 // project imports
-import { CssBaseline, styled, useTheme } from '@mui/material'
+import { CssBaseline, styled, Theme, useTheme } from '@mui/material'
 import Header from './Header'
 import Sidebar from './Sidebar'
 
@@ -22,8 +21,14 @@ import menuItems from '../../menu-items'
 import Breadcrumbs from '../../ui-component/extended/Breadcrumbs'
 import Customization from '../customization'
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'theme' })(
-  ({ theme, open }: { theme: any; open: boolean }) => ({
+// Define the type for the props used in Main styled component
+interface MainProps {
+  theme: Theme
+  open: boolean
+}
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'theme' })<MainProps>(
+  ({ theme, open }) => ({
     ...theme.typography.mainContent,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,

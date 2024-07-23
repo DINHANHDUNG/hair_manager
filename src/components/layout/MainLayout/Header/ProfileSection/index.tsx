@@ -40,7 +40,7 @@ import MainCard from '../../../../ui-component/cards/MainCard'
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
-  const theme = useTheme() as any
+  const theme = useTheme()
   const customization = useAppSelector(customTheme)
   const navigate = useNavigate()
 
@@ -52,19 +52,19 @@ const ProfileSection = () => {
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
-  const anchorRef = useRef(null) as any
+  const anchorRef = useRef<HTMLDivElement>(null)
   const handleLogout = async () => {
     console.log('Logout')
   }
 
-  const handleClose = (event: any) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+  const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
       return
     }
     setOpen(false)
   }
 
-  const handleListItemClick = (event: any, index: any, route = '') => {
+  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number, route = '') => {
     setSelectedIndex(index)
     handleClose(event)
 
@@ -79,7 +79,7 @@ const ProfileSection = () => {
   const prevOpen = useRef(open)
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
-      anchorRef.current.focus()
+      anchorRef?.current?.focus()
     }
 
     prevOpen.current = open

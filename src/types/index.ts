@@ -47,4 +47,12 @@ export interface MenuItem {
   breadcrumbs?: boolean
   target?: boolean
   children?: Array<MenuItem>
+  disabled?: boolean
+  chip?: {
+    label?: string
+    avatar?: React.ReactElement
+    size?: 'small' | 'medium'
+    variant?: 'filled' | 'outlined'
+    color?: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
+  }
 }

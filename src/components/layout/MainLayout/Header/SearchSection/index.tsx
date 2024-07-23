@@ -3,7 +3,7 @@ import { useState, forwardRef } from 'react'
 
 // material-ui
 import { useTheme } from '@mui/material/styles'
-import Avatar from '@mui/material/Avatar'
+import Avatar, { AvatarProps } from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
@@ -19,9 +19,14 @@ import Transitions from '../../../../ui-component/extended/Transitions'
 
 // assets
 import { IconAdjustmentsHorizontal, IconSearch, IconX } from '@tabler/icons-react'
+import { PopupState as PopupStateType } from 'material-ui-popup-state/hooks'
 
-const HeaderAvatar = forwardRef(({ children, ...others }: any, ref) => {
-  const theme = useTheme() as any
+type HeaderAvatarProps = AvatarProps & {
+  children?: React.ReactNode
+}
+
+const HeaderAvatar = forwardRef<HTMLDivElement, HeaderAvatarProps>(({ children, ...others }, ref) => {
+  const theme = useTheme()
 
   return (
     <Avatar
@@ -50,8 +55,16 @@ const HeaderAvatar = forwardRef(({ children, ...others }: any, ref) => {
 
 // ==============================|| SEARCH INPUT - MOBILE||============================== //
 
-const MobileSearch = ({ value, setValue, popupState }: any) => {
-  const theme = useTheme() as any
+const MobileSearch = ({
+  value,
+  setValue,
+  popupState
+}: {
+  value: string
+  setValue: (v: string) => void
+  popupState: PopupStateType
+}) => {
+  const theme = useTheme()
 
   return (
     <OutlinedInput

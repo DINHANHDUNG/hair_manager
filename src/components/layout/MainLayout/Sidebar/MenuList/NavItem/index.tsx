@@ -1,28 +1,29 @@
-import PropTypes from 'prop-types'
-import { forwardRef, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
 import Avatar from '@mui/material/Avatar'
 import Chip from '@mui/material/Chip'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 // assets
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import { menuOpen, setMenu } from '../../../../../../app/features/customization/customizationSlice'
 import { useAppSelector } from '../../../../../../app/hooks'
 import { customTheme } from '../../../../../../app/selectedStore'
-import { menuOpen, setMenu } from '../../../../../../app/features/customization/customizationSlice'
+import { MenuItem } from '../../../../../../types'
+// import { MenuItem } from '../../../../../../types'
 
 // ==============================|| SIDEBAR MENU LIST ITEMS ||============================== //
 
-const NavItem = ({ item, level }: any) => {
-  const theme = useTheme() as any
+const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
+  const theme = useTheme()
   const dispatch = useDispatch()
   const { pathname } = useLocation()
   const customization = useAppSelector(customTheme)
@@ -32,7 +33,7 @@ const NavItem = ({ item, level }: any) => {
   const matchesSM = useMediaQuery(theme.breakpoints.down('lg'))
 
   const Icon = item.icon
-  const itemIcon = item?.icon ? (
+  const itemIcon = Icon ? (
     <Icon stroke={1.5} size='1.3rem' />
   ) : (
     <FiberManualRecordIcon
@@ -44,20 +45,20 @@ const NavItem = ({ item, level }: any) => {
     />
   )
 
-  let itemTarget = '_self'
-  if (item.target) {
-    itemTarget = '_blank'
-  }
+  // let itemTarget = '_self'
+  // if (item.target) {
+  //   itemTarget = '_blank'
+  // }
 
-  let listItemProps = {
-    // component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
-    component: forwardRef((props) => <Link {...props} to={item.url} target={itemTarget} />)
-  } as any
-  if (item?.external) {
-    listItemProps = { component: 'a', href: item.url, target: itemTarget }
-  }
+  // let listItemProps = {
+  //   // component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
+  //   component: forwardRef((props) => <Link {...props} to={item.url ?? ''} target={itemTarget} />)
+  // } as any
+  // if (item?.external) {
+  //   listItemProps = { component: 'a', href: item.url, target: itemTarget }
+  // }
 
-  const itemHandler = (id: number) => {
+  const itemHandler = (id: string) => {
     dispatch(menuOpen({ id }))
     if (matchesSM) dispatch(setMenu({ opened: false }))
   }
@@ -76,7 +77,7 @@ const NavItem = ({ item, level }: any) => {
 
   return (
     <ListItemButton
-      {...listItemProps}
+      // {...listItemProps}
       disabled={item.disabled}
       sx={{
         borderRadius: `${customization.borderRadius}px`,
@@ -87,7 +88,7 @@ const NavItem = ({ item, level }: any) => {
         pl: `${level * 24}px`
       }}
       selected={customization?.isOpen?.findIndex((id) => id === item.id) > -1}
-      onClick={() => itemHandler(item.id)}
+      onClick={() => itemHandler(item?.id)}
     >
       <ListItemIcon sx={{ my: 'auto', minWidth: !item?.icon ? 18 : 36 }}>{itemIcon}</ListItemIcon>
       <ListItemText
@@ -120,9 +121,9 @@ const NavItem = ({ item, level }: any) => {
   )
 }
 
-NavItem.propTypes = {
-  item: PropTypes.object,
-  level: PropTypes.number
-}
+// NavItem.propTypes = {
+//   item: PropTypes.object,
+//   level: PropTypes.number
+// }
 
 export default NavItem

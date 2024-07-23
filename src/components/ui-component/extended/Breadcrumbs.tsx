@@ -7,11 +7,12 @@ import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs'
-import { IconChevronRight, IconTallymark1 } from '@tabler/icons-react'
+import { IconChevronRight, IconProps, IconTallymark1 } from '@tabler/icons-react'
 import AccountTreeTwoToneIcon from '@mui/icons-material/AccountTreeTwoTone'
 import HomeIcon from '@mui/icons-material/Home'
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone'
 import navigation from '../../menu-items/index'
+import { MenuItem } from '../../../types'
 
 // ==============================|| BREADCRUMBS TITLE ||============================== //
 
@@ -72,10 +73,10 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
 }) => {
   const theme = useTheme()
   const location = useLocation()
-  const [main, setMain] = useState<any>()
-  const [item, setItem] = useState<any>()
+  const [main, setMain] = useState<MenuItem>()
+  const [item, setItem] = useState<MenuItem>()
 
-  const iconSX: any = {
+  const iconSX: React.CSSProperties = {
     marginRight: 6,
     marginTop: -2,
     width: '1rem',
@@ -94,7 +95,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   const customLocation = location.pathname
 
   useEffect(() => {
-    navigation?.items?.map((menu: any) => {
+    navigation?.items?.map((menu: MenuItem) => {
       if (menu.type && menu.type === 'group') {
         if (menu?.url && menu.url === customLocation) {
           setMain(menu)
@@ -108,9 +109,9 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   }, [customLocation])
 
   // set active item state
-  const getCollapse = (menu: any) => {
+  const getCollapse = (menu: MenuItem) => {
     if (!custom && menu.children) {
-      menu.children.filter((collapse: any) => {
+      menu.children.filter((collapse: MenuItem) => {
         if (collapse.type && collapse.type === 'collapse') {
           getCollapse(collapse)
           if (collapse.url === customLocation) {
@@ -129,7 +130,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   }
 
   // item separator
-  const SeparatorIcon = separator as any
+  const SeparatorIcon = separator as React.ComponentType<IconProps>
   const separatorIcon = separator ? (
     React.isValidElement(separator) ? (
       separator
@@ -144,8 +145,8 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   let itemContent: React.ReactNode
   let breadcrumbContent: React.ReactNode = <Typography />
   let itemTitle = ''
-  let CollapseIcon: React.ComponentType | any
-  let ItemIcon: React.ComponentType | any
+  let CollapseIcon: React.ComponentType | React.ComponentType<IconProps>
+  let ItemIcon: React.ComponentType | React.ComponentType<IconProps>
 
   // collapse item
   if (main && main.type === 'collapse') {
@@ -203,7 +204,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
 
   // items
   if ((item && item.type === 'item') || (item?.type === 'group' && item?.url) || custom) {
-    itemTitle = item?.title
+    itemTitle = item?.title || ''
 
     ItemIcon = item?.icon ? item.icon : AccountTreeTwoToneIcon
     itemContent = (

@@ -14,7 +14,7 @@ import { MenuItem } from '../../../../../../types'
 // ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
 
 const NavGroup = ({ item }: { item: MenuItem }) => {
-  const theme = useTheme() as any
+  const theme = useTheme()
 
   // menu list collapse & items
   const items = item.children?.map((menu: MenuItem) => {

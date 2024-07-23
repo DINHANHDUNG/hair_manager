@@ -19,29 +19,29 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { useAppSelector } from '../../../../../../app/hooks'
 import { customTheme } from '../../../../../../app/selectedStore'
-// import { MenuItem } from '../../../../../../types'
+import { MenuItem } from '../../../../../../types'
 
 // ==============================|| SIDEBAR MENU LIST COLLAPSE ITEMS ||============================== //
 
-const NavCollapse = ({ menu, level }: { menu: any; level: number }) => {
-  const theme = useTheme() as any
+const NavCollapse = ({ menu, level }: { menu: MenuItem; level: number }) => {
+  const theme = useTheme()
   const customization = useAppSelector(customTheme)
   const navigate = useNavigate()
 
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState<string>('')
 
   const handleClick = () => {
     setOpen(!open)
-    setSelected(!selected ? menu?.id : null)
+    setSelected(!selected ? menu?.id : '')
     if (menu?.id !== 'authentication') {
-      navigate(menu?.children[0]?.url)
+      menu?.children && menu?.children[0]?.url && navigate(menu?.children[0]?.url)
     }
   }
 
   const { pathname } = useLocation()
-  const checkOpenForParent = (child: any, id: any) => {
-    child.forEach((item: any) => {
+  const checkOpenForParent = (child: Array<MenuItem>, id: string) => {
+    child?.forEach((item: MenuItem) => {
       if (item.url === pathname) {
         setOpen(true)
         setSelected(id)
@@ -52,11 +52,11 @@ const NavCollapse = ({ menu, level }: { menu: any; level: number }) => {
   // menu collapse for sub-levels
   useEffect(() => {
     setOpen(false)
-    setSelected(null)
+    setSelected('')
     if (menu.children) {
-      menu.children.forEach((item: any) => {
-        if (item.children?.length) {
-          checkOpenForParent(item.children, menu.id)
+      menu.children.forEach((item: MenuItem) => {
+        if (item?.children && item?.children?.length > 0) {
+          checkOpenForParent(item?.children, menu.id)
         }
         if (item.url === pathname) {
           setSelected(menu?.id)
@@ -67,7 +67,7 @@ const NavCollapse = ({ menu, level }: { menu: any; level: number }) => {
   }, [pathname, menu.children])
 
   // menu collapse & item
-  const menus = menu.children?.map((item: any) => {
+  const menus = menu.children?.map((item: MenuItem) => {
     switch (item.type) {
       case 'collapse':
         return <NavCollapse key={item.id} menu={item} level={level + 1} />
@@ -83,7 +83,7 @@ const NavCollapse = ({ menu, level }: { menu: any; level: number }) => {
   })
 
   const Icon = menu.icon
-  const menuIcon = menu.icon ? (
+  const menuIcon = Icon ? (
     <Icon strokeWidth={1.5} size='1.3rem' style={{ marginTop: 'auto', marginBottom: 'auto' }} />
   ) : (
     <FiberManualRecordIcon

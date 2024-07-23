@@ -7,13 +7,20 @@ import Box from '@mui/material/Box'
 import Grow from '@mui/material/Grow'
 import Slide from '@mui/material/Slide'
 import Zoom from '@mui/material/Zoom'
+import { SxProps } from '@mui/system'
+import { Theme } from '@mui/material'
 
 type TransitionsProps = {
   children: ReactNode
   type?: 'grow' | 'fade' | 'collapse' | 'slide' | 'zoom'
   position?: 'top-left' | 'top-right' | 'top' | 'bottom-left' | 'bottom-right' | 'bottom'
   direction?: 'up' | 'down' | 'left' | 'right'
-  [x: string]: any
+  sx?: SxProps<Theme> // Định nghĩa kiểu cho `sx`
+  timeout?: {
+    appear?: number
+    enter?: number
+    exit?: number
+  }
 }
 
 // ==============================|| TRANSITIONS ||============================== //
