@@ -75,7 +75,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   const [main, setMain] = useState<any>()
   const [item, setItem] = useState<any>()
 
-  const iconSX: SxProps<Theme> = {
+  const iconSX: any = {
     marginRight: 6,
     marginTop: -2,
     width: '1rem',

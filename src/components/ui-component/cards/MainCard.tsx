@@ -25,6 +25,7 @@ interface MainCardProps {
   shadow?: string | number
   sx?: object
   title?: ReactNode
+  elevation?: number
 }
 
 // ==============================|| CUSTOM MAIN CARD ||============================== //

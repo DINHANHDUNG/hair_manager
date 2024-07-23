@@ -80,3 +80,4 @@
             "prettier:fix": "prettier --write \"src/**/(_.tsx|_.ts|_.css|_.scss)\""
         }
 
+// eslint-disable-next-line react-hooks/exhaustive-deps

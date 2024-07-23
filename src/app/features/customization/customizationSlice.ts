@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { config } from '../../../constants'
 const initialState = {
-  isOpen: [], // for active default menu
+  isOpen: [] as Array<string>, // for active default menu
   defaultId: 'default',
   fontFamily: config.fontFamily,
   borderRadius: config.borderRadius,
@@ -13,11 +13,22 @@ const customizationSlice = createSlice({
   initialState: initialState,
   reducers: {
     menuOpen: (state, action) => {
-      state.isOpen = action.payload.id
+      console.log('action.payload.id', action.payload.id)
+
+      state.isOpen = action.payload.id ? [action.payload.id] : []
+    },
+    setMenu: (state, action) => {
+      state.opened = action.payload.opened
+    },
+    setBorderRd: (state, action) => {
+      state.borderRadius = action.payload.borderRadius
+    },
+    setFontFa: (state, action) => {
+      state.fontFamily = action.payload.fontFamily
     }
   }
 })
 
-export const { menuOpen } = customizationSlice.actions
+export const { menuOpen, setMenu, setBorderRd, setFontFa } = customizationSlice.actions
 
 export default customizationSlice.reducer
