@@ -26,12 +26,15 @@ import AnimateButton from '../../../components/ui-component/extended/AnimateButt
 // assets
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-
-// ============================|| FIREBASE - LOGIN ||============================ //
+import { useAppDispatch } from '../../../app/hooks'
+import { setCredentials } from '../../../app/features/auth/authSlice'
+import { useNavigate } from 'react-router-dom'
+import ROUTES from '../../../routers/helpersRouter/constantRouter'
 
 const AuthLogin = ({ ...others }) => {
+  const navigate = useNavigate()
   const theme = useTheme()
-
+  const dispatch = useAppDispatch()
   const [checked, setChecked] = useState(true)
 
   const [showPassword, setShowPassword] = useState(false)
@@ -108,15 +111,29 @@ const AuthLogin = ({ ...others }) => {
         initialValues={{
           email: '',
           password: '',
+          key: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
+          key: Yup.string().max(255).required('Key is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={(values, { setSubmitting }) => {
           setTimeout(() => {
-            alert(JSON.stringify(values, null, 2))
+            dispatch(
+              setCredentials({
+                refreshToken: 'abc',
+                accessToken: 'abc',
+                user: {
+                  username: values.email,
+                  Password: values.password,
+                  roles: ['admin']
+                }
+              })
+            )
+            navigate(ROUTES.HOME)
+            // alert(JSON.stringify(values, null, 2))
             setSubmitting(false)
           }, 400)
         }}
@@ -181,6 +198,25 @@ const AuthLogin = ({ ...others }) => {
                 </FormHelperText>
               )}
             </FormControl>
+
+            <FormControl fullWidth error={Boolean(touched.key && errors.key)} sx={{ ...theme.typography.customInput }}>
+              <InputLabel htmlFor='outlined-adornment-email-login'>key</InputLabel>
+              <OutlinedInput
+                id='outlined-adornment-email-login'
+                type='key'
+                value={values.key}
+                name='key'
+                onBlur={handleBlur}
+                onChange={handleChange}
+                label='key'
+                inputProps={{}}
+              />
+              {touched.key && errors.key && (
+                <FormHelperText error id='standard-weight-helper-text-email-login'>
+                  {errors.key}
+                </FormHelperText>
+              )}
+            </FormControl>
             <Stack direction='row' alignItems='center' justifyContent='space-between' spacing={1}>
               <FormControlLabel
                 control={
@@ -193,9 +229,9 @@ const AuthLogin = ({ ...others }) => {
                 }
                 label='Remember me'
               />
-              <Typography variant='subtitle1' color='secondary' sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+              {/* <Typography variant='subtitle1' color='secondary' sx={{ textDecoration: 'none', cursor: 'pointer' }}>
                 Forgot Password?
-              </Typography>
+              </Typography> */}
             </Stack>
             {errors.submit && (
               <Box sx={{ mt: 3 }}>
