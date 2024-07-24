@@ -1,5 +1,6 @@
 // assets
 import { IconKey } from '@tabler/icons-react'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = {
@@ -22,10 +23,10 @@ const pages = {
 
       children: [
         {
-          id: 'login3',
+          id: 'login',
           title: 'Login',
           type: 'item',
-          url: '/login',
+          url: ROUTES.LOGIN,
           target: true
         }
         // {
