@@ -48,6 +48,7 @@ export interface MenuItem {
   target?: boolean
   children?: Array<MenuItem>
   disabled?: boolean
+  external?: boolean
   chip?: {
     label?: string
     avatar?: React.ReactElement

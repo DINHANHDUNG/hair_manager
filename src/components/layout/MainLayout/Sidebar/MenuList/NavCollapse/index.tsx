@@ -34,8 +34,8 @@ const NavCollapse = ({ menu, level }: { menu: MenuItem; level: number }) => {
   const handleClick = () => {
     setOpen(!open)
     setSelected(!selected ? menu?.id : '')
-    if (menu?.id !== 'authentication') {
-      menu?.children && menu?.children[0]?.url && navigate(menu?.children[0]?.url)
+    if (menu?.id !== 'authentication' && menu?.children && menu?.children[0]?.url) {
+      navigate(menu?.children[0]?.url)
     }
   }
 

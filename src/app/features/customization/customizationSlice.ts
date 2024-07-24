@@ -22,8 +22,6 @@ const customizationSlice = createSlice({
   initialState: initialState,
   reducers: {
     menuOpen: (state, action) => {
-      console.log('action.payload.id', action.payload.id)
-
       state.isOpen = action.payload.id ? [action.payload.id] : []
     },
     setMenu: (state, action) => {

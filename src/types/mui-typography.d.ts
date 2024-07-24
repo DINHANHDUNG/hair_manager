@@ -103,18 +103,41 @@ interface CustomTypographyOptions extends TypographyOptions {
     height: string
     fontSize: string
   }
+  customInput: {
+    marginTop?: number
+    marginBottom?: number
+    '& > label'?: {
+      top?: number
+      left?: number
+      color?: string
+      '&[data-shrink="false"]'?: {
+        top?: number
+      }
+    }
+    '& > div > input'?: {
+      padding?: string
+    }
+    '& legend'?: {
+      display?: string
+    }
+    '& fieldset'?: {
+      top?: number
+    }
+  }
 }
 // theme.ts
 import { createTheme } from '@mui/material/styles'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants extends CustomTypographyOptions {
-    // commonAvatar: React.CSSProperties
+    commonAvatar: React.CSSProperties
+    customInput: React.CSSProperties
   }
 
   // allow configuration using `createTheme`
   interface TypographyVariantsOptions extends CustomTypographyOptions {
-    // commonAvatar?: React.CSSProperties
+    commonAvatar?: React.CSSProperties
+    customInput?: React.CSSProperties
   }
 }
 
@@ -123,5 +146,6 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     commonAvatar: true
     mediumAvatar: true
+    customInput: true
   }
 }

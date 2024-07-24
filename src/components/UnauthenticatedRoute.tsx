@@ -1,10 +1,9 @@
-import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { RootState } from '../app/store'
+import { Navigate, Outlet } from 'react-router-dom'
+import { authStore } from '../app/selectedStore'
 
 const UnauthenticatedRoute = () => {
-  const auth = useSelector((state: RootState) => state.auth)
+  const auth = useSelector(authStore)
 
   if (auth.accessToken) {
     return <Navigate to='/' />

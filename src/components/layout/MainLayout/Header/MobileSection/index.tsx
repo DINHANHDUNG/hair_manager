@@ -21,7 +21,6 @@ import Transitions from '../../../../ui-component/extended/Transitions'
 // ==============================|| HEADER CONTENT - MOBILE ||============================== //
 
 const MobileSection = () => {
-
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLElement>(null)
   // const anchorRef: RefObject<HTMLElement> = React.useRef(null);
