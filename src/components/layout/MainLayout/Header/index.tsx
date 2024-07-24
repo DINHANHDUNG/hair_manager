@@ -18,7 +18,7 @@ import { IconMenu2 } from '@tabler/icons-react'
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
 const Header = ({ handleLeftDrawerToggle }: { handleLeftDrawerToggle: () => void }) => {
-  const theme = useTheme() as any
+  const theme = useTheme()
 
   return (
     <>

@@ -3,7 +3,9 @@
  * @param {JsonObject} theme Theme customization object
  */
 
-export default function themePalette(theme: any) {
+import { ThemeOption } from '../types/customTheme'
+
+export default function themePalette(theme: ThemeOption) {
   return {
     mode: theme?.customization?.navType,
     common: {

@@ -1,6 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { config } from '../../../constants'
-const initialState = {
+
+export interface CustomizationState {
+  isOpen: string[]
+  defaultId: string
+  fontFamily: string
+  borderRadius: number
+  opened: boolean
+}
+
+const initialState: CustomizationState = {
   isOpen: [] as Array<string>, // for active default menu
   defaultId: 'default',
   fontFamily: config.fontFamily,

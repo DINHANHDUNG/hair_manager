@@ -1,4 +1,6 @@
-export default function componentStyleOverrides(theme: any) {
+import { ThemeOption } from '../types/customTheme'
+
+export default function componentStyleOverrides(theme: ThemeOption) {
   const bgColor = theme.colors?.grey50
   return {
     MuiButton: {

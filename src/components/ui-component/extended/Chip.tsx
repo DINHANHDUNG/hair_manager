@@ -8,7 +8,11 @@ type ChipColor = 'primary' | 'secondary' | 'success' | 'error' | 'orange' | 'war
 interface ChipProps extends MuiChipProps {
   chipcolor?: ChipColor
   variant?: 'outlined' | 'filled'
+  sx: SxProps<Theme>
 }
+
+// Định nghĩa kiểu cho sx
+type SXProps = SxProps<Theme>
 
 const Chip: React.FC<ChipProps> = ({ chipcolor = 'primary', disabled, sx = {}, variant = 'filled', ...others }) => {
   const theme = useTheme()
@@ -164,7 +168,7 @@ const Chip: React.FC<ChipProps> = ({ chipcolor = 'primary', disabled, sx = {}, v
         })
   }
 
-  let SX = defaultSX as any
+  let SX: SXProps = defaultSX
   if (variant === 'outlined') {
     SX = outlineSX
   }

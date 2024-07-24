@@ -1,11 +1,10 @@
-/**
- * Typography used in theme
- * @param {JsonObject} theme theme customization object
- */
+// import { TypographyOptions } from '@mui/material/styles/createTypography'
 
-export default function themeTypography(theme: any) {
+import { ThemeOption } from '../types/customTheme'
+
+export default function themeTypography(theme: ThemeOption) {
   return {
-    fontFamily: theme?.customization?.fontFamily,
+    fontFamily: theme.customization.fontFamily,
     h6: {
       fontWeight: 500,
       color: theme.heading,
@@ -54,7 +53,8 @@ export default function themeTypography(theme: any) {
     body1: {
       fontSize: '0.875rem',
       fontWeight: 400,
-      lineHeight: '1.334em'
+      lineHeight: '1.334em',
+      color: theme.textDark
     },
     body2: {
       letterSpacing: '0em',
@@ -63,28 +63,7 @@ export default function themeTypography(theme: any) {
       color: theme.darkTextPrimary
     },
     button: {
-      textTransform: 'capitalize'
-    },
-    customInput: {
-      marginTop: 1,
-      marginBottom: 1,
-      '& > label': {
-        top: 23,
-        left: 0,
-        color: theme.grey500,
-        '&[data-shrink="false"]': {
-          top: 5
-        }
-      },
-      '& > div > input': {
-        padding: '30.5px 14px 11.5px !important'
-      },
-      '& legend': {
-        display: 'none'
-      },
-      '& fieldset': {
-        top: 0
-      }
+      textTransform: 'capitalize' as const
     },
     mainContent: {
       backgroundColor: theme.background,

@@ -23,8 +23,9 @@ import Chip from '../../../../ui-component/extended/Chip'
 // assets
 import { IconBrandTelegram, IconBuildingStore, IconMailbox, IconPhoto } from '@tabler/icons-react'
 import User1 from '../../../../../assets/images/users/user-round.svg'
+import { ReactNode } from 'react'
 
-const ListItemWrapper = ({ children }: any) => {
+const ListItemWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <Box
       sx={{

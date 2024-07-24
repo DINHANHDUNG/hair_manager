@@ -71,7 +71,7 @@ ColorBox.propTypes = {
 // ===============================|| UI COLOR ||=============================== //
 
 const UIColor = () => {
-  const theme = useTheme() as any
+  const theme = useTheme()
 
   return (
     <MainCard title='Color Palette' secondary={<SecondaryAction link='https://next.material-ui.com/system/palette/' />}>
@@ -90,7 +90,7 @@ const UIColor = () => {
               <Grid item xs={12} sm={6} md={4} lg={2}>
                 <ColorBox
                   bgcolor='primary.200'
-                  data={{ label: 'Blue-200', color: theme.palette.primary[200] }}
+                  data={{ label: 'Blue-200', color: theme.palette.primary[200] || '' }}
                   title='primary[200]'
                   dark
                 />
@@ -112,7 +112,7 @@ const UIColor = () => {
               <Grid item xs={12} sm={6} md={4} lg={2}>
                 <ColorBox
                   bgcolor='primary.800'
-                  data={{ label: 'Blue-800', color: theme.palette.primary[800] }}
+                  data={{ label: 'Blue-800', color: theme.palette.primary[800] || '' }}
                   title='primary[800]'
                 />
               </Grid>
@@ -133,7 +133,7 @@ const UIColor = () => {
               <Grid item xs={12} sm={6} md={4} lg={2}>
                 <ColorBox
                   bgcolor='secondary.200'
-                  data={{ label: 'DeepPurple-200', color: theme.palette.secondary[200] }}
+                  data={{ label: 'DeepPurple-200', color: theme.palette.secondary[200] || '' }}
                   title='secondary[200]'
                   dark
                 />
@@ -155,7 +155,7 @@ const UIColor = () => {
               <Grid item xs={12} sm={6} md={4} lg={2}>
                 <ColorBox
                   bgcolor='secondary.800'
-                  data={{ label: 'DeepPurple-800', color: theme.palette.secondary[800] }}
+                  data={{ label: 'DeepPurple-800', color: theme.palette.secondary[800] || '' }}
                   title='secondary[800]'
                 />
               </Grid>
@@ -176,7 +176,7 @@ const UIColor = () => {
               <Grid item xs={12} sm={6} md={4} lg={2}>
                 <ColorBox
                   bgcolor='success.200'
-                  data={{ label: 'Green-A200', color: theme.palette.success[200] }}
+                  data={{ label: 'Green-A200', color: theme.palette.success[200] || '' }}
                   title='success[200]'
                 />
               </Grid>

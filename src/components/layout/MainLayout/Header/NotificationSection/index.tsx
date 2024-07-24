@@ -53,7 +53,7 @@ const status = [
 // ==============================|| NOTIFICATION ||============================== //
 
 const NotificationSection = () => {
-  const theme = useTheme() as any
+  const theme = useTheme()
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'))
 
   const [open, setOpen] = useState(false)
@@ -61,15 +61,14 @@ const NotificationSection = () => {
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
-  const anchorRef = useRef<any>(null)
-  // const anchorRef = useRef<HTMLElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null)
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen)
   }
 
-  const handleClose = (event: any) => {
-    if (anchorRef?.current && anchorRef?.current.contains(event.target)) {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
+    if (anchorRef?.current && anchorRef?.current.contains(event.target as Node)) {
       return
     }
     setOpen(false)
@@ -83,8 +82,8 @@ const NotificationSection = () => {
     prevOpen.current = open
   }, [open])
 
-  const handleChange = (event: any) => {
-    if (event?.target.value) setValue(event?.target.value)
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    if (event?.target?.value) setValue(event?.target?.value)
   }
 
   return (

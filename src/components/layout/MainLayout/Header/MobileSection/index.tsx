@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Toolbar from '@mui/material/Toolbar'
 
 // project import
 
-import SearchSection from '../SearchSection'
 import ProfileSection from '../ProfileSection'
+import SearchSection from '../SearchSection'
 
 // assets
 // import { MoreOutlined } from '@ant-design/icons'
@@ -22,20 +21,22 @@ import Transitions from '../../../../ui-component/extended/Transitions'
 // ==============================|| HEADER CONTENT - MOBILE ||============================== //
 
 const MobileSection = () => {
-  const theme = useTheme() as any
 
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLElement>(null)
+  // const anchorRef: RefObject<HTMLElement> = React.useRef(null);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen)
   }
 
-  const handleClose = (event: any) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+  const handleClose = (event: MouseEvent | TouchEvent) => {
+    // Check if the event target is within the element referenced by anchorRef
+    if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
       return
     }
 
+    // Set the state to close the menu or dialog
     setOpen(false)
   }
 
@@ -90,7 +91,9 @@ const MobileSection = () => {
       >
         {({ TransitionProps }) => (
           <Transitions type='fade' in={open} {...TransitionProps}>
-            <Paper sx={{ boxShadow: theme.customShadows.z1 }}>
+            <Paper
+            // sx={{ boxShadow: theme.customShadows.z1 }}
+            >
               <ClickAwayListener onClickAway={handleClose}>
                 <AppBar color='inherit'>
                   <Toolbar>

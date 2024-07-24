@@ -1,22 +1,14 @@
-import { createTheme } from '@mui/material/styles'
-
-// assets
+import { createTheme, ThemeOptions, PaletteOptions } from '@mui/material/styles'
 import colors from '../assets/scss/_themes-vars.module.scss'
-
-// project imports
 import componentStyleOverrides from './compStyleOverride'
 import themePalette from './palette'
 import themeTypography from './typography'
+import { Customization, ThemeOption } from '../types/customTheme'
 
-/**
- * Represent theme style and structure as per Material-UI
- * @param {JsonObject} customization customization parameter object
- */
-
-export const theme = (customization: any) => {
+const theme = (customization: Customization) => {
   const color = colors
 
-  const themeOption = {
+  const themeOption: ThemeOption = {
     colors: color,
     heading: color.grey900,
     paper: color.paper,
@@ -31,9 +23,9 @@ export const theme = (customization: any) => {
     customization
   }
 
-  const themeOptions = {
+  const themeOptions: ThemeOptions = {
     direction: 'ltr',
-    palette: themePalette(themeOption),
+    palette: themePalette(themeOption) as PaletteOptions,
     mixins: {
       toolbar: {
         minHeight: '48px',
@@ -44,10 +36,48 @@ export const theme = (customization: any) => {
       }
     },
     typography: themeTypography(themeOption)
-  } as any
+  }
 
   const themes = createTheme(themeOptions)
-  themes.components = componentStyleOverrides(themeOption)
+
+  themes.components = {
+    ...componentStyleOverrides(themeOption),
+    MuiCssBaseline: {
+      styleOverrides: {
+        mainContent: {
+          backgroundColor: themeOption.background,
+          width: '100%',
+          minHeight: 'calc(100vh - 88px)',
+          flexGrow: 1,
+          padding: '20px',
+          marginTop: '88px',
+          marginRight: '20px',
+          borderRadius: `${themeOption.customization.borderRadius}px`
+        },
+        customInput: {
+          marginTop: 1,
+          marginBottom: 1,
+          '& > label': {
+            top: 23,
+            left: 0,
+            color: themeOption.colors.grey500,
+            '&[data-shrink="false"]': {
+              top: 5
+            }
+          },
+          '& > div > input': {
+            padding: '30.5px 14px 11.5px !important'
+          },
+          '& legend': {
+            display: 'none'
+          },
+          '& fieldset': {
+            top: 0
+          }
+        }
+      }
+    }
+  }
 
   return themes
 }
