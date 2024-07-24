@@ -1,19 +1,28 @@
 import { useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router-dom'
-import { RootState } from '../app/store'
+import { Navigate } from 'react-router-dom'
+import { authStore } from '../app/selectedStore'
+import { ReactNode } from 'react'
+import ROUTES from '../routers/helpersRouter/constantRouter'
 
-const ProtectedRoute = ({ roles }: { roles: Array<string> }) => {
-  const auth = useSelector((state: RootState) => state.auth)
+interface ProtectedRouteProps {
+  roles: string[]
+  element: ReactNode
+}
+
+const ProtectedRoute = ({ roles, element }: ProtectedRouteProps) => {
+  const auth = useSelector(authStore)
 
   if (!auth.accessToken) {
-    return <Navigate to='/login' />
+    // Nếu không có accessToken, chuyển hướng tới trang đăng nhập
+    return <Navigate to={ROUTES.LOGIN} />
   }
 
-  if (roles && !roles.includes(auth.user?.role)) {
-    return <Navigate to='/' />
+  if (!roles?.includes(auth.user?.role)) {
+    // Nếu người dùng không có vai trò được yêu cầu, chuyển hướng tới trang không được phép
+    return <Navigate to={ROUTES.NOT_AUTHORIZED} />
   }
 
-  return <Outlet />
+  return <>{element}</>
 }
 
 export default ProtectedRoute

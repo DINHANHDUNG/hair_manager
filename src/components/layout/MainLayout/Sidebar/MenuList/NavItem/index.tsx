@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { forwardRef, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 // material-ui
 import Avatar from '@mui/material/Avatar'
@@ -18,17 +18,18 @@ import { menuOpen, setMenu } from '../../../../../../app/features/customization/
 import { useAppSelector } from '../../../../../../app/hooks'
 import { customTheme } from '../../../../../../app/selectedStore'
 import { MenuItem } from '../../../../../../types'
-// import { MenuItem } from '../../../../../../types'
 
 // ==============================|| SIDEBAR MENU LIST ITEMS ||============================== //
+
+type ListItemProps = {
+  component: React.ElementType
+} & Omit<React.ComponentProps<typeof ListItemButton>, 'component'>
 
 const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
   const theme = useTheme()
   const dispatch = useDispatch()
   const { pathname } = useLocation()
   const customization = useAppSelector(customTheme)
-
-  console.log('customization', customization)
 
   const matchesSM = useMediaQuery(theme.breakpoints.down('lg'))
 
@@ -45,15 +46,14 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
     />
   )
 
-  // let itemTarget = '_self'
-  // if (item.target) {
-  //   itemTarget = '_blank'
-  // }
+  let itemTarget = '_self'
+  if (item.target) {
+    itemTarget = '_blank'
+  }
 
-  // let listItemProps = {
-  //   // component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
-  //   component: forwardRef((props) => <Link {...props} to={item.url ?? ''} target={itemTarget} />)
-  // } as any
+  const listItemProps: ListItemProps = {
+    component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
+  }
   // if (item?.external) {
   //   listItemProps = { component: 'a', href: item.url, target: itemTarget }
   // }
@@ -77,7 +77,7 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
 
   return (
     <ListItemButton
-      // {...listItemProps}
+      {...listItemProps}
       disabled={item.disabled}
       sx={{
         borderRadius: `${customization.borderRadius}px`,

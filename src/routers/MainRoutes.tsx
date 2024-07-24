@@ -1,6 +1,9 @@
 import { lazy } from 'react'
 import MainLayout from '../components/layout/MainLayout'
 import Loadable from '../components/ui-component/Loadable'
+import ROUTES from './helpersRouter/constantRouter'
+import { createPrivateRoute, createProtectedRoute } from './helpersRouter/routeHelpers'
+import { PERMISSION } from '../constants'
 
 // project imports
 
@@ -11,59 +14,57 @@ const DashboardDefault = Loadable(lazy(() => import('../page/admin/AdminPage')))
 const UtilsTypography = Loadable(lazy(() => import('../page/utilities/Typography')))
 const UtilsColor = Loadable(lazy(() => import('../page/utilities/Color')))
 const UtilsShadow = Loadable(lazy(() => import('../page/utilities/Shadow')))
-
-// sample page routing
-const HomePage = Loadable(lazy(() => import('../page/home/HomePage')))
+const SamplePage = Loadable(lazy(() => import('../page/home/HomePage')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
-  path: '/',
-  element: <MainLayout />,
+  path: ROUTES.HOME,
+  element: createPrivateRoute(<MainLayout />),
   children: [
     {
-      path: '/',
-      element: <DashboardDefault />
+      path: ROUTES.HOME,
+      element: createProtectedRoute(<DashboardDefault />, [PERMISSION.ADMIN, PERMISSION.OP])
     },
     {
-      path: 'dashboard',
+      path: ROUTES.DASHBOARD,
       children: [
         {
-          path: 'default',
-          element: <DashboardDefault />
+          path: ROUTES.DEFAULT,
+          element: createProtectedRoute(<DashboardDefault />, [PERMISSION.ADMIN])
         }
       ]
     },
     {
-      path: 'utils',
+      path: ROUTES.UTILS,
       children: [
         {
-          path: 'util-typography',
-          element: <UtilsTypography />
+          path: ROUTES.UTILS_CHILD.TYPOGRAPHY,
+          element: createProtectedRoute(<UtilsTypography />, [PERMISSION.ADMIN])
         }
       ]
     },
     {
-      path: 'utils',
+      path: ROUTES.UTILS,
       children: [
         {
-          path: 'util-color',
-          element: <UtilsColor />
+          path: ROUTES.UTILS_CHILD.COLOR,
+          element: createProtectedRoute(<UtilsColor />, [PERMISSION.ADMIN])
         }
       ]
     },
     {
-      path: 'utils',
+      path: ROUTES.UTILS,
       children: [
         {
-          path: 'util-shadow',
-          element: <UtilsShadow />
+          path: ROUTES.UTILS_CHILD.SHADOW,
+          element: createProtectedRoute(<UtilsShadow />, [PERMISSION.ADMIN])
         }
       ]
     },
     {
-      path: 'home',
-      element: <HomePage />
+      path: ROUTES.SAMPLE_PAGE,
+      element: <SamplePage />
     }
   ]
 }

@@ -10,3 +10,12 @@ export const config = {
   fontFamily: `'Roboto', sans-serif`,
   borderRadius: 12
 }
+
+export const PERMISSION = {
+  ADMIN: 'admin',
+  NVKT: 'nvkt',
+  NVKH: 'nvkh',
+  NVCSKH: 'nvcskh',
+  OP: 'op',
+  DATABASE: 'database'
+}
