@@ -40,7 +40,7 @@ const Customization = () => {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const customization = useAppSelector(customTheme)
-
+  const DEV = process.env.REACT_APP_DEV ?? false
   // drawer on/off
   const [open, setOpen] = useState(false)
   const handleToggle = () => {
@@ -50,10 +50,6 @@ const Customization = () => {
   // state - border radius
   const [borderRadius, setBorderRadius] = useState(customization.borderRadius)
   const handleBorderRadius = (event: Event, newValue: number | number[]) => {
-    // setBorderRadius(newValue);
-    console.log('====================================')
-    console.log(event, newValue)
-    console.log('====================================')
     setBorderRadius(newValue as number)
   }
 
@@ -97,32 +93,34 @@ const Customization = () => {
   return (
     <>
       {/* toggle button */}
-      <Tooltip title='Live Customize'>
-        <Fab
-          component='div'
-          onClick={handleToggle}
-          size='medium'
-          variant='circular'
-          color='secondary'
-          sx={{
-            borderRadius: 0,
-            borderTopLeftRadius: '50%',
-            borderBottomLeftRadius: '50%',
-            borderTopRightRadius: '50%',
-            borderBottomRightRadius: '4px',
-            top: '25%',
-            position: 'fixed',
-            right: 10,
-            zIndex: theme.zIndex.speedDial
-          }}
-        >
-          <AnimateButton type='rotate'>
-            <IconButton color='inherit' size='large' disableRipple>
-              <IconSettings />
-            </IconButton>
-          </AnimateButton>
-        </Fab>
-      </Tooltip>
+      {DEV && (
+        <Tooltip title='Live Customize'>
+          <Fab
+            component='div'
+            onClick={handleToggle}
+            size='medium'
+            variant='circular'
+            color='secondary'
+            sx={{
+              borderRadius: 0,
+              borderTopLeftRadius: '50%',
+              borderBottomLeftRadius: '50%',
+              borderTopRightRadius: '50%',
+              borderBottomRightRadius: '4px',
+              top: '25%',
+              position: 'fixed',
+              right: 10,
+              zIndex: theme.zIndex.speedDial
+            }}
+          >
+            <AnimateButton type='rotate'>
+              <IconButton color='inherit' size='large' disableRipple>
+                <IconSettings />
+              </IconButton>
+            </AnimateButton>
+          </Fab>
+        </Tooltip>
+      )}
 
       <Drawer
         anchor='right'

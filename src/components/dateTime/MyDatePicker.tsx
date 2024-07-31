@@ -1,0 +1,67 @@
+import { FormControl, TextFieldVariants } from '@mui/material'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker'
+import dayjs, { Dayjs } from 'dayjs'
+import React from 'react'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
+
+type CustomDatePickerProps = Omit<DatePickerProps<Dayjs>, 'name' | 'value' | 'onChange' | 'onBlur'> & {
+  error?: boolean
+}
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface MyDatePickerProps extends CustomDatePickerProps {
+  name: string
+  control: Control<any>
+  label: string
+  errors: FieldErrors<any>
+  defaultValue?: Dayjs
+  format?: string
+  mb?: number
+  variant?: TextFieldVariants
+}
+
+const MyDatePicker: React.FC<MyDatePickerProps> = ({
+  name,
+  control,
+  label,
+  errors,
+  defaultValue,
+  format,
+  mb,
+  variant,
+  ...props
+}) => {
+  const hasError = !!errors[name]
+
+  return (
+    <FormControl fullWidth sx={{ mb: mb }}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Controller
+          name={name}
+          control={control}
+          defaultValue={defaultValue || null}
+          render={({ field }) => (
+            <DatePicker
+              {...props}
+              {...field}
+              label={label}
+              format={format || 'DD/MM/YYYY'}
+              onChange={(value) => field.onChange(value || '')}
+              value={field.value ? dayjs(field.value) : null}
+              slotProps={{
+                textField: {
+                  error: hasError,
+                  variant: variant || 'outlined',
+                  helperText: errors[name] ? (errors[name] as any).message : ''
+                }
+              }}
+            />
+          )}
+        />
+      </LocalizationProvider>
+    </FormControl>
+  )
+}
+
+export default MyDatePicker

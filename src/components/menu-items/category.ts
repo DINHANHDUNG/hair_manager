@@ -10,30 +10,25 @@ const icons = {
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
 const categorys = {
-  id: 'category-all',
-  title: 'Category',
-  caption: 'Category Caption',
+  id: 'category-manager',
+  title: 'Quản lý danh mục',
+  // caption: 'Danh mục',
   type: 'group',
   children: [
     {
       id: 'list-category',
-      title: 'List category',
+      title: 'Danh mục',
       type: 'collapse',
       icon: icons.IconCategory,
 
       children: [
         {
           id: 'category-persion',
-          title: 'category-persion',
+          title: 'Nhân viên',
           type: 'item',
-          url: ROUTES.SAMPLE_PAGE
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`
           // target: true
-        },
-        {
-          id: 'category-2',
-          title: 'category-2',
-          type: 'item',
-          url: ROUTES.DASHBOARD + '/' + ROUTES.DEFAULT
         }
       ]
     }

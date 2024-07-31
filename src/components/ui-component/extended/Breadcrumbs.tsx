@@ -95,7 +95,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   const customLocation = location.pathname
 
   useEffect(() => {
-    navigation?.items?.map((menu: MenuItem) => {
+    navigation()?.map((menu: MenuItem) => {
       if (menu.type && menu.type === 'group') {
         if (menu?.url && menu.url === customLocation) {
           setMain(menu)
@@ -203,7 +203,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   }
 
   // items
-  if ((item && item.type === 'item') || (item?.type === 'group' && item?.url) || custom) {
+  if ((item && item?.type === 'item') || (item?.type === 'group' && item?.url) || custom) {
     itemTitle = item?.title || ''
 
     ItemIcon = item?.icon ? item.icon : AccountTreeTwoToneIcon

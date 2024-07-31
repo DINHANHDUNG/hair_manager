@@ -9,7 +9,9 @@ import themes from './themes'
 import { useAppSelector } from './app/hooks'
 import { customTheme } from './app/selectedStore'
 import router from './routers'
+import { LicenseInfo } from '@mui/x-data-grid-pro'
 
+LicenseInfo.setLicenseKey(process.env.REACT_APP_PUBLIC_MUI_LICENSE_KEY || '')
 function App() {
   // const { data, error, isLoading } = useGetPokemonByNameQuery('bulbasaur')
   const customization = useAppSelector(customTheme)

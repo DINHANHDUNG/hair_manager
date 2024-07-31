@@ -1,12 +1,14 @@
 // assets
-import { IconTypography, IconPalette, IconShadow, IconWindmill } from '@tabler/icons-react'
+import { IconTypography, IconPalette, IconShadow, IconWindmill, IconInputAi } from '@tabler/icons-react'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = {
   IconTypography,
   IconPalette,
   IconShadow,
-  IconWindmill
+  IconWindmill,
+  IconInputAi
 }
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -38,6 +40,14 @@ const utilities = {
       type: 'item',
       url: '/utils/util-shadow',
       icon: icons.IconShadow,
+      breadcrumbs: false
+    },
+    {
+      id: 'util-input',
+      title: 'Input',
+      type: 'item',
+      url: `/${ROUTES.UTILS}/${ROUTES.UTILS_CHILD.INPUT}`,
+      icon: icons.IconInputAi,
       breadcrumbs: false
     }
   ]

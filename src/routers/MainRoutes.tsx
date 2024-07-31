@@ -14,7 +14,9 @@ const DashboardDefault = Loadable(lazy(() => import('../page/admin/AdminPage')))
 const UtilsTypography = Loadable(lazy(() => import('../page/utilities/Typography')))
 const UtilsColor = Loadable(lazy(() => import('../page/utilities/Color')))
 const UtilsShadow = Loadable(lazy(() => import('../page/utilities/Shadow')))
+const UtilsInput = Loadable(lazy(() => import('../page/utilities/Input')))
 const SamplePage = Loadable(lazy(() => import('../page/home/HomePage')))
+const StaffPage = Loadable(lazy(() => import('../page/category/staff')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -41,24 +43,27 @@ const MainRoutes = {
         {
           path: ROUTES.UTILS_CHILD.TYPOGRAPHY,
           element: createProtectedRoute(<UtilsTypography />, [PERMISSION.ADMIN])
-        }
-      ]
-    },
-    {
-      path: ROUTES.UTILS,
-      children: [
-        {
-          path: ROUTES.UTILS_CHILD.COLOR,
-          element: createProtectedRoute(<UtilsColor />, [PERMISSION.ADMIN])
-        }
-      ]
-    },
-    {
-      path: ROUTES.UTILS,
-      children: [
+        },
         {
           path: ROUTES.UTILS_CHILD.SHADOW,
           element: createProtectedRoute(<UtilsShadow />, [PERMISSION.ADMIN])
+        },
+        {
+          path: ROUTES.UTILS_CHILD.COLOR,
+          element: createProtectedRoute(<UtilsColor />, [PERMISSION.ADMIN])
+        },
+        {
+          path: ROUTES.UTILS_CHILD.INPUT,
+          element: createProtectedRoute(<UtilsInput />, [PERMISSION.ADMIN])
+        }
+      ]
+    },
+    {
+      path: ROUTES.CATEGORY,
+      children: [
+        {
+          path: ROUTES.CATEGORY_CHILD.STAFF,
+          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN])
         }
       ]
     },

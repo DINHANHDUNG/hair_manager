@@ -10,8 +10,13 @@ const ROUTES = {
   UTILS_CHILD: {
     TYPOGRAPHY: 'util-typography',
     COLOR: 'util-color',
-    SHADOW: 'util-shadow'
+    SHADOW: 'util-shadow',
+    INPUT: 'util-input'
     // Add more utility routes here as needed
+  },
+  CATEGORY: 'category',
+  CATEGORY_CHILD: {
+    STAFF: 'staff'
   }
 }
 

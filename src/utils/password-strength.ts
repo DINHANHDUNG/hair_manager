@@ -2,12 +2,14 @@
  * Password validator for login pages
  */
 import value from 'assets/scss/_themes-vars.module.scss'
+import { VALIDATE } from '../common/validate'
 
 // has number
-const hasNumber = (number: string) => new RegExp(/[0-9]/).test(number)
+const hasNumber = (number: string) => new RegExp(VALIDATE.number).test(number)
 
 // has mix of small and capitals
-const hasMixed = (number: string) => new RegExp(/[a-z]/).test(number) && new RegExp(/[A-Z]/).test(number)
+const hasMixed = (number: string) =>
+  new RegExp(VALIDATE.textNoUppercase).test(number) && new RegExp(VALIDATE.textUppercase).test(number)
 
 // has special chars
 const hasSpecial = (number: string) => new RegExp(/[!#@$%^&*)(+=._-]/).test(number)
