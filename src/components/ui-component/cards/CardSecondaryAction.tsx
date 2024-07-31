@@ -20,9 +20,9 @@ interface CardSecondaryActionProps {
 // ==============================|| CARD SECONDARY ACTION ||============================== //
 
 const CardSecondaryAction: React.FC<CardSecondaryActionProps> = ({ title, link, icon }) => {
-  // const theme = useTheme()
   console.log(link, icon)
 
+  // const theme = useTheme()
   return (
     <Tooltip title={title || 'Reference'} placement='left'>
       <ButtonBase disableRipple>
