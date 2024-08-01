@@ -13,6 +13,7 @@ export const CustomInputFilterDataGrid = ({
   type?: string
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('colDef.field', event.target.value)
     onFilterChange(colDef.field, event.target.value)
   }
 
@@ -28,6 +29,8 @@ export const CustomInputFilterDataGrid = ({
         type={type || 'text'}
         size='small'
         fullWidth
+        onKeyDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       />
     </FormControl>
   )

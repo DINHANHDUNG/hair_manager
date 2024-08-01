@@ -1,7 +1,8 @@
 const ROUTES = {
   HOME: '/',
   DEFAULT: 'default',
-  DASHBOARD: 'dashboard',
+  ORDER: 'order',
+  ORDER_DETAIL: 'order-detail',
   LOGIN: 'login',
   NOT_AUTHORIZED: 'not-authorized',
   SAMPLE_PAGE: 'sample-page',

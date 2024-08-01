@@ -35,7 +35,7 @@ const MyTimeField: React.FC<MyTimeFieldProps> = ({
 
   return (
     <FormControl fullWidth sx={{ mb: mb }}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider adapterLocale='vi' dateAdapter={AdapterDayjs}>
         <Controller
           name={name}
           control={control}
