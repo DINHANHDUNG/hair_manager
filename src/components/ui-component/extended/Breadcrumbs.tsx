@@ -264,7 +264,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
       breadcrumbContent = (
         <Card
           sx={
-            card === false ? { mb: 3, bgcolor: 'transparent', ...sx } : { mb: 3, bgcolor: 'background.default', ...sx }
+            card === false ? { mb: 2, bgcolor: 'transparent', ...sx } : { mb: 2, bgcolor: 'background.default', ...sx }
           }
           {...others}
         >

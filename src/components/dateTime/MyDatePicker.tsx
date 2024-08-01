@@ -36,7 +36,7 @@ const MyDatePicker: React.FC<MyDatePickerProps> = ({
 
   return (
     <FormControl fullWidth sx={{ mb: mb }}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider adapterLocale='vi' dateAdapter={AdapterDayjs}>
         <Controller
           name={name}
           control={control}

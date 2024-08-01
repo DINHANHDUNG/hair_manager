@@ -1,3 +1,4 @@
+import { styled } from '@mui/system'
 import {
   DataGridPro,
   GridCallbackDetails,
@@ -7,7 +8,7 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid-pro'
-import React from 'react'
+import React, { ReactElement } from 'react'
 import CustomToolbar from './CustomToolbarDataGrid'
 
 interface TableDataGridProps {
@@ -26,6 +27,8 @@ interface TableDataGridProps {
   headerFilters?: boolean
   checkboxSelection?: boolean
   handleSearchChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  toolbarEnable?: boolean
+  toolbar?: ReactElement
 }
 
 const TableDataGrid: React.FC<TableDataGridProps> = ({
@@ -43,11 +46,14 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   checkboxSelection,
   headerFilters,
   filterMode,
+  toolbarEnable,
+  toolbar,
   otherProps // Các props bổ sung
 }) => {
   return (
     <DataGridPro
       //   {...data}
+      autoHeight
       checkboxSelection={checkboxSelection}
       headerFilters={headerFilters}
       onRowSelectionModelChange={onRowSelectionChange}
@@ -68,33 +74,40 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
           labelDisplayedRows,
           labelRowsPerPage: 'Số bản ghi'
         },
+
         footerRowSelected: (count) => `Đã chọn ${count}`
       }}
+      disableColumnReorder={true} //Tắt di chuyển cột
       sx={{
         '.MuiDataGrid-columnSeparator': {
           display: 'none'
         },
         '&.MuiDataGrid-root': {
           border: 'none'
-        },
-        '& .super-app-theme--header': {
-          backgroundColor: 'red'
         }
       }}
       slots={{
-        toolbar: () => (
-          <CustomToolbar
-            onSearchChange={(e) => handleSearchChange && handleSearchChange(e)}
-            searchValue={searchValue || ''}
-          />
-        )
+        // headerFilterMenu: null,
+        toolbar: () =>
+          toolbarEnable ? (
+            toolbar ? (
+              toolbar
+            ) : (
+              <CustomToolbar
+                onSearchChange={(e) => handleSearchChange && handleSearchChange(e)}
+                searchValue={searchValue || ''}
+              />
+            )
+          ) : (
+            <></>
+          )
       }}
-      //   slotProps={{
-      //     toolbar: {
-      //       searchValue: searchValue,
-      //       onSearchChange: handleSearchChange
-      //     }
-      //   }}
+      // slotProps={{
+      //   toolbar: {
+      //     searchValue: searchValue,
+      //     onSearchChange: handleSearchChange
+      //   }
+      // }}
       {...otherProps} // Truyền các props bổ sung vào đây
     />
   )
@@ -113,6 +126,23 @@ const labelDisplayedRows = ({
   count: number
   estimated?: number
 }) => {
-  if (!estimated) return `${from}–${to} của ${count !== -1 ? count : `više nego ${to}`}`
-  return `${from}–${to} của ${count !== -1 ? count : `više nego ${estimated > to ? estimated : to}`}`
+  if (!estimated) return `${from}–${to} của ${count !== -1 ? count : `đến ${to}`}`
+  return `${from}–${to} của ${count !== -1 ? count : `đến ${estimated > to ? estimated : to}`}`
 }
+
+export const StickyDataGrid = styled(DataGridPro)(({ theme }) => ({
+  '& .MuiDataGrid-columnHeaders': {
+    position: 'sticky',
+    top: 0,
+    // Replace background colour if necessary
+    backgroundColor: theme.palette.background.paper,
+    // Display header above grid data, but below any popups
+    zIndex: 1
+  },
+  '& .MuiDataGrid-toolbarContainer': {
+    position: 'sticky',
+    top: '0',
+    backgroundColor: '#fff',
+    zIndex: 1
+  }
+}))

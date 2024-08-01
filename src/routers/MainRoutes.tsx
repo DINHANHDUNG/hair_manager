@@ -4,6 +4,7 @@ import Loadable from '../components/ui-component/Loadable'
 import ROUTES from './helpersRouter/constantRouter'
 import { createPrivateRoute, createProtectedRoute } from './helpersRouter/routeHelpers'
 import { PERMISSION } from '../constants'
+import NotAuthorizedPage from '../page/notAuthor/NotAuthorizedPage'
 
 // project imports
 
@@ -25,15 +26,15 @@ const MainRoutes = {
   element: createPrivateRoute(<MainLayout />),
   children: [
     {
-      path: ROUTES.HOME,
-      element: createProtectedRoute(<DashboardDefault />, [PERMISSION.ADMIN, PERMISSION.OP])
-    },
-    {
-      path: ROUTES.DASHBOARD,
+      path: ROUTES.ORDER,
       children: [
         {
           path: ROUTES.DEFAULT,
           element: createProtectedRoute(<DashboardDefault />, [PERMISSION.ADMIN])
+        },
+        {
+          path: ROUTES.ORDER_DETAIL,
+          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN])
         }
       ]
     },
@@ -69,7 +70,11 @@ const MainRoutes = {
     },
     {
       path: ROUTES.SAMPLE_PAGE,
-      element: <SamplePage />
+      element: createProtectedRoute(<SamplePage />, [PERMISSION.DATABASE])
+    },
+    {
+      path: ROUTES.NOT_AUTHORIZED,
+      element: <NotAuthorizedPage />
     }
   ]
 }

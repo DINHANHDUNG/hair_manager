@@ -1,5 +1,6 @@
 // assets
 import { IconShoppingCartBolt } from '@tabler/icons-react'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = { IconShoppingCartBolt }
@@ -12,12 +13,12 @@ const dashboard = {
   type: 'group',
   children: [
     {
-      id: 'default',
+      id: ROUTES.ORDER,
       title: 'Danh sách đơn hàng',
       type: 'item',
-      url: '/dashboard/default',
+      url: `/${ROUTES.ORDER}/${ROUTES.DEFAULT}`,
       icon: icons.IconShoppingCartBolt,
-      breadcrumbs: false
+      breadcrumbs: true
     }
   ]
 }

@@ -19,7 +19,7 @@ const ProtectedRoute = ({ roles, element }: ProtectedRouteProps) => {
 
   if (!roles.some((e) => auth?.user?.roles?.includes(e))) {
     // Nếu người dùng không có vai trò được yêu cầu, chuyển hướng tới trang không được phép
-    return <Navigate to={ROUTES.NOT_AUTHORIZED} />
+    return <Navigate to={`/${ROUTES.NOT_AUTHORIZED}`} />
   }
 
   return <>{element}</>

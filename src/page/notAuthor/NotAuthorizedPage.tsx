@@ -3,7 +3,7 @@ import MainCard from '../../components/ui-component/cards/MainCard'
 
 const NotAuthorizedPage = () => {
   return (
-    <MainCard title='Sample Card'>
+    <MainCard title='Đã có lỗi xảy ra'>
       <Typography variant='body2'>Bạn không có quyền truy cập. Liên hệ admin để được cấp quyền</Typography>
     </MainCard>
   )
