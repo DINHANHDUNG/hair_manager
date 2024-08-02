@@ -20,6 +20,8 @@ import { drawerWidth } from '../../../constants'
 import menuItems from '../../menu-items'
 import Breadcrumbs from '../../ui-component/extended/Breadcrumbs'
 import Customization from '../customization'
+import { useGetAccountQuery } from '../../../app/services/auth'
+import LoadingModal from '../../ui-component/LoadingModal'
 
 // Define the type for the props used in Main styled component
 interface MainProps {
@@ -65,6 +67,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && pr
 // ==============================|| MAIN LAYOUT ||============================== //
 
 const MainLayout = () => {
+  const { data, isLoading } = useGetAccountQuery({})
+  console.log('data', data)
+
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'))
   // Handle left drawer
@@ -103,6 +108,7 @@ const MainLayout = () => {
         <Outlet />
       </Main>
       <Customization />
+      <LoadingModal open={isLoading} />
     </Box>
   )
 }

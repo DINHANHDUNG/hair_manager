@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // material-ui
 import Box from '@mui/material/Box'
@@ -26,15 +26,20 @@ import AnimateButton from '../../../components/ui-component/extended/AnimateButt
 // assets
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { useAppDispatch } from '../../../app/hooks'
-import { setCredentials } from '../../../app/features/auth/authSlice'
+import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
+import { useAppSelector } from '../../../app/hooks'
+import { authStore } from '../../../app/selectedStore'
+import { useLoginMutation } from '../../../app/services/auth'
+import LoadingModal from '../../../components/ui-component/LoadingModal'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
 
 const AuthLogin = ({ ...others }) => {
+  const { enqueueSnackbar } = useSnackbar()
+  const auth = useAppSelector(authStore)
   const navigate = useNavigate()
   const theme = useTheme()
-  const dispatch = useAppDispatch()
+  const [login, { isLoading, error }] = useLoginMutation()
   const [checked, setChecked] = useState(true)
 
   const [showPassword, setShowPassword] = useState(false)
@@ -46,119 +51,71 @@ const AuthLogin = ({ ...others }) => {
     event?.preventDefault()
   }
 
+  useEffect(() => {
+    if (auth.accessToken) {
+      navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
+    }
+  }, [auth])
+
+  useEffect(() => {
+    if (!isLoading && error) {
+      enqueueSnackbar('Tài khoản hoặc mật khẩu không chính xác', {
+        variant: 'error',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' }
+      })
+    }
+  }, [error])
+
   return (
     <>
       <Grid container direction='column' justifyContent='center' spacing={2}>
-        {/* <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              disableElevation
-              fullWidth
-              onClick={googleHandler}
-              size='large'
-              variant='outlined'
-              sx={{
-                color: 'grey.700',
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt='google' width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              Sign in with Google
-            </Button>
-          </AnimateButton>
-        </Grid> */}
-        {/* <Grid item xs={12}>
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex'
-            }}
-          >
-            <Divider sx={{ flexGrow: 1 }} orientation='horizontal' />
-
-            <Button
-              variant='outlined'
-              sx={{
-                cursor: 'unset',
-                m: 2,
-                py: 0.5,
-                px: 7,
-                borderColor: `${theme.palette.grey[100]} !important`,
-                color: `${theme.palette.grey[900]}!important`,
-                fontWeight: 500,
-                borderRadius: `${customization.borderRadius}px`
-              }}
-              disableRipple
-              disabled
-            >
-              OR
-            </Button>
-
-            <Divider sx={{ flexGrow: 1 }} orientation='horizontal' />
-          </Box>
-        </Grid> */}
         <Grid item xs={12} container alignItems='center' justifyContent='center'>
           <Box sx={{ mb: 2 }}>
-            <Typography variant='subtitle1'>Sign in with Email address</Typography>
+            <Typography variant='subtitle1'>Đăng nhập để tiếp tục</Typography>
           </Box>
         </Grid>
       </Grid>
 
       <Formik
         initialValues={{
-          email: '',
+          username: '',
           password: '',
-          key: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          key: Yup.string().max(255).required('Key is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          username: Yup.string().max(255).required('Vui lòng nhập tài khoản'),
+          // email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          password: Yup.string().max(255).required('Vui lòng nhập mật khẩu')
         })}
         onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            dispatch(
-              setCredentials({
-                refreshToken: 'abc',
-                accessToken: 'abc',
-                user: {
-                  username: values.email,
-                  Password: values.password,
-                  roles: ['admin']
-                }
-              })
-            )
-            navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
-            // alert(JSON.stringify(values, null, 2))
-            setSubmitting(false)
-          }, 400)
+          login({
+            username: values.username,
+            Password: values.password
+          })
+          setSubmitting(false)
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit} {...others}>
             <FormControl
               fullWidth
-              error={Boolean(touched.email && errors.email)}
+              error={Boolean(touched.username && errors.username)}
               sx={{ ...theme.typography.customInput }}
             >
-              <InputLabel htmlFor='outlined-adornment-email-login'>Email Address / Username</InputLabel>
+              <InputLabel htmlFor='outlined-adornment-email-login'>Tài khoản</InputLabel>
               <OutlinedInput
                 id='outlined-adornment-email-login'
-                type='email'
-                value={values.email}
-                name='email'
+                type='text'
+                value={values.username}
+                name='username'
                 onBlur={handleBlur}
                 onChange={handleChange}
-                label='Email Address / Username'
+                label='Tài khoản'
                 inputProps={{}}
               />
-              {touched.email && errors.email && (
+              {touched.username && errors.username && (
                 <FormHelperText error id='standard-weight-helper-text-email-login'>
-                  {errors.email}
+                  {errors.username}
                 </FormHelperText>
               )}
             </FormControl>
@@ -168,7 +125,7 @@ const AuthLogin = ({ ...others }) => {
               error={Boolean(touched.password && errors.password)}
               sx={{ ...theme.typography.customInput }}
             >
-              <InputLabel htmlFor='outlined-adornment-password-login'>Password</InputLabel>
+              <InputLabel htmlFor='outlined-adornment-password-login'>Mật khẩu</InputLabel>
               <OutlinedInput
                 id='outlined-adornment-password-login'
                 type={showPassword ? 'text' : 'password'}
@@ -189,7 +146,7 @@ const AuthLogin = ({ ...others }) => {
                     </IconButton>
                   </InputAdornment>
                 }
-                label='Password'
+                label='Mật khẩu'
                 inputProps={{}}
               />
               {touched.password && errors.password && (
@@ -199,24 +156,6 @@ const AuthLogin = ({ ...others }) => {
               )}
             </FormControl>
 
-            <FormControl fullWidth error={Boolean(touched.key && errors.key)} sx={{ ...theme.typography.customInput }}>
-              <InputLabel htmlFor='outlined-adornment-email-login'>key</InputLabel>
-              <OutlinedInput
-                id='outlined-adornment-email-login'
-                type='key'
-                value={values.key}
-                name='key'
-                onBlur={handleBlur}
-                onChange={handleChange}
-                label='key'
-                inputProps={{}}
-              />
-              {touched.key && errors.key && (
-                <FormHelperText error id='standard-weight-helper-text-email-login'>
-                  {errors.key}
-                </FormHelperText>
-              )}
-            </FormControl>
             <Stack direction='row' alignItems='center' justifyContent='space-between' spacing={1}>
               <FormControlLabel
                 control={
@@ -227,7 +166,7 @@ const AuthLogin = ({ ...others }) => {
                     color='primary'
                   />
                 }
-                label='Remember me'
+                label='Nhớ mật khẩu'
               />
               {/* <Typography variant='subtitle1' color='secondary' sx={{ textDecoration: 'none', cursor: 'pointer' }}>
                 Forgot Password?
@@ -250,10 +189,11 @@ const AuthLogin = ({ ...others }) => {
                   variant='contained'
                   color='secondary'
                 >
-                  Sign in
+                  Đăng nhập
                 </Button>
               </AnimateButton>
             </Box>
+            <LoadingModal open={isLoading} />
           </form>
         )}
       </Formik>

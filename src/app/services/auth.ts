@@ -1,6 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { axiosBaseQuery } from '../baseQuery'
-import { setCredentials } from '../features/auth/authSlice'
+import { setCredentials, setUser } from '../features/auth/authSlice'
+import { NetWork } from '../../common/apiKey'
+import { GET, POST } from '../../common/contants'
 // import { ReponseData } from '../../types'
 
 export const authApi = createApi({
@@ -9,17 +11,34 @@ export const authApi = createApi({
   //   tagTypes: [],
   endpoints: (builder) => ({
     login: builder.mutation({
-      query: ({ username, password }) => ({
-        url: '/auth/login',
-        method: 'POST',
-        body: { username, password }
+      query: (data) => ({
+        url: NetWork.login,
+        method: POST,
+        data: data
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
+          console.log('data', data)
+
           dispatch(setCredentials(data))
         } catch (err) {
           console.error('Login failed', err)
+        }
+      }
+    }),
+    getAccount: builder.query({
+      query: () => ({
+        url: NetWork.account,
+        method: GET
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          console.log('data', data)
+          dispatch(setUser(data))
+        } catch (err) {
+          console.error('Get Account failed', err)
         }
       }
     })
@@ -27,4 +46,4 @@ export const authApi = createApi({
 })
 
 // Export hooks for usage in functional components
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useGetAccountQuery } = authApi

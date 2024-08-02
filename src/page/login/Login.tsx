@@ -38,7 +38,7 @@ const Login = () => {
                           maxWidth: { xs: 80, md: 80 }
                         }}
                         alt='The house from the offer.'
-                        src={images.logoLogin}
+                        src={images.logo}
                       />
                     </Link>
                   </Grid>
@@ -52,11 +52,11 @@ const Login = () => {
                       <Grid item>
                         <Stack alignItems='center' justifyContent='center' spacing={1}>
                           <Typography color='secondary.main' gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            Hi, Welcome Back
+                            Quản lý công nhân
                           </Typography>
-                          <Typography variant='caption' fontSize='16px' textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Enter your credentials to continue
-                          </Typography>
+                          {/* <Typography variant='caption' fontSize='16px' textAlign={{ xs: 'center', md: 'inherit' }}>
+                            Quản lý công nhân
+                          </Typography> */}
                         </Stack>
                       </Grid>
                     </Grid>

@@ -1,7 +1,7 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query'
 import type { AxiosError, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
-import { API_URL } from '../../common/apiKey'
+import { API_URL, NetWork } from '../../common/apiKey'
 import { setCredentials, logout } from '../features/auth/authSlice'
 import { RootState } from '../store'
 
@@ -39,24 +39,19 @@ export const axiosBaseQuery: BaseQueryFn<
   } catch (axiosError) {
     const err = axiosError as AxiosError
 
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && url != NetWork.login) {
       // try to get a new token
       try {
-        const refreshResult = await axiosInstance.post('/auth/refresh', {
+        console.log('Token expired, refreshing token...')
+        const refreshResult = await axiosInstance.post(NetWork.refresh_token, {
           refreshToken: state.auth.refreshToken
         })
 
         if (refreshResult.data) {
-          const newAccessToken = refreshResult.data.accessToken
-          const newRefreshToken = refreshResult.data.refreshToken
+          const newAccessToken = refreshResult.data.data.accessToken
 
           // store the new token
-          dispatch(
-            setCredentials({
-              accessToken: newAccessToken,
-              refreshToken: newRefreshToken
-            })
-          )
+          dispatch(setCredentials(refreshResult.data))
 
           // retry the original query with new token
           const retryResult = await axiosInstance({

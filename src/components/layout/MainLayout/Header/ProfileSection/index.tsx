@@ -32,16 +32,18 @@ import User1 from '../../../../../assets/images/users/user-round.svg'
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-react'
-import { useAppSelector } from '../../../../../app/hooks'
+import { useAppDispatch, useAppSelector } from '../../../../../app/hooks'
 import { customTheme } from '../../../../../app/selectedStore'
 import Transitions from '../../../../ui-component/extended/Transitions'
 import MainCard from '../../../../ui-component/cards/MainCard'
+import { logout } from '../../../../../app/features/auth/authSlice'
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
   const theme = useTheme()
   const customization = useAppSelector(customTheme)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const [sdm, setSdm] = useState(true)
@@ -54,7 +56,7 @@ const ProfileSection = () => {
    * */
   const anchorRef = useRef<HTMLDivElement>(null)
   const handleLogout = async () => {
-    console.log('Logout')
+    dispatch(logout())
   }
 
   const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {

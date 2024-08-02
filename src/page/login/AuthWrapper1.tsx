@@ -9,7 +9,7 @@ import { images } from '../../assets/images'
 const AuthWrapper1 = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.grey[100],
   minHeight: '100vh',
-  backgroundImage: `url(${images.logistic})`, // Đường dẫn tới hình ảnh nền
+  backgroundImage: `url(${images.backgroud_login})`, // Đường dẫn tới hình ảnh nền
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat'
