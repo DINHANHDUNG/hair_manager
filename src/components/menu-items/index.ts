@@ -1,5 +1,6 @@
 import categorys from './category'
 import dashboard from './dashboard'
+import order from './order'
 import other from './other'
 import utilities from './utilities'
 
@@ -8,7 +9,7 @@ import utilities from './utilities'
 const menuItems = () => {
   const DEV = process.env.REACT_APP_DEV ?? false
   const listDEV = [utilities, other]
-  const listStg = [dashboard, categorys]
+  const listStg = [dashboard, order, categorys]
   return DEV ? [...listStg, ...listDEV] : listStg
 }
 

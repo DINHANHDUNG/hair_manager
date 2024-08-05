@@ -53,7 +53,7 @@ const AuthLogin = ({ ...others }) => {
 
   useEffect(() => {
     if (auth.accessToken) {
-      navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
+      navigate(`/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`)
     }
   }, [auth])
 

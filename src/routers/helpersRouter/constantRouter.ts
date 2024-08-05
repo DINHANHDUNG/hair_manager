@@ -1,6 +1,8 @@
 const ROUTES = {
   HOME: '/',
   DEFAULT: 'default',
+  INDEX: 'index',
+  DASHBOARD: 'dashboard',
   ORDER: 'order',
   ORDER_DETAIL: 'order-detail',
   LOGIN: 'login',

@@ -11,6 +11,12 @@ import { customTheme } from './app/selectedStore'
 import router from './routers'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
 
+//Chart
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+
+// Register necessary components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+
 LicenseInfo.setLicenseKey(process.env.REACT_APP_PUBLIC_MUI_LICENSE_KEY || '')
 function App() {
   const customization = useAppSelector(customTheme)
