@@ -67,8 +67,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && pr
 // ==============================|| MAIN LAYOUT ||============================== //
 
 const MainLayout = () => {
-  const { data, isLoading } = useGetAccountQuery({})
-  console.log('data', data)
+  const { isLoading } = useGetAccountQuery({})
 
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'))

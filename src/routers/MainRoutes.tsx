@@ -6,10 +6,11 @@ import { createPrivateRoute, createProtectedRoute } from './helpersRouter/routeH
 import { PERMISSION } from '../constants'
 import NotAuthorizedPage from '../page/notAuthor/NotAuthorizedPage'
 
-// project imports
-
 // dashboard routing
-const DashboardDefault = Loadable(lazy(() => import('../page/admin/AdminPage')))
+const DashboardDefault = Loadable(lazy(() => import('../page/dashboard/DashboardPage')))
+
+// admin routing
+const AdminPage = Loadable(lazy(() => import('../page/admin/AdminPage')))
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('../page/utilities/Typography')))
@@ -26,11 +27,20 @@ const MainRoutes = {
   element: createPrivateRoute(<MainLayout />),
   children: [
     {
+      path: ROUTES.DASHBOARD,
+      children: [
+        {
+          path: ROUTES.INDEX,
+          element: <DashboardDefault />
+        }
+      ]
+    },
+    {
       path: ROUTES.ORDER,
       children: [
         {
           path: ROUTES.DEFAULT,
-          element: createProtectedRoute(<DashboardDefault />, [PERMISSION.ADMIN])
+          element: <AdminPage />
         },
         {
           path: ROUTES.ORDER_DETAIL,
@@ -43,19 +53,19 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.UTILS_CHILD.TYPOGRAPHY,
-          element: createProtectedRoute(<UtilsTypography />, [PERMISSION.ADMIN])
+          element: <UtilsTypography />
         },
         {
           path: ROUTES.UTILS_CHILD.SHADOW,
-          element: createProtectedRoute(<UtilsShadow />, [PERMISSION.ADMIN])
+          element: <UtilsShadow />
         },
         {
           path: ROUTES.UTILS_CHILD.COLOR,
-          element: createProtectedRoute(<UtilsColor />, [PERMISSION.ADMIN])
+          element: <UtilsColor />
         },
         {
           path: ROUTES.UTILS_CHILD.INPUT,
-          element: createProtectedRoute(<UtilsInput />, [PERMISSION.ADMIN])
+          element: <UtilsInput />
         }
       ]
     },
