@@ -74,7 +74,7 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.CATEGORY_CHILD.STAFF,
-          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN])
+          element: <StaffPage />
         }
       ]
     },

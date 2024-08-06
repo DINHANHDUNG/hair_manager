@@ -5,8 +5,10 @@ import {
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
+  GridRowParams,
   GridRowSelectionModel,
-  GridRowsProp
+  GridRowsProp,
+  MuiEvent
 } from '@mui/x-data-grid-pro'
 import React, { ReactElement } from 'react'
 import CustomToolbar from './CustomToolbarDataGrid'
@@ -29,6 +31,11 @@ interface TableDataGridProps {
   handleSearchChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   toolbarEnable?: boolean
   toolbar?: ReactElement
+  onRowClick?: (
+    params: GridRowParams, // GridRowParams
+    event: MuiEvent<React.MouseEvent<HTMLElement>>, // MuiEvent<React.MouseEvent<HTMLElement>>
+    details: GridCallbackDetails // GridCallbackDetails
+  ) => void
 }
 
 const TableDataGrid: React.FC<TableDataGridProps> = ({
@@ -39,6 +46,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   paginationModel,
   setPaginationModel,
   onRowSelectionChange,
+  onRowClick,
   onFilterChange,
   pageSizeOptions,
   searchValue,
@@ -57,6 +65,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       checkboxSelection={checkboxSelection}
       headerFilters={headerFilters}
       onRowSelectionModelChange={onRowSelectionChange}
+      onRowClick={onRowClick}
       columns={columns}
       disableColumnFilter
       rows={rows}
@@ -75,7 +84,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
           labelRowsPerPage: 'Số bản ghi'
         },
 
-        footerRowSelected: (count) => `Đã chọn ${count}`
+        footerRowSelected: (count) => (checkboxSelection ? `Đã chọn ${count}` : '')
       }}
       disableColumnReorder={true} //Tắt di chuyển cột
       sx={{
