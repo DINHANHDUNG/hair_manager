@@ -8,8 +8,8 @@ import utilities from './utilities'
 
 const menuItems = () => {
   const DEV = process.env.REACT_APP_DEV ?? false
-  const listDEV = [utilities, other]
-  const listStg = [dashboard, order, categorys]
+  const listDEV = [utilities, other, order]
+  const listStg = [dashboard, categorys]
   return DEV ? [...listStg, ...listDEV] : listStg
 }
 

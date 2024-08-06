@@ -1,12 +1,294 @@
-import { Typography } from '@mui/material'
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
+import IconSearch from '@mui/icons-material/Search'
+import { Button, Grid, OutlinedInput } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import {
+  GridActionsCellItem,
+  GridCallbackDetails,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowParams,
+  GridRowSelectionModel,
+  GridRowsProp
+} from '@mui/x-data-grid'
+import * as React from 'react'
+import { useSearchParams } from 'react-router-dom'
+import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
+import Chip from '../../../components/ui-component/extended/Chip'
+import { gridSpacing } from '../../../constants'
+import DetailStaffDrawer from './DetailStaffDrawer'
 
-const StaffPage = () => {
+interface StaffRow {
+  id: number
+  name: string
+  age: number
+  sex: string
+  address: string
+  numberphone: string
+  email: string
+  typework: string
+}
+
+const StaffPage = React.memo(() => {
+  // const navigate = useNavigate()
+  const theme = useTheme()
+  const [searchParams, setSearchParams] = useSearchParams()
+  console.log('searchParams', searchParams.get('page'))
+
+  const initialPage = parseInt(searchParams.get('page') || '0') || 0
+  const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
+  const initialKeyword = searchParams.get('keyword') || ''
+
+  const [paginationModel, setPaginationModel] = React.useState({
+    pageSize: initialPageSize,
+    page: initialPage
+  })
+
+  const [filters, setFilters] = React.useState<{ [field: string]: string }>({
+    keyword: initialKeyword
+  })
+
+  const [openDetail, setOpenDetail] = React.useState(false)
+
+  const handleClickDetail = () => {
+    setOpenDetail(!openDetail)
+  }
+
+  const rows: GridRowsProp = [
+    {
+      id: 1,
+      name: 'Alice',
+      age: 25,
+      sex: 'Female',
+      address: '123 Main St',
+      numberphone: '123-456-7890',
+      email: 'alice@example.com',
+      typework: 'PartTime'
+    },
+    {
+      id: 2,
+      name: 'Bob',
+      age: 30,
+      sex: 'Male',
+      address: '456 Elm St',
+      numberphone: '987-654-3210',
+      email: 'bob@example.com',
+      typework: 'FullTime'
+    },
+    {
+      id: 3,
+      name: 'Charlie',
+      age: 35,
+      sex: 'Male',
+      address: '789 Oak St',
+      numberphone: '555-555-5555',
+      email: 'charlie@example.com',
+      typework: 'PartTime'
+    },
+    {
+      id: 4,
+      name: 'David',
+      age: 28,
+      sex: 'Male',
+      address: '101 Pine St',
+      numberphone: '444-444-4444',
+      email: 'david@example.com',
+      typework: 'FullTime'
+    },
+    {
+      id: 5,
+      name: 'Eve',
+      age: 22,
+      sex: 'Female',
+      address: '202 Maple St',
+      numberphone: '333-333-3333',
+      email: 'eve@example.com',
+      typework: 'PartTime'
+    },
+    {
+      id: 6,
+      name: 'Frank',
+      age: 40,
+      sex: 'Male',
+      address: '303 Cedar St',
+      numberphone: '222-222-2222',
+      email: 'frank@example.com',
+      typework: 'FullTime'
+    },
+    {
+      id: 7,
+      name: 'Grace',
+      age: 27,
+      sex: 'Female',
+      address: '404 Birch St',
+      numberphone: '111-111-1111',
+      email: 'grace@example.com',
+      typework: 'PartTime'
+    },
+    {
+      id: 8,
+      name: 'Hannah',
+      age: 33,
+      sex: 'Female',
+      address: '505 Walnut St',
+      numberphone: '666-666-6666',
+      email: 'hannah@example.com',
+      typework: 'FullTime'
+    },
+    {
+      id: 9,
+      name: 'Ivy',
+      age: 29,
+      sex: 'Female',
+      address: '606 Chestnut St',
+      numberphone: '777-777-7777',
+      email: 'ivy@example.com',
+      typework: 'PartTime'
+    },
+    {
+      id: 10,
+      name: 'Jack',
+      age: 26,
+      sex: 'Male',
+      address: '707 Willow St',
+      numberphone: '888-888-8888',
+      email: 'jack@example.com',
+      typework: 'FullTime'
+    }
+  ]
+
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [field]: value
+    }))
+  }
+
+  const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
+    console.log(rowSelectionModel, details)
+  }
+
+  const onRowClick = (params: GridRowParams) => {
+    console.log('params', params.row)
+    handleClickDetail()
+  }
+
+  const data = {
+    columns: [
+      {
+        field: 'order',
+        headerName: 'No.',
+        width: 50,
+        renderCell: (params: GridRenderCellParams) => {
+          const rowIndex = params.api.getRowIndexRelativeToVisibleRows(params.id)
+          const { page, pageSize } = params.api.state.pagination.paginationModel
+          return page * pageSize + (rowIndex + 1)
+        }
+      },
+      { field: 'name', headerName: 'Họ tên', flex: 1 },
+      { field: 'age', headerName: 'Tuổi', flex: 1 },
+      { field: 'sex', headerName: 'Giới tính', flex: 1 },
+      { field: 'address', headerName: 'Địa chỉ', flex: 1 },
+      { field: 'numberphone', headerName: 'Số điện thoại', flex: 1 },
+      { field: 'email', headerName: 'Email', flex: 1 },
+      {
+        field: 'typework',
+        headerName: 'Hình thức',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<StaffRow, number>) => {
+          return (
+            <Chip
+              size='small'
+              label={params.value}
+              sx={{
+                color: theme.palette.background.default,
+                bgcolor: theme.palette.success.dark
+              }}
+            />
+          )
+        }
+      },
+      {
+        field: 'actions',
+        headerName: 'Hành động',
+        type: 'actions',
+        flex: 1,
+        getActions: () => [
+          <GridActionsCellItem icon={<LockOpenOutlinedIcon />} label='Lock' className='textPrimary' color='inherit' />,
+          <GridActionsCellItem icon={<EditOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />,
+          <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
+        ]
+      }
+    ]
+  }
+
+  const renderColumn = (colDef: { field: string; headerName: string }) => {
+    switch (colDef.field) {
+      default:
+        return colDef
+    }
+  }
+
+  const columns: GridColDef[] = React.useMemo(
+    () => data.columns.map((colDef) => renderColumn(colDef)),
+    [data.columns, filters]
+  )
+
+  React.useEffect(() => {
+    // Update URL parameters when pagination model changes
+    setSearchParams({
+      page: paginationModel.page.toString(),
+      pageSize: paginationModel.pageSize.toString(),
+      keyword: filters.keyword
+    })
+  }, [paginationModel, filters, setSearchParams])
+
   return (
-    <MainCard title='Sample Card'>
-      <Typography variant='body2'>Quản lý nhân viên</Typography>
+    <MainCard>
+      <Grid container spacing={gridSpacing}>
+        <Grid item xs={12} sm={6}>
+          <OutlinedInput
+            size='small'
+            id='search-input'
+            startAdornment={<IconSearch sx={{ mr: 1 }} />}
+            placeholder='Tìm kiếm'
+            value={filters?.['keyword']}
+            onChange={(e) => handleFilterChange('keyword', e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div>
+            <Button variant='outlined' sx={{ mr: 1 }}>
+              Thêm mới
+            </Button>
+            {/* <Button variant='outlined' color='error'>
+              Xóa
+            </Button> */}
+          </div>
+        </Grid>
+      </Grid>
+
+      <div style={{ height: '70vh', width: '100%', overflow: 'auto', marginTop: '20px' }}>
+        <TableDataGrid
+          rows={rows}
+          columns={columns}
+          isLoading={false}
+          paginationModel={paginationModel}
+          setPaginationModel={setPaginationModel}
+          onRowSelectionChange={onRowSelectionChange}
+          onRowClick={onRowClick}
+          // checkboxSelection
+          filterMode='server'
+          headerFilters={false}
+        />
+      </div>
+      <DetailStaffDrawer isVisible={openDetail} changeVisible={handleClickDetail} />
     </MainCard>
   )
-}
+})
 
 export default StaffPage
