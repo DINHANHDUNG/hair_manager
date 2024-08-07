@@ -24,7 +24,7 @@ interface MySelectProps extends Omit<SelectProps<any>, 'name' | 'value' | 'onCha
 
 const MySelect: React.FC<MySelectProps> = ({ name, control, label, errors, options, mb, variant, ...props }) => {
   return (
-    <FormControl variant={variant || 'outlined'} fullWidth error={!!errors[name]} sx={{ mb: mb }}>
+    <FormControl variant={variant || 'standard'} fullWidth error={!!errors[name]} sx={{ mb: mb }}>
       <InputLabel id='demo-simple-select-standard-label'>{label}</InputLabel>
       <Controller
         name={name as string}

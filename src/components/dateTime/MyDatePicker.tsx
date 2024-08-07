@@ -37,6 +37,7 @@ const MyDatePicker: React.FC<MyDatePickerProps> = ({
   return (
     <FormControl fullWidth sx={{ mb: mb }}>
       <LocalizationProvider adapterLocale='vi' dateAdapter={AdapterDayjs}>
+        {/* <DemoContainer components={['DatePicker']}> */}
         <Controller
           name={name}
           control={control}
@@ -52,13 +53,14 @@ const MyDatePicker: React.FC<MyDatePickerProps> = ({
               slotProps={{
                 textField: {
                   error: hasError,
-                  variant: variant || 'outlined',
+                  variant: variant || 'standard',
                   helperText: errors[name] ? (errors[name] as any).message : ''
                 }
               }}
             />
           )}
         />
+        {/* </DemoContainer> */}
       </LocalizationProvider>
     </FormControl>
   )
