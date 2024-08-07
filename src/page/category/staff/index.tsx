@@ -20,6 +20,7 @@ import MainCard from '../../../components/ui-component/cards/MainCard'
 import Chip from '../../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../../constants'
 import DetailStaffDrawer from './DetailStaffDrawer'
+import FormAddStaff from './FormAddStaff'
 
 interface StaffRow {
   id: number
@@ -52,9 +53,18 @@ const StaffPage = React.memo(() => {
   })
 
   const [openDetail, setOpenDetail] = React.useState(false)
+  const [openFormAdd, setOpenFormAdd] = React.useState(false)
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
+  }
+
+  const handleClickOpenForm = () => {
+    setOpenFormAdd(true)
+  }
+
+  const handleCloseForm = () => {
+    setOpenFormAdd(false)
   }
 
   const rows: GridRowsProp = [
@@ -262,12 +272,9 @@ const StaffPage = React.memo(() => {
         </Grid>
         <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <div>
-            <Button variant='outlined' sx={{ mr: 1 }}>
+            <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
               Thêm mới
             </Button>
-            {/* <Button variant='outlined' color='error'>
-              Xóa
-            </Button> */}
           </div>
         </Grid>
       </Grid>
@@ -287,6 +294,13 @@ const StaffPage = React.memo(() => {
         />
       </div>
       <DetailStaffDrawer isVisible={openDetail} changeVisible={handleClickDetail} />
+      <FormAddStaff
+        open={openFormAdd}
+        handleClose={handleCloseForm}
+        handleSave={() => {
+          console.log('save')
+        }}
+      />
     </MainCard>
   )
 })

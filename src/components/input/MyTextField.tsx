@@ -21,7 +21,7 @@ const MyTextField: React.FC<MyTextFieldProps> = ({ name, control, label, errors,
         <TextField
           {...field}
           label={label}
-          variant='outlined'
+          variant='standard'
           fullWidth
           error={!!errors[name]}
           helperText={errors[name] ? (errors[name] as FieldError).message : ''}
