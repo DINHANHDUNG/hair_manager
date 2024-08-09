@@ -26,7 +26,7 @@ const categorys = {
           id: 'category-persion',
           title: 'Nhân viên',
           type: 'item',
-          breadcrumbs: true,
+          breadcrumbs: false,
           url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`
           // target: true
         }

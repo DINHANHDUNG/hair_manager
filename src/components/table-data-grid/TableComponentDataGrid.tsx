@@ -1,7 +1,9 @@
 import { styled } from '@mui/system'
 import {
   DataGridPro,
+  GridAutosizeOptions,
   GridCallbackDetails,
+  gridClasses,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
@@ -36,6 +38,10 @@ interface TableDataGridProps {
     event: MuiEvent<React.MouseEvent<HTMLElement>>, // MuiEvent<React.MouseEvent<HTMLElement>>
     details: GridCallbackDetails // GridCallbackDetails
   ) => void
+}
+
+const autosizeOptions: GridAutosizeOptions = {
+  includeOutliers: true
 }
 
 const TableDataGrid: React.FC<TableDataGridProps> = ({
@@ -76,7 +82,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       paginationModel={paginationModel}
       paginationMode='server'
       pagination
+      getRowHeight={() => 'auto'}
       onPaginationModelChange={setPaginationModel}
+      autosizeOptions={autosizeOptions}
       rowCount={rows.length || 0}
       localeText={{
         MuiTablePagination: {
@@ -93,6 +101,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
         },
         '&.MuiDataGrid-root': {
           border: 'none'
+        },
+        [`& .${gridClasses.cell}`]: {
+          py: 1
         }
       }}
       slots={{
