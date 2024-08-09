@@ -20,7 +20,9 @@ const ROUTES = {
   CATEGORY: 'category',
   CATEGORY_CHILD: {
     STAFF: 'staff',
-    STAFF_DETAIL: 'staff/:id'
+    STAFF_DETAIL: 'staff/:id',
+    PARTER: 'partner',
+    COMPANY: 'company'
   }
 }
 
