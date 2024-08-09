@@ -19,6 +19,7 @@ const UtilsShadow = Loadable(lazy(() => import('../page/utilities/Shadow')))
 const UtilsInput = Loadable(lazy(() => import('../page/utilities/Input')))
 const SamplePage = Loadable(lazy(() => import('../page/home/HomePage')))
 const StaffPage = Loadable(lazy(() => import('../page/category/staff')))
+const StaffDetailPage = Loadable(lazy(() => import('../page/category/staff/detail')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -44,7 +45,7 @@ const MainRoutes = {
         },
         {
           path: ROUTES.ORDER_DETAIL,
-          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN])
+          element: <StaffPage />
         }
       ]
     },
@@ -75,6 +76,10 @@ const MainRoutes = {
         {
           path: ROUTES.CATEGORY_CHILD.STAFF,
           element: <StaffPage />
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.STAFF_DETAIL,
+          element: <StaffDetailPage />
         }
       ]
     },

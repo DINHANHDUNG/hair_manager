@@ -19,7 +19,8 @@ const ROUTES = {
   },
   CATEGORY: 'category',
   CATEGORY_CHILD: {
-    STAFF: 'staff'
+    STAFF: 'staff',
+    STAFF_DETAIL: 'staff/:id'
   }
 }
 

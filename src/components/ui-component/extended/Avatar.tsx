@@ -43,7 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({ color, outline, size, sx, ...others }) 
       sizeSX = { width: 60, height: 60 }
       break
     default:
-      sizeSX = {}
+      sizeSX = { width: 120, height: 120 }
   }
 
   return <MuiAvatar sx={{ ...colorSX, ...outlineSX, ...sizeSX, ...sx }} {...others} />

@@ -14,13 +14,14 @@ import {
   GridRowsProp
 } from '@mui/x-data-grid'
 import * as React from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import Chip from '../../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../../constants'
 import DetailStaffDrawer from './DetailStaffDrawer'
 import FormAddStaff from './FormAddStaff'
+import ROUTES from '../../../routers/helpersRouter/constantRouter'
 
 interface StaffRow {
   id: number
@@ -34,7 +35,7 @@ interface StaffRow {
 }
 
 const StaffPage = React.memo(() => {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
   console.log('searchParams', searchParams.get('page'))
@@ -226,19 +227,40 @@ const StaffPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: () => [
-          <GridActionsCellItem icon={<LockOpenOutlinedIcon />} label='Lock' className='textPrimary' color='inherit' />,
-          <GridActionsCellItem icon={<EditOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />,
-          <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
-        ]
+        getActions: (params: GridRenderCellParams<StaffRow, number>) => {
+          return [
+            <GridActionsCellItem
+              icon={<LockOpenOutlinedIcon />}
+              label='Lock'
+              className='textPrimary'
+              color='inherit'
+            />,
+            <GridActionsCellItem
+              icon={<EditOutlinedIcon />}
+              label='Delete'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${params.id}`)}
+            />,
+            <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
+          ]
+        }
       }
     ]
   }
 
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
+      case 'numberphone':
+        return {
+          ...colDef,
+          minWidth: 150
+        }
       default:
-        return colDef
+        return {
+          ...colDef,
+          minWidth: 120
+        }
     }
   }
 
@@ -257,51 +279,53 @@ const StaffPage = React.memo(() => {
   }, [paginationModel, filters, setSearchParams])
 
   return (
-    <MainCard>
-      <Grid container spacing={gridSpacing}>
-        <Grid item xs={12} sm={6}>
-          <OutlinedInput
-            size='small'
-            id='search-input'
-            startAdornment={<IconSearch sx={{ mr: 1 }} />}
-            placeholder='Tìm kiếm'
-            value={filters?.['keyword']}
-            onChange={(e) => handleFilterChange('keyword', e.target.value)}
-            fullWidth
-          />
+    <>
+      <MainCard title={'Danh sách nhân viên'}>
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={6}>
+            <OutlinedInput
+              size='small'
+              id='search-input'
+              startAdornment={<IconSearch sx={{ mr: 1 }} />}
+              placeholder='Tìm kiếm'
+              value={filters?.['keyword']}
+              onChange={(e) => handleFilterChange('keyword', e.target.value)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div>
+              <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
+                Thêm mới
+              </Button>
+            </div>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div>
-            <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
-              Thêm mới
-            </Button>
-          </div>
-        </Grid>
-      </Grid>
 
-      <div style={{ height: '70vh', width: '100%', overflow: 'auto', marginTop: '20px' }}>
-        <TableDataGrid
-          rows={rows}
-          columns={columns}
-          isLoading={false}
-          paginationModel={paginationModel}
-          setPaginationModel={setPaginationModel}
-          onRowSelectionChange={onRowSelectionChange}
-          onRowClick={onRowClick}
-          // checkboxSelection
-          filterMode='server'
-          headerFilters={false}
+        <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
+          <TableDataGrid
+            rows={rows}
+            columns={columns}
+            isLoading={false}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
+            onRowSelectionChange={onRowSelectionChange}
+            onRowClick={onRowClick}
+            // checkboxSelection
+            filterMode='server'
+            headerFilters={false}
+          />
+        </div>
+        <DetailStaffDrawer isVisible={openDetail} changeVisible={handleClickDetail} />
+        <FormAddStaff
+          open={openFormAdd}
+          handleClose={handleCloseForm}
+          handleSave={() => {
+            console.log('save')
+          }}
         />
-      </div>
-      <DetailStaffDrawer isVisible={openDetail} changeVisible={handleClickDetail} />
-      <FormAddStaff
-        open={openFormAdd}
-        handleClose={handleCloseForm}
-        handleSave={() => {
-          console.log('save')
-        }}
-      />
-    </MainCard>
+      </MainCard>
+    </>
   )
 })
 

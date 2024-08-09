@@ -12,6 +12,8 @@ import SubCard from '../../../components/ui-component/cards/SubCard'
 import Avatar from '../../../components/ui-component/extended/Avatar'
 import { gridSpacing } from '../../../constants'
 import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined'
+import ROUTES from '../../../routers/helpersRouter/constantRouter'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
   isVisible: boolean
@@ -19,6 +21,7 @@ interface Props {
 }
 
 const DetailStaffDrawer = (Props: Props) => {
+  const navigate = useNavigate()
   const { isVisible, changeVisible } = Props
 
   const theme = useTheme()
@@ -50,7 +53,11 @@ const DetailStaffDrawer = (Props: Props) => {
                     flexDirection={'row'}
                   >
                     <Typography variant='h5'>Thông tin chung</Typography>
-                    <IconButton color='inherit' size='small'>
+                    <IconButton
+                      color='inherit'
+                      size='small'
+                      onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${1}`)}
+                    >
                       <DriveFileRenameOutlineOutlinedIcon fontSize='inherit' />
                     </IconButton>
                   </Grid>

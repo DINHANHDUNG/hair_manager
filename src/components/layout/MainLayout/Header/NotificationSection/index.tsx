@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
 import CardActions from '@mui/material/CardActions'
 import Chip from '@mui/material/Chip'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
@@ -14,10 +14,10 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import ButtonBase from '@mui/material/ButtonBase'
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -27,8 +27,8 @@ import NotificationList from './NotificationList'
 
 // assets
 import { IconBell } from '@tabler/icons-react'
-import Transitions from '../../../../ui-component/extended/Transitions'
 import MainCard from '../../../../ui-component/cards/MainCard'
+import Transitions from '../../../../ui-component/extended/Transitions'
 
 // notification status options
 const status = [
