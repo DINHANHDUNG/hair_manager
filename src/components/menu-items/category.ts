@@ -1,10 +1,11 @@
 // assets
-import { IconCategory } from '@tabler/icons-react'
+import { IconCategory, IconUsersGroup } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = {
-  IconCategory
+  IconCategory,
+  IconUsersGroup
 }
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -28,6 +29,22 @@ const categorys = {
           type: 'item',
           breadcrumbs: false,
           url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`
+          // target: true
+        },
+        {
+          id: 'category-partner',
+          title: 'Đối tác',
+          type: 'item',
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`
+          // target: true
+        },
+        {
+          id: 'category-company',
+          title: 'Công ty',
+          type: 'item',
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.COMPANY}`
           // target: true
         }
       ]
