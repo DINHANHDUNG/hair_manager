@@ -32,6 +32,14 @@ const categorys = {
           // target: true
         },
         {
+          id: 'category-worker',
+          title: 'Công nhân',
+          type: 'item',
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}`
+          // target: true
+        },
+        {
           id: 'category-partner',
           title: 'Đối tác',
           type: 'item',

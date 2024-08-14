@@ -27,6 +27,13 @@ const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
     }
   },
   {
+    label: 'Hôm qua',
+    getValue: () => {
+      const yesterday = dayjs().subtract(1, 'day')
+      return [yesterday, yesterday]
+    }
+  },
+  {
     label: 'Tuần này',
     getValue: () => {
       const today = dayjs()
@@ -62,6 +69,51 @@ const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
       const startOfNextMonth = today.endOf('month').add(1, 'day')
       return [startOfNextMonth, startOfNextMonth.endOf('month')]
     }
+  },
+  {
+    label: 'Quý 1',
+    getValue: () => {
+      const today = dayjs()
+      return [today.startOf('year'), today.startOf('year').add(2, 'month').endOf('month')]
+    }
+  },
+  {
+    label: 'Quý 2',
+    getValue: () => {
+      const today = dayjs()
+      const startOfQ2 = today.startOf('year').add(3, 'month')
+      return [startOfQ2, startOfQ2.add(2, 'month').endOf('month')]
+    }
+  },
+  {
+    label: 'Quý 3',
+    getValue: () => {
+      const today = dayjs()
+      const startOfQ3 = today.startOf('year').add(6, 'month')
+      return [startOfQ3, startOfQ3.add(2, 'month').endOf('month')]
+    }
+  },
+  {
+    label: 'Quý 4',
+    getValue: () => {
+      const today = dayjs()
+      const startOfQ4 = today.startOf('year').add(9, 'month')
+      return [startOfQ4, startOfQ4.add(2, 'month').endOf('month')]
+    }
+  },
+  {
+    label: 'Năm nay',
+    getValue: () => {
+      const today = dayjs()
+      return [today.startOf('year'), today.endOf('year')]
+    }
+  },
+  {
+    label: 'Năm trước',
+    getValue: () => {
+      const today = dayjs().subtract(1, 'year')
+      return [today.startOf('year'), today.endOf('year')]
+    }
   }
   // { label: 'Reset', getValue: () => [null, null] }
 ]
@@ -71,9 +123,10 @@ interface Props {
   setValue: (newValue: DateRange<Dayjs> | undefined) => void
   sx?: SxProps<Theme>
   variant?: TextFieldVariants
+  calendars?: 1 | 2 | 3
 }
 
-export default function DateRangePickerShortCut({ value, setValue, sx, variant }: Props) {
+export default function DateRangePickerShortCut({ value, setValue, sx, variant, calendars }: Props) {
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
@@ -84,12 +137,9 @@ export default function DateRangePickerShortCut({ value, setValue, sx, variant }
           sx={sx}
           slots={{ field: SingleInputDateRangeField }}
           name='allowedRange'
+          calendars={calendars || 2}
           value={value ?? undefined}
           onChange={(newValue) => setValue(newValue)}
-          //   localeText={{ //Không hoạt động
-          //     start: 'ádsd',
-          //     end: 'ádasd'
-          //   }}
           slotProps={{
             actionBar: {
               //   actions: ['clear'] // Button clear bên dưới
@@ -100,12 +150,6 @@ export default function DateRangePickerShortCut({ value, setValue, sx, variant }
             // field: { clearable: true },
             textField: { variant: variant || 'outlined', InputProps: { endAdornment: <Calendar fontSize='small' /> } }
           }}
-          //   slotProps={{
-          //     field: {
-          //       startText: 'Ngày bắt đầu',
-          //       endText: 'Ngày kết thúc'
-          //     }
-          //   }}
         />
       </DemoContainer>
     </LocalizationProvider>

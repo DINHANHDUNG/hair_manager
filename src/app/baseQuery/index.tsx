@@ -47,6 +47,8 @@ export const axiosBaseQuery: BaseQueryFn<
           refreshToken: state.auth.refreshToken
         })
 
+        console.log('refreshResult', refreshResult)
+
         if (refreshResult.data) {
           const newAccessToken = refreshResult.data.data.accessToken
 
@@ -66,11 +68,10 @@ export const axiosBaseQuery: BaseQueryFn<
             }
           })
           return { data: retryResult.data }
-        } else {
-          dispatch(logout())
         }
       } catch (refreshError) {
         const refreshErr = refreshError as AxiosError
+        if (refreshErr.response?.status === 401) dispatch(logout())
         return {
           error: {
             status: refreshErr.response?.status,

@@ -15,3 +15,13 @@ export const OPTIONTYPEWORK = [
   { value: 'OFFICIAL', label: 'Chính thức' },
   { value: 'PART_TIME', label: 'Bán thời gian' }
 ]
+
+export const OPTIONSTTWORKER = [
+  { value: 'WAITING_FOR_INTERVIEW', label: 'Chờ phỏng vấn' },
+  { value: 'INTERVIEW_FAILED', label: 'Phỏng vấn trượt' },
+  { value: 'WORKING', label: 'Đang làm việc' },
+  { value: 'WAITING_FOR_JOB', label: 'Đang chờ việc' },
+  { value: 'LENT_TO_PARTNER', label: 'Cho đối tác mượn' },
+  { value: 'RESIGNED', label: 'Đã nghỉ việc' },
+  { value: 'BORROWED_FROM_PARTNER', label: 'Mượn của đối tác' }
+]

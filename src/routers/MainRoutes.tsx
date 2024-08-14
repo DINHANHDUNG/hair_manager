@@ -22,6 +22,8 @@ const StaffPage = Loadable(lazy(() => import('../page/category/staff')))
 const StaffDetailPage = Loadable(lazy(() => import('../page/category/staff/detail')))
 const PartnerPage = Loadable(lazy(() => import('../page/category/partner')))
 const CompanyPage = Loadable(lazy(() => import('../page/category/company')))
+const WorkerPage = Loadable(lazy(() => import('../page/category/worker')))
+const WorkerDetailPage = Loadable(lazy(() => import('../page/category/worker/detail')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -90,6 +92,14 @@ const MainRoutes = {
         {
           path: ROUTES.CATEGORY_CHILD.COMPANY,
           element: <CompanyPage />
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.WORKER,
+          element: <WorkerPage />
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.WORKER_DETAIL,
+          element: <WorkerDetailPage />
         }
       ]
     },

@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent'
-import { Grid, IconButton, Typography, useMediaQuery } from '@mui/material'
+import { Grid, IconButton, Typography } from '@mui/material'
 import { useMemo, useRef, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { COLORS } from '../../../../common/colors'
-import { OPTIONSTATUSWORK, OPTIONTYPEWORK } from '../../../../common/contants'
+import { OPTIONSTATUSWORK } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
@@ -14,8 +14,8 @@ import MySelect from '../../../../components/select/MySelect'
 import { CustomTimelineItem } from '../../../../components/timeLine/CustomTimelineItem'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
 import { gridSpacingForm } from '../../../../constants'
-import { useTheme } from '@mui/material/styles'
 //Icon
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import AppsIcon from '@mui/icons-material/Apps'
 import CodeIcon from '@mui/icons-material/Code'
 import CoffeeIcon from '@mui/icons-material/Coffee'
@@ -24,7 +24,6 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import FormatListNumberedRtlIcon from '@mui/icons-material/FormatListNumberedRtl'
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom'
 import TripOriginIcon from '@mui/icons-material/TripOrigin'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import WorkIcon from '@mui/icons-material/Work'
 import Timeline from '@mui/lab/Timeline'
 
@@ -37,20 +36,18 @@ interface tasksType {
   date: string
   description: string
   status: string
-  typeWork: string
   icon?: React.ReactElement
 }
 
 type FormValues = {
   description: string
   date: string
-  typeWork: string
   status: string
 }
 
 const validationSchema = yup.object({
   description: yup.string().max(255).required('Trường này là bắt buộc'),
-  typeWork: yup.string().max(255).required('Trường này là bắt buộc'),
+
   status: yup.string().max(255).required('Trường này là bắt buộc'),
   date: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng')
 })
@@ -75,7 +72,7 @@ const renderContentRight = (item: tasksType) => {
         {item.description}
       </Typography>
       <Typography variant='caption' color='GrayText'>
-        {item.status} | {item.typeWork}
+        {item.status}
       </Typography>
     </>
   )
@@ -89,8 +86,6 @@ const renderColumn = (colDef: { field: string; headerName: string }) => {
 }
 
 export default function TabWorkProgress() {
-  const theme = useTheme()
-  const matchDownMd = useMediaQuery(theme.breakpoints.down('lg'))
   const myFormRef = useRef<Element | null>(null)
   const [typeList, setTypeList] = useState(false)
   const [idUpdate, setIdUpdate] = useState<number>()
@@ -193,7 +188,7 @@ export default function TabWorkProgress() {
       description: 'Client Meeting',
       icon: <MeetingRoomIcon sx={{ color: COLORS.bgButton }} />
     },
-    { time: 'Thứ 5', date: '20/05/2024', description: 'End Work', status: 'Đang làm việc', typeWork: 'Thử việc' }
+    { time: 'Thứ 5', date: '20/05/2024', description: 'End Work', status: 'Đang làm việc' }
   ] as tasksType[]
 
   const rows: GridRowsProp = tasks.map((task, index) => ({
@@ -201,7 +196,6 @@ export default function TabWorkProgress() {
     order: index + 1,
     date: task.date,
     status: task.status,
-    typeWork: task.typeWork,
     description: task.description
   }))
 
@@ -234,7 +228,6 @@ export default function TabWorkProgress() {
       'Payment transaction [method: Credit Card, typeWork: sale, amount: $90,020, status: Processing ]'
     )
     setValue('status', 'WORKING')
-    setValue('typeWork', 'PROBATION')
     clearErrors()
     scrollFormAddEdit()
   }
@@ -248,18 +241,18 @@ export default function TabWorkProgress() {
   }
 
   const scrollFormAddEdit = () => {
-    if (myFormRef.current && matchDownMd) {
+    if (myFormRef.current) {
       myFormRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
   return (
     <Grid container spacing={gridSpacingForm}>
-      <Grid item xs={12} sm={12} md={12} lg={8} xl={8} sx={{ mb: 3 }}>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 3 }}>
         <SubCard
           title={
             <Grid item xs={12} container alignItems={'center'} justifyContent={'space-between'} flexDirection={'row'}>
-              <Typography variant='h5'>Quá trình làm việc</Typography>
+              <Typography variant='h5'>Quá trình làm việc </Typography>
               <div>
                 <IconButton color='inherit' size='small' onClick={() => addItem()}>
                   <AddCircleOutlineIcon fontSize='inherit' />
@@ -307,7 +300,7 @@ export default function TabWorkProgress() {
           )}
         </SubCard>
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={4} xl={4} sx={{ mb: 3 }}>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 3 }}>
         <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} quá trình làm việc`}>
           <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={gridSpacingForm}>
@@ -318,16 +311,6 @@ export default function TabWorkProgress() {
                   label='Trạng thái'
                   errors={errors}
                   options={OPTIONSTATUSWORK}
-                  variant='outlined'
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MySelect
-                  name='typeWork'
-                  control={control}
-                  label='Hình thức'
-                  errors={errors}
-                  options={OPTIONTYPEWORK}
                   variant='outlined'
                 />
               </Grid>
