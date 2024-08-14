@@ -22,7 +22,9 @@ const ROUTES = {
     STAFF: 'staff',
     STAFF_DETAIL: 'staff/:id',
     PARTER: 'partner',
-    COMPANY: 'company'
+    COMPANY: 'company',
+    WORKER: 'worker',
+    WORKER_DETAIL: 'worker/:id'
   }
 }
 

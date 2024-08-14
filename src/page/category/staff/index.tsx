@@ -27,6 +27,7 @@ interface StaffRow {
   id: number
   name: string
   age: number
+  birtday: string
   sex: string
   address: string
   numberphone: string
@@ -73,6 +74,7 @@ const StaffPage = React.memo(() => {
       id: 1,
       name: 'Alice',
       age: 25,
+      birtday: '20/10/2024',
       sex: 'Female',
       address: '123 Main St',
       numberphone: '123-456-7890',
@@ -83,6 +85,7 @@ const StaffPage = React.memo(() => {
       id: 2,
       name: 'Bob',
       age: 30,
+      birtday: '20/10/2024',
       sex: 'Male',
       address: '456 Elm St',
       numberphone: '987-654-3210',
@@ -93,6 +96,7 @@ const StaffPage = React.memo(() => {
       id: 3,
       name: 'Charlie',
       age: 35,
+      birtday: '20/10/2024',
       sex: 'Male',
       address: '789 Oak St',
       numberphone: '555-555-5555',
@@ -103,6 +107,7 @@ const StaffPage = React.memo(() => {
       id: 4,
       name: 'David',
       age: 28,
+      birtday: '20/10/2024',
       sex: 'Male',
       address: '101 Pine St',
       numberphone: '444-444-4444',
@@ -113,61 +118,12 @@ const StaffPage = React.memo(() => {
       id: 5,
       name: 'Eve',
       age: 22,
+      birtday: '20/10/2024',
       sex: 'Female',
       address: '202 Maple St',
       numberphone: '333-333-3333',
       email: 'eve@example.com',
       typework: 'PartTime'
-    },
-    {
-      id: 6,
-      name: 'Frank',
-      age: 40,
-      sex: 'Male',
-      address: '303 Cedar St',
-      numberphone: '222-222-2222',
-      email: 'frank@example.com',
-      typework: 'FullTime'
-    },
-    {
-      id: 7,
-      name: 'Grace',
-      age: 27,
-      sex: 'Female',
-      address: '404 Birch St',
-      numberphone: '111-111-1111',
-      email: 'grace@example.com',
-      typework: 'PartTime'
-    },
-    {
-      id: 8,
-      name: 'Hannah',
-      age: 33,
-      sex: 'Female',
-      address: '505 Walnut St',
-      numberphone: '666-666-6666',
-      email: 'hannah@example.com',
-      typework: 'FullTime'
-    },
-    {
-      id: 9,
-      name: 'Ivy',
-      age: 29,
-      sex: 'Female',
-      address: '606 Chestnut St',
-      numberphone: '777-777-7777',
-      email: 'ivy@example.com',
-      typework: 'PartTime'
-    },
-    {
-      id: 10,
-      name: 'Jack',
-      age: 26,
-      sex: 'Male',
-      address: '707 Willow St',
-      numberphone: '888-888-8888',
-      email: 'jack@example.com',
-      typework: 'FullTime'
     }
   ]
 
@@ -200,7 +156,7 @@ const StaffPage = React.memo(() => {
         }
       },
       { field: 'name', headerName: 'Họ tên', flex: 1 },
-      { field: 'age', headerName: 'Tuổi', flex: 1 },
+      { field: 'birtday', headerName: 'Ngày sinh', flex: 1 },
       { field: 'sex', headerName: 'Giới tính', flex: 1 },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'numberphone', headerName: 'Số điện thoại', flex: 1 },
