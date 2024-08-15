@@ -33,6 +33,8 @@ import { authStore } from '../../../app/selectedStore'
 import { useLoginMutation } from '../../../app/services/auth'
 import LoadingModal from '../../../components/ui-component/LoadingModal'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
+import { LICENSE_KEY } from '../../../common/contants'
+import CryptoJS from 'crypto-js'
 
 const AuthLogin = ({ ...others }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -66,6 +68,19 @@ const AuthLogin = ({ ...others }) => {
     }
   }, [error])
 
+  useEffect(() => {
+    const encryptedUsername = localStorage.getItem('username')
+    const encryptedPassword = localStorage.getItem('password')
+
+    if (encryptedUsername && encryptedPassword) {
+      // const decryptedUsername = CryptoJS.AES.decrypt(encryptedUsername, LICENSE_KEY).toString(CryptoJS.enc.Utf8)
+      // const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, LICENSE_KEY).toString(CryptoJS.enc.Utf8)
+      // setFieldValue('username', decryptedUsername)
+      // setFieldValue('password', decryptedPassword)
+      setChecked(true)
+    }
+  }, [])
+
   return (
     <>
       <Grid container direction='column' justifyContent='center' spacing={2}>
@@ -90,8 +105,18 @@ const AuthLogin = ({ ...others }) => {
         onSubmit={(values, { setSubmitting }) => {
           login({
             username: values.username,
-            Password: values.password
+            password: values.password
           })
+          if (checked) {
+            const encryptedUsername = CryptoJS.AES.encrypt(values.username, LICENSE_KEY).toString()
+            const encryptedPassword = CryptoJS.AES.encrypt(values.password, LICENSE_KEY).toString()
+            localStorage.setItem('username', encryptedUsername)
+            localStorage.setItem('password', encryptedPassword)
+          } else {
+            localStorage.removeItem('username')
+            localStorage.removeItem('password')
+          }
+
           setSubmitting(false)
         }}
       >

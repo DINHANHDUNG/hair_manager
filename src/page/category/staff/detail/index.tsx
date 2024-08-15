@@ -4,19 +4,21 @@ import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import { useSnackbar } from 'notistack'
 import { useState } from 'react'
-import User1 from '../../../../assets/images/users/user-round.svg'
+import { useParams } from 'react-router-dom'
+import { useGetStaffByIdQuery } from '../../../../app/services/staff'
 import MyButton from '../../../../components/button/MyButton'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
 import Avatar from '../../../../components/ui-component/extended/Avatar'
 import { gridSpacing } from '../../../../constants'
+import { StaffType } from '../../../../types/staff'
+import TabAlertLevels from './TabAlertLevels'
+import TabChangePassword from './TabChangePassword'
 import TabInfoStaff from './TabInfo'
 import TabInfoRelationship from './TabInfoRelationship'
-import TabChangePassword from './TabChangePassword'
+import TabKPI from './TabKPI'
 import TabSalary from './TabSalary'
 import TabWorkProgress from './TabWorkProgress'
-import TabAlertLevels from './TabAlertLevels'
-import TabKPI from './TabKPI'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -31,6 +33,19 @@ const VisuallyHiddenInput = styled('input')({
 })
 
 const StaffDetailPage = () => {
+  const params = useParams()
+  const staffId = params?.id ? Number(params?.id) : null
+
+  const { data: fetchStaff, refetch } = useGetStaffByIdQuery(
+    {
+      staffId: staffId || 0
+    },
+    {
+      skip: !staffId
+    }
+  )
+  const dataStaff = fetchStaff?.data || ({} as StaffType)
+
   const { enqueueSnackbar } = useSnackbar()
   const [tab, setTab] = useState(0)
 
@@ -61,24 +76,13 @@ const StaffDetailPage = () => {
   }
   return (
     <>
-      {/* <Card sx={{ mb: 2, bgcolor: '#fff' }}>
-        <Box sx={{ p: 2, pl: 2 }}>
-          <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'} spacing={1}>
-            <Grid item>
-              <Typography variant='h3' sx={{ fontWeight: 500 }}>
-                {'Thông tin chi tiết nhân viên'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Box>
-      </Card> */}
       <MainCard title={'Thông tin chi tiết nhân viên'}>
         <Grid container spacing={gridSpacing} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={6} lg={4}>
             <SubCard title='Ảnh đại diện'>
               <Grid item xs={12} container alignItems={'center'} justifyContent={'center'} flexDirection={'column'}>
                 <MyButton component='label' role={undefined} variant='text' tabIndex={-1} sx={{ border: 'none' }}>
-                  <Avatar alt='John Doe' src={User1} sx={{ mb: 2 }} />
+                  <Avatar alt='John Doe' src={dataStaff.avatar} sx={{ mb: 2 }} />
                   <VisuallyHiddenInput type='file' onChange={handleFileChange} />
                 </MyButton>
                 <Typography variant='caption' sx={{ mb: 2 }}>
@@ -100,7 +104,7 @@ const StaffDetailPage = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={6} lg={4}>
             <SubCard title='Mô tả'>
-              <Typography variant='h4'>ĐINH ANH DŨNG</Typography>
+              <Typography variant='h4'>{dataStaff?.name}</Typography>
               <Typography variant='caption' sx={{ mb: 2 }}>
                 Nhân viên xuất sắc
               </Typography>
@@ -117,7 +121,7 @@ const StaffDetailPage = () => {
                 Số điện thoại
               </Typography>
               <Typography variant='caption' sx={{ mb: 2 }}>
-                0333968599{' '}
+                {dataStaff?.phoneNumber}
                 <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
                   <ContentCopyIcon fontSize='inherit' />
                 </IconButton>
@@ -125,7 +129,7 @@ const StaffDetailPage = () => {
               <p></p>
               <Typography variant='h4'>Email</Typography>
               <Typography variant='caption' sx={{ mb: 2 }} onClick={() => handleCopy('dinhanhdung03011999@gmail.com')}>
-                dinhanhdung03011999@gmail.com{' '}
+                {dataStaff?.email}
                 <IconButton color='inherit' size='small' disableRipple>
                   <ContentCopyIcon fontSize='inherit' />
                 </IconButton>
@@ -147,10 +151,10 @@ const StaffDetailPage = () => {
               </Tabs>
             </Box>
             <CustomTabPanel value={tab} index={0}>
-              <TabInfoStaff />
+              <TabInfoStaff data={dataStaff} reloadData={() => refetch()} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={1}>
-              <TabInfoRelationship />
+              <TabInfoRelationship data={dataStaff} reloadData={() => refetch()} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={2}>
               <TabSalary />

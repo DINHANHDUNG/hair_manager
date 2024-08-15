@@ -4,6 +4,23 @@ export const GET = 'GET'
 export const DELETE = 'DELETE'
 export const PATCH = 'PATCH'
 
+export const LICENSE_KEY = process.env.REACT_APP_PUBLIC_MUI_LICENSE_KEY || ''
+
+export const OPTIONGENDER = [
+  { value: 'MALE', label: 'Nam' },
+  { value: 'FEMALE', label: 'Nữ' },
+  { value: 'OTHER', label: 'Khác' }
+]
+
+export const OPTIONSPOSITION = [
+  { value: 'ADMIN', label: 'Admin' },
+  { value: 'GIAMDOC', label: 'Giám đốc' },
+  { value: 'KETOAN', label: 'Kế toán' },
+  { value: 'HCNS', label: 'Hành chính nhân sự' },
+  { value: 'TUYENDUNG', label: 'Tuyển dụng' },
+  { value: 'SALE', label: 'Bán hàng' }
+]
+
 export const OPTIONSTATUSWORK = [
   { value: 'WORKING', label: 'Đang làm việc' },
   { value: 'OUT', label: 'Đã nghỉ việc' },
@@ -24,4 +41,13 @@ export const OPTIONSTTWORKER = [
   { value: 'LENT_TO_PARTNER', label: 'Cho đối tác mượn' },
   { value: 'RESIGNED', label: 'Đã nghỉ việc' },
   { value: 'BORROWED_FROM_PARTNER', label: 'Mượn của đối tác' }
+]
+
+export const STATUS_WORKING_EMPLOYEE = [
+  { value: 'WAITING', label: 'Đang chờ' },
+  { value: 'FAIL', label: 'Thất bại' },
+  { value: 'IN_HOME', label: 'Ở nhà' },
+  { value: 'IN_COMPANY', label: 'Trong công ty' },
+  { value: 'IN_PARTNER', label: 'Ở đối tác' },
+  { value: 'OUT', label: 'Ra ngoài' }
 ]

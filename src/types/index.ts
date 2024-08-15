@@ -32,6 +32,11 @@ export interface ReponseData<T> {
   data: T
 }
 
+export interface ReponseData2<T> {
+  status: string
+  data: T
+}
+
 export interface RejectValue {
   error: string
   code: number

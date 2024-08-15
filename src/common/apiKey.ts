@@ -7,7 +7,13 @@ export const NetWork = {
 
   //Account
   account: 'account',
+  role: 'role',
 
   //Pokemon
-  pokemon: 'api/v2/'
+  pokemon: 'api/v2/',
+
+  //Staff
+  staff: 'staff',
+  staffId: (staffId: number) => `staff/${staffId}`,
+  staffActive: (staffId: number) => `staff/${staffId}/active`
 }

@@ -57,17 +57,6 @@ const WorkerDetailPage = () => {
   }
   return (
     <>
-      {/* <Card sx={{ mb: 2, bgcolor: '#fff' }}>
-        <Box sx={{ p: 2, pl: 2 }}>
-          <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'} spacing={1}>
-            <Grid item>
-              <Typography variant='h3' sx={{ fontWeight: 500 }}>
-                {'Thông tin chi tiết nhân viên'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Box>
-      </Card> */}
       <MainCard title={'Thông tin chi tiết công nhân'}>
         <Grid container spacing={gridSpacing} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={12} md={12} lg={4}>

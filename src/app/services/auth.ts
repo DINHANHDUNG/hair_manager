@@ -19,8 +19,6 @@ export const authApi = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log('data', data)
-
           dispatch(setCredentials(data))
         } catch (err) {
           console.error('Login failed', err)
@@ -41,9 +39,15 @@ export const authApi = createApi({
           console.error('Get Account failed', err)
         }
       }
+    }),
+    getRoles: builder.query({
+      query: () => ({
+        url: NetWork.role,
+        method: GET
+      })
     })
   })
 })
 
 // Export hooks for usage in functional components
-export const { useLoginMutation, useGetAccountQuery } = authApi
+export const { useLoginMutation, useGetAccountQuery, useGetRolesQuery } = authApi
