@@ -6,14 +6,21 @@ import {
   gridClasses,
   GridColDef,
   GridFilterModel,
+  GridFooterContainer,
+  gridPageCountSelector,
+  gridPageSelector,
+  GridPagination,
   GridPaginationModel,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp,
-  MuiEvent
+  MuiEvent,
+  useGridApiContext,
+  useGridSelector
 } from '@mui/x-data-grid-pro'
 import React, { ReactElement } from 'react'
 import CustomToolbar from './CustomToolbarDataGrid'
+import { Pagination } from '@mui/material'
 
 interface TableDataGridProps {
   data?: Record<string, unknown> // Dữ liệu không xác định cụ thể, tránh dùng any
@@ -38,6 +45,7 @@ interface TableDataGridProps {
     event: MuiEvent<React.MouseEvent<HTMLElement>>, // MuiEvent<React.MouseEvent<HTMLElement>>
     details: GridCallbackDetails // GridCallbackDetails
   ) => void
+  totalCount?: number
 }
 
 const autosizeOptions: GridAutosizeOptions = {
@@ -62,6 +70,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   filterMode,
   toolbarEnable,
   toolbar,
+  totalCount,
   otherProps // Các props bổ sung
 }) => {
   return (
@@ -75,6 +84,11 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       columns={columns}
       disableColumnFilter
       rows={rows}
+      // rowModesModel={'server'}
+      // rowsLoadingMode='server'
+      // columnVisibilityModel={'server'}
+      // columnOrderModel={'server'}
+      // editMode='row'
       filterMode={filterMode || 'server'}
       onFilterModelChange={onFilterChange}
       loading={isLoading}
@@ -85,7 +99,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       getRowHeight={() => 'auto'}
       onPaginationModelChange={setPaginationModel}
       autosizeOptions={autosizeOptions}
-      rowCount={rows.length || 0}
+      rowCount={totalCount || 0}
       localeText={{
         MuiTablePagination: {
           labelDisplayedRows,
@@ -108,6 +122,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       }}
       slots={{
         // headerFilterMenu: null,
+        footer: CustomFooter,
         toolbar: () =>
           toolbarEnable ? (
             toolbar ? (
@@ -166,3 +181,27 @@ export const StickyDataGrid = styled(DataGridPro)(({ theme }) => ({
     zIndex: 1
   }
 }))
+
+export function CustomPagination() {
+  const apiRef = useGridApiContext()
+  const page = useGridSelector(apiRef, gridPageSelector)
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector)
+
+  return (
+    <Pagination
+      color='primary'
+      count={pageCount}
+      page={page + 1}
+      onChange={(event, value) => apiRef.current.setPage(value - 1)}
+    />
+  )
+}
+
+function CustomFooter() {
+  return (
+    <GridFooterContainer>
+      <CustomPagination />
+      <GridPagination />
+    </GridFooterContainer>
+  )
+}

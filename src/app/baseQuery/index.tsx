@@ -47,8 +47,6 @@ export const axiosBaseQuery: BaseQueryFn<
           refreshToken: state.auth.refreshToken
         })
 
-        console.log('refreshResult', refreshResult)
-
         if (refreshResult.data) {
           const newAccessToken = refreshResult.data.data.accessToken
 
@@ -75,7 +73,8 @@ export const axiosBaseQuery: BaseQueryFn<
         return {
           error: {
             status: refreshErr.response?.status,
-            data: refreshErr.response?.data || refreshErr.message
+            data: refreshErr.response?.data || refreshErr.message,
+            message: refreshErr.message
           }
         }
       }
@@ -84,7 +83,8 @@ export const axiosBaseQuery: BaseQueryFn<
     return {
       error: {
         status: err.response?.status,
-        data: err.response?.data || err.message
+        data: err.response?.data || err.message,
+        message: err.message
       }
     }
   }

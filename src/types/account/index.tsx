@@ -1,3 +1,5 @@
+import { StaffType } from '../staff'
+
 export interface AccountType {
   id: number
   createdAt: string
@@ -13,18 +15,12 @@ export interface AccountType {
   roles: string[]
 }
 
-export interface StaffType {
+export interface RoleType {
   id: number
   createdAt: string
   updatedAt: string
   deletedAt: string
   name: string
-  address: string
-  birthDay: string
-  phoneNumber: string
-  email: string
-  identificationCard: string
-  addressOrigin: string
-  accountId: number
-  account: AccountType
+  isActive: boolean
+  permission: string
 }

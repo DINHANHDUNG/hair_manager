@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -12,15 +11,14 @@ import Chip from '@mui/material/Chip'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
-import InputAdornment from '@mui/material/InputAdornment'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 
@@ -31,12 +29,12 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import User1 from '../../../../../assets/images/users/user-round.svg'
 
 // assets
-import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-react'
+import { IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import { logout } from '../../../../../app/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '../../../../../app/hooks'
 import { customTheme } from '../../../../../app/selectedStore'
-import Transitions from '../../../../ui-component/extended/Transitions'
 import MainCard from '../../../../ui-component/cards/MainCard'
-import { logout } from '../../../../../app/features/auth/authSlice'
+import Transitions from '../../../../ui-component/extended/Transitions'
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -47,7 +45,6 @@ const ProfileSection = () => {
   const navigate = useNavigate()
 
   const [sdm, setSdm] = useState(true)
-  const [value, setValue] = useState('')
   const [notification, setNotification] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [open, setOpen] = useState(false)
@@ -155,7 +152,7 @@ const ProfileSection = () => {
               <ClickAwayListener onClickAway={handleClose}>
                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                   <Box sx={{ p: 2, pb: 0 }}>
-                    <Stack>
+                    <Stack sx={{ mb: 1 }}>
                       <Stack direction='row' spacing={0.5} alignItems='center'>
                         <Typography variant='h4'>Good Morning,</Typography>
                         <Typography component='span' variant='h4' sx={{ fontWeight: 400 }}>
@@ -164,7 +161,7 @@ const ProfileSection = () => {
                       </Stack>
                       <Typography variant='subtitle2'>Project Admin</Typography>
                     </Stack>
-                    <OutlinedInput
+                    {/* <OutlinedInput
                       sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
                       id='input-search-profile'
                       value={value}
@@ -179,7 +176,7 @@ const ProfileSection = () => {
                       inputProps={{
                         'aria-label': 'weight'
                       }}
-                    />
+                    /> */}
                     <Divider />
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>

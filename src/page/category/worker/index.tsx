@@ -71,6 +71,7 @@ const WorkerPage = React.memo(() => {
     pageSize: initialPageSize,
     page: initialPage
   })
+  console.log('paginationModel', paginationModel)
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     keyword: initialKeyword,
@@ -82,8 +83,6 @@ const WorkerPage = React.memo(() => {
     status: initialStatus,
     company: initialCompany
   })
-
-  console.log('filters', filters)
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
@@ -410,7 +409,9 @@ const WorkerPage = React.memo(() => {
             columns={columns}
             isLoading={false}
             paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
+            setPaginationModel={(model) => {
+              setPaginationModel(model)
+            }}
             onRowSelectionChange={onRowSelectionChange}
             onRowClick={onRowClick}
             checkboxSelection

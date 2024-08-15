@@ -1,5 +1,6 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import { Button, Grid, OutlinedInput } from '@mui/material'
@@ -13,37 +14,29 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import moment from 'moment'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
+import { OPTIONGENDER, OPTIONTYPEWORK } from '../../../common/contants'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
+import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import Chip from '../../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../../constants'
+import ROUTES from '../../../routers/helpersRouter/constantRouter'
+import { StaffType } from '../../../types/staff'
 import DetailStaffDrawer from './DetailStaffDrawer'
 import FormAddStaff from './FormAddStaff'
-import ROUTES from '../../../routers/helpersRouter/constantRouter'
-
-interface StaffRow {
-  id: number
-  name: string
-  age: number
-  birtday: string
-  sex: string
-  address: string
-  numberphone: string
-  email: string
-  typework: string
-}
 
 const StaffPage = React.memo(() => {
   const navigate = useNavigate()
   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
-  console.log('searchParams', searchParams.get('page'))
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
-  const initialKeyword = searchParams.get('keyword') || ''
+  const initialSearchKey = searchParams.get('searchKey') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -51,11 +44,30 @@ const StaffPage = React.memo(() => {
   })
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    keyword: initialKeyword
+    searchKey: initialSearchKey
   })
+  const [itemSelected, setItemSelected] = React.useState<StaffType>()
+  const [rowsData, setRowsData] = React.useState<StaffType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
+
+  const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
+  const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
+    useActiveStaffMutation()
+
+  const {
+    data: dataApiStaff,
+    isLoading,
+    refetch
+  } = useGetListStaffQuery({
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
+    ...filters
+  })
+
+  const rows: GridRowsProp = rowsData || []
+  const rowTotal = dataApiStaff?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -69,64 +81,6 @@ const StaffPage = React.memo(() => {
     setOpenFormAdd(false)
   }
 
-  const rows: GridRowsProp = [
-    {
-      id: 1,
-      name: 'Alice',
-      age: 25,
-      birtday: '20/10/2024',
-      sex: 'Female',
-      address: '123 Main St',
-      numberphone: '123-456-7890',
-      email: 'alice@example.com',
-      typework: 'PartTime'
-    },
-    {
-      id: 2,
-      name: 'Bob',
-      age: 30,
-      birtday: '20/10/2024',
-      sex: 'Male',
-      address: '456 Elm St',
-      numberphone: '987-654-3210',
-      email: 'bob@example.com',
-      typework: 'FullTime'
-    },
-    {
-      id: 3,
-      name: 'Charlie',
-      age: 35,
-      birtday: '20/10/2024',
-      sex: 'Male',
-      address: '789 Oak St',
-      numberphone: '555-555-5555',
-      email: 'charlie@example.com',
-      typework: 'PartTime'
-    },
-    {
-      id: 4,
-      name: 'David',
-      age: 28,
-      birtday: '20/10/2024',
-      sex: 'Male',
-      address: '101 Pine St',
-      numberphone: '444-444-4444',
-      email: 'david@example.com',
-      typework: 'FullTime'
-    },
-    {
-      id: 5,
-      name: 'Eve',
-      age: 22,
-      birtday: '20/10/2024',
-      sex: 'Female',
-      address: '202 Maple St',
-      numberphone: '333-333-3333',
-      email: 'eve@example.com',
-      typework: 'PartTime'
-    }
-  ]
-
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -139,7 +93,7 @@ const StaffPage = React.memo(() => {
   }
 
   const onRowClick = (params: GridRowParams) => {
-    console.log('params', params.row)
+    setItemSelected(params.row)
     handleClickDetail()
   }
 
@@ -148,33 +102,45 @@ const StaffPage = React.memo(() => {
       {
         field: 'order',
         headerName: 'No.',
-        width: 50,
-        renderCell: (params: GridRenderCellParams) => {
-          const rowIndex = params.api.getRowIndexRelativeToVisibleRows(params.id)
-          const { page, pageSize } = params.api.state.pagination.paginationModel
-          return page * pageSize + (rowIndex + 1)
-        }
+        width: 30
       },
       { field: 'name', headerName: 'Họ tên', flex: 1 },
-      { field: 'birtday', headerName: 'Ngày sinh', flex: 1 },
-      { field: 'sex', headerName: 'Giới tính', flex: 1 },
+      {
+        field: 'birthDay',
+        headerName: 'Ngày sinh',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<StaffType, number>) =>
+          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+      },
+      {
+        field: 'gender',
+        headerName: 'Giới tính',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => {
+          const show = OPTIONGENDER.find((e) => e.value === params.row.gender)?.label
+          return show || ''
+        }
+      },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
-      { field: 'numberphone', headerName: 'Số điện thoại', flex: 1 },
+      { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
       { field: 'email', headerName: 'Email', flex: 1 },
       {
-        field: 'typework',
+        field: 'typeWorking',
         headerName: 'Hình thức',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffRow, number>) => {
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => {
+          const label = OPTIONTYPEWORK.find((e) => e.value === params.row.typeWorking)?.label || ''
           return (
-            <Chip
-              size='small'
-              label={params.value}
-              sx={{
-                color: theme.palette.background.default,
-                bgcolor: theme.palette.success.dark
-              }}
-            />
+            label && (
+              <Chip
+                size='small'
+                label={label}
+                sx={{
+                  color: theme.palette.background.default,
+                  bgcolor: theme.palette.success.dark
+                }}
+              />
+            )
           )
         }
       },
@@ -183,13 +149,14 @@ const StaffPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (params: GridRenderCellParams<StaffRow, number>) => {
+        getActions: (params: GridRenderCellParams<StaffType, number>) => {
           return [
             <GridActionsCellItem
-              icon={<LockOpenOutlinedIcon />}
+              icon={!params.row.isActive ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
               label='Lock'
               className='textPrimary'
               color='inherit'
+              onClick={() => activeStaff({ staffId: Number(params.id), active: !params.row.isActive })}
             />,
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
@@ -198,7 +165,13 @@ const StaffPage = React.memo(() => {
               color='inherit'
               onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${params.id}`)}
             />,
-            <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
+            <GridActionsCellItem
+              icon={<DeleteOutlinedIcon />}
+              label='Delete'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => deleteStaff({ ids: [Number(params.id)] })}
+            />
           ]
         }
       }
@@ -208,6 +181,11 @@ const StaffPage = React.memo(() => {
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
       case 'numberphone':
+        return {
+          ...colDef,
+          minWidth: 150
+        }
+      case 'name':
         return {
           ...colDef,
           minWidth: 150
@@ -222,17 +200,49 @@ const StaffPage = React.memo(() => {
 
   const columns: GridColDef[] = React.useMemo(
     () => data.columns.map((colDef) => renderColumn(colDef)),
-    [data.columns, filters]
+    [data.columns, filters, dataApiStaff]
   )
+
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+    }
+  }
 
   React.useEffect(() => {
     // Update URL parameters when pagination model changes
     setSearchParams({
       page: paginationModel.page.toString(),
       pageSize: paginationModel.pageSize.toString(),
-      keyword: filters.keyword
+      searchKey: filters.searchKey
     })
   }, [paginationModel, filters, setSearchParams])
+
+  React.useEffect(() => {
+    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+  }, [loadingDelete])
+
+  React.useEffect(() => {
+    handleMutation(loadingActive, isErrorActive, isSuccessActive, 'Thao tác thành công', 'Thao tác không thành công')
+  }, [loadingActive])
+
+  React.useEffect(() => {
+    // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+    const updatedRows =
+      dataApiStaff?.data?.rows.map((row: StaffType, index: number) => ({
+        ...row,
+        order: paginationModel.page * paginationModel.pageSize + index + 1
+      })) || []
+
+    setRowsData(updatedRows)
+  }, [dataApiStaff])
 
   return (
     <>
@@ -244,8 +254,8 @@ const StaffPage = React.memo(() => {
               id='search-input'
               startAdornment={<IconSearch sx={{ mr: 1 }} />}
               placeholder='Tìm kiếm'
-              value={filters?.['keyword']}
-              onChange={(e) => handleFilterChange('keyword', e.target.value)}
+              value={filters?.['searchKey']}
+              onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
           </Grid>
@@ -260,26 +270,36 @@ const StaffPage = React.memo(() => {
 
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
+            // key={rowTotal}
             rows={rows}
             columns={columns}
-            isLoading={false}
+            isLoading={isLoading}
             paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
+            setPaginationModel={(model) => {
+              setPaginationModel(model)
+            }}
             onRowSelectionChange={onRowSelectionChange}
             onRowClick={onRowClick}
             // checkboxSelection
             filterMode='server'
             headerFilters={false}
+            totalCount={rowTotal}
           />
         </div>
-        <DetailStaffDrawer isVisible={openDetail} changeVisible={handleClickDetail} />
+        <DetailStaffDrawer
+          isVisible={openDetail}
+          changeVisible={handleClickDetail}
+          staff={itemSelected || ({} as StaffType)}
+        />
         <FormAddStaff
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
-            console.log('save')
+            refetch()
+            handleCloseForm()
           }}
         />
+        {/* <LoadingModal open={isLoading || isFetching} /> */}
       </MainCard>
     </>
   )

@@ -1,73 +1,85 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
+import dayjs from 'dayjs'
+import moment from 'moment'
 import { useEffect } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { useUpdateStaffMutation } from '../../../../app/services/staff'
+import { OPTIONGENDER } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
 import MyTextField from '../../../../components/input/MyTextField'
 import MySelect from '../../../../components/select/MySelect'
+import Toast from '../../../../components/toast'
 import { gridSpacingForm } from '../../../../constants'
+import { StaffType } from '../../../../types/staff'
 
 type FormValues = {
-  nanme: string
-  sex: string
-  birthday: string
+  name: string
+  gender: string
+  birthDay: string
   email: string
   address: string
-  phonenumber: string
+  phoneNumber: string
   ethnic: string
-  cccd: string
-  domicile: string
+  identificationCard: string
+  addressOrigin: string
 }
 
 const validationSchema = yup.object({
-  nanme: yup
+  name: yup
     .string()
     .max(255)
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
-  sex: yup.string().required('Trường này là bắt buộc'),
-  birthday: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
+  gender: yup.string().required('Trường này là bắt buộc'),
+  birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
   email: yup.string().required('Trường này là bắt buộc').email('Email không hợp lệ'),
   address: yup.string().required('Trường này là bắt buộc').max(255),
-  cccd: yup
+  identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(255)
     .matches(VALIDATE.cccdRegex, 'Vui lòng nhập đúng định dạng'),
   ethnic: yup.string().required('Trường này là bắt buộc').max(255),
-  domicile: yup.string().required('Trường này là bắt buộc').max(255),
-  phonenumber: yup
+  addressOrigin: yup.string().required('Trường này là bắt buộc').max(255),
+  phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng')
 })
+interface Props {
+  data: StaffType
+  reloadData?: () => void
+}
+export default function TabInfoStaff(Props: Props) {
+  const { data, reloadData } = Props
 
-export default function TabInfoStaff() {
+  const [updateStaff, { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error }] =
+    useUpdateStaffMutation()
   //   const { open, handleClose, handleSave } = Props
 
-  const selectOptions = [
-    { value: '0', label: 'Nữ' },
-    { value: '1', label: 'Nam' }
-  ]
   // Khởi tạo react-hook-form với schema xác thực
   const {
     control,
     handleSubmit,
-    // setValue,
+    setValue,
     reset,
+    setError,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema)
   })
 
   // Xử lý khi form được submit
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data)
-
+  const onSubmit: SubmitHandler<FormValues> = (value) => {
+    const date = moment(data.birthDay).startOf('day')
+    const isoDateStr = date?.toISOString()
+    console.log(moment(isoDateStr).format('DD/MM/YYYY'))
+    updateStaff({ ...value, id: data.id, birthDay: isoDateStr })
     // handleSave(data)
   }
 
@@ -75,26 +87,79 @@ export default function TabInfoStaff() {
     reset()
   }, [open])
 
+  useEffect(() => {
+    setValue('name', data?.name)
+    setValue('gender', data?.gender)
+    setValue('identificationCard', data?.identificationCard)
+    setValue('ethnic', data?.ethnic)
+    setValue('phoneNumber', data?.phoneNumber)
+    setValue('email', data?.email)
+    setValue('addressOrigin', data?.addressOrigin)
+    setValue('address', data?.address)
+    setValue('birthDay', dayjs(data?.birthDay).toString())
+  }, [data])
+
+  type Field =
+    | 'name'
+    | 'gender'
+    | 'birthDay'
+    | 'email'
+    | 'address'
+    | 'addressOrigin'
+    | 'identificationCard'
+    | 'phoneNumber'
+    | 'ethnic'
+
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (isSuccess) reloadData && reloadData()
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' })
+    }
+  }
+
+  useEffect(() => {
+    if (!loadingUpdate && isErrorUpdate) {
+      const newError = error as {
+        data: {
+          errors: string
+          keyError: Field
+          message: string
+          status: string
+        }
+      }
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation(loadingUpdate, isErrorUpdate, isSuccessUpdate, 'Cập nhật thành công', 'Cập nhật không thành công')
+  }, [loadingUpdate])
+
   return (
     // <SubCard>
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={gridSpacingForm}>
         <Grid item xs={12} sm={6} md={6} lg={4}>
-          <MyTextField name='nanme' control={control} label='Họ và tên' errors={errors} variant='outlined' />
+          <MyTextField name='name' control={control} label='Họ và tên' errors={errors} variant='outlined' />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MySelect
-            name='sex'
+            name='gender'
             control={control}
             label='Giới tính'
             errors={errors}
-            options={selectOptions}
+            options={OPTIONGENDER}
             variant='outlined'
           />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyDatePicker
-            name='birthday'
+            name='birthDay'
             control={control}
             label='Ngày sinh'
             errors={errors}
@@ -103,19 +168,25 @@ export default function TabInfoStaff() {
           />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
-          <MyTextField name='cccd' control={control} label='Căn cước công dân' errors={errors} variant='outlined' />
+          <MyTextField
+            name='identificationCard'
+            control={control}
+            label='Căn cước công dân'
+            errors={errors}
+            variant='outlined'
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField name='ethnic' control={control} label='Dân tộc' errors={errors} variant='outlined' />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
-          <MyTextField name='phonenumber' control={control} label='Số điện thoại' errors={errors} variant='outlined' />
+          <MyTextField name='phoneNumber' control={control} label='Số điện thoại' errors={errors} variant='outlined' />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField name='address' control={control} label='Địa chỉ' errors={errors} variant='outlined' />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
-          <MyTextField name='domicile' control={control} label='Nguyên quán' errors={errors} variant='outlined' />
+          <MyTextField name='addressOrigin' control={control} label='Nguyên quán' errors={errors} variant='outlined' />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField name='email' control={control} label='Email' errors={errors} variant='outlined' />

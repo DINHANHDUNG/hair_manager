@@ -5,24 +5,26 @@ import Grid from '@mui/material/Grid'
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar'
 // assets
+import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined'
 import { IconButton, Typography, useTheme } from '@mui/material'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import User1 from '../../../assets/images/users/user-round.svg'
+import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 import SubCard from '../../../components/ui-component/cards/SubCard'
 import Avatar from '../../../components/ui-component/extended/Avatar'
 import { gridSpacing } from '../../../constants'
-import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
-import { useNavigate } from 'react-router-dom'
+import { StaffType } from '../../../types/staff'
 
 interface Props {
   isVisible: boolean
   changeVisible: () => void
+  staff: StaffType
 }
 
 const DetailStaffDrawer = (Props: Props) => {
   const navigate = useNavigate()
-  const { isVisible, changeVisible } = Props
+  const { isVisible, changeVisible, staff } = Props
 
   const theme = useTheme()
   const matchUpMd = useMediaQuery(theme.breakpoints.up('sm'))
@@ -56,7 +58,7 @@ const DetailStaffDrawer = (Props: Props) => {
                     <IconButton
                       color='inherit'
                       size='small'
-                      onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${1}`)}
+                      onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${staff.id}`)}
                     >
                       <DriveFileRenameOutlineOutlinedIcon fontSize='inherit' />
                     </IconButton>
@@ -64,14 +66,14 @@ const DetailStaffDrawer = (Props: Props) => {
                 }
               >
                 <Grid item xs={12} container alignItems={'center'} justifyContent={'center'} flexDirection={'column'}>
-                  <Avatar size='xl' alt='John Doe' src={User1} sx={{ mb: 2 }} />
+                  <Avatar size='xl' alt={staff?.name} src={staff?.avatar} sx={{ mb: 2 }} />
                   <Typography variant='h3' sx={{ mb: 1 }}>
-                    ĐINH ANH DŨNG
+                    {staff?.name}
                   </Typography>
-                  <Typography variant='body1' textAlign={'center'}>
+                  {/* <Typography variant='body1' textAlign={'center'}>
                     Hello,I’m Anshan Handgun Creative Graphic Designer & User Experience Designer based in Website, I
                     create digital Products a more Beautiful and usable place. Morbid accusant ipsum. Nam nec tellus at.
-                  </Typography>
+                  </Typography> */}
                 </Grid>
               </SubCard>
             </Grid>
@@ -82,27 +84,29 @@ const DetailStaffDrawer = (Props: Props) => {
                     <Typography variant='h5' fontWeight={'700'}>
                       Họ tên
                     </Typography>
-                    <Typography variant='caption'>Đinh Anh Dũng</Typography>
+                    <Typography variant='caption'>{staff?.name}</Typography>
                   </Grid>
                   <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Năm sinh</Typography>
-                    <Typography variant='caption'>03/01/1999 (25 tuổi)</Typography>
+                    <Typography variant='caption'>
+                      {staff?.birthDay ? moment(staff?.birthDay).format('DD/MM/YYYY') : ''}
+                    </Typography>
                   </Grid>
                   <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Giới tính</Typography>
-                    <Typography variant='caption'>Nam</Typography>
+                    <Typography variant='caption'>{staff?.gender}</Typography>
                   </Grid>
                   <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Số điện thoại</Typography>
-                    <Typography variant='caption'>0333968599</Typography>
+                    <Typography variant='caption'>{staff?.phoneNumber}</Typography>
                   </Grid>
                   <Grid item xs={12} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Email</Typography>
-                    <Typography variant='caption'>anhdung0301@gmail.com</Typography>
+                    <Typography variant='caption'>{staff?.email}</Typography>
                   </Grid>
                   <Grid item xs={12} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Địa chỉ</Typography>
-                    <Typography variant='caption'>Phù Khê Đông - Phù Khê - Từ Sơn - Bắc Ninh</Typography>
+                    <Typography variant='caption'>{staff?.address}</Typography>
                   </Grid>
                 </Grid>
               </SubCard>
@@ -114,20 +118,20 @@ const DetailStaffDrawer = (Props: Props) => {
                     <Typography variant='h5' fontWeight={'700'}>
                       Họ tên
                     </Typography>
-                    <Typography variant='caption'>Nguyễn Văn A</Typography>
+                    <Typography variant='caption'>{staff?.representativeName}</Typography>
                   </Grid>
                   <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Chức vụ</Typography>
-                    <Typography variant='caption'>Mẹ</Typography>
+                    <Typography variant='caption'>{staff?.representativePosition}</Typography>
                   </Grid>
                   <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Số điện thoại</Typography>
-                    <Typography variant='caption'>0333968555</Typography>
+                    <Typography variant='caption'>{staff?.representativePhone}</Typography>
                   </Grid>
-                  <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
+                  {/* <Grid item xs={6} alignItems={'center'} justifyContent={'start'} flexDirection={'column'}>
                     <Typography variant='h5'>Năm sinh</Typography>
                     <Typography variant='caption'>03/01/1976</Typography>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </SubCard>
             </Grid>
