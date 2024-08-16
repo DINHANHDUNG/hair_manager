@@ -1,4 +1,4 @@
-import { styled } from '@mui/system'
+import { alpha, styled } from '@mui/system'
 import {
   DataGridPro,
   GridAutosizeOptions,
@@ -21,6 +21,9 @@ import {
 import React, { ReactElement } from 'react'
 import CustomToolbar from './CustomToolbarDataGrid'
 import { Pagination } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+
+const ODD_OPACITY = 0.2
 
 interface TableDataGridProps {
   data?: Record<string, unknown> // Dữ liệu không xác định cụ thể, tránh dùng any
@@ -73,6 +76,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   totalCount,
   otherProps // Các props bổ sung
 }) => {
+  const theme = useTheme()
   return (
     <DataGridPro
       //   {...data}
@@ -117,7 +121,18 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
           border: 'none'
         },
         [`& .${gridClasses.cell}`]: {
-          py: 1
+          py: 1,
+          display: 'flex',
+          alignItems: 'center' // Center text vertically
+        },
+        [`& .${gridClasses.row}.even`]: {
+          backgroundColor: theme.palette.grey[200],
+          '&:hover': {
+            backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+            '@media (hover: none)': {
+              backgroundColor: 'transparent'
+            }
+          }
         }
       }}
       slots={{

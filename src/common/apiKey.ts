@@ -15,5 +15,13 @@ export const NetWork = {
   //Staff
   staff: 'staff',
   staffId: (staffId: number) => `staff/${staffId}`,
-  staffActive: (staffId: number) => `staff/${staffId}/active`
+  staffActive: (staffId: number) => `staff/${staffId}/active`,
+
+  //Company
+  company: 'company',
+  companyId: (companyId: number) => `company/${companyId}`,
+
+  //Partner
+  partner: 'partner',
+  partnerId: (partnerId: number) => `partner/${partnerId}`
 }

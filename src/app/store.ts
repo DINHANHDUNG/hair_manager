@@ -5,6 +5,8 @@ import customizationReducer from './features/customization/customizationSlice'
 import { pokemonApi } from './services/pokemon'
 import { authApi } from './services/auth'
 import { staffApi } from './services/staff'
+import { companyApi } from './services/company'
+import { partnerApi } from './services/partner'
 
 export const store = configureStore({
   reducer: {
@@ -14,10 +16,18 @@ export const store = configureStore({
     //RTKQR
     [pokemonApi.reducerPath]: pokemonApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
-    [staffApi.reducerPath]: staffApi.reducer
+    [staffApi.reducerPath]: staffApi.reducer,
+    [companyApi.reducerPath]: companyApi.reducer,
+    [partnerApi.reducerPath]: partnerApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(pokemonApi.middleware, authApi.middleware, staffApi.middleware)
+    getDefaultMiddleware().concat(
+      pokemonApi.middleware,
+      authApi.middleware,
+      staffApi.middleware,
+      companyApi.middleware,
+      partnerApi.middleware
+    )
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

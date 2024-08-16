@@ -33,7 +33,6 @@ export const authApi = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log('data', data)
           dispatch(setUser(data))
         } catch (err) {
           console.error('Get Account failed', err)
