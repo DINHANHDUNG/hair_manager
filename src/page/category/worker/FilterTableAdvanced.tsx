@@ -5,7 +5,7 @@ import { Box } from '@mui/system'
 import { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { OPTIONSTTWORKER } from '../../../common/contants'
+import { STATUS_WORKING_EMPLOYEE } from '../../../common/contants'
 import MyButton from '../../../components/button/MyButton'
 import DateRangePickerShortCut from '../../../components/dateTime/DateRangePickerShortCut'
 import PopperComponent from '../../../components/popper'
@@ -65,6 +65,7 @@ interface Props {
   open: boolean
   value?: { [field: string]: string }
   anchorRef: React.RefObject<HTMLElement>
+  listCompany: { value: string; label: string }[]
   handleComfirm?: (value: StateFilterTableAdvanced) => void
   handleClose: (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
@@ -77,7 +78,14 @@ export interface StateFilterTableAdvanced {
   date: DateRange<Dayjs> | undefined
 }
 
-export default function FilterTableAdvanced({ open, anchorRef, handleClose, handleComfirm, value }: Props) {
+export default function FilterTableAdvanced({
+  open,
+  anchorRef,
+  handleClose,
+  handleComfirm,
+  value,
+  listCompany
+}: Props) {
   const today = dayjs()
 
   const [state, setState] = useState<StateFilterTableAdvanced>({
@@ -87,22 +95,15 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
     date: [today.startOf('month'), today.endOf('month')]
   })
 
-  const listCompany = [
-    { value: '1', label: 'Công ty 1' },
-    { value: '2', label: 'Công ty 2' }
-  ]
-
-  console.log('value', value)
-
   useEffect(() => {
     if (open && value) {
       setState({
-        company: value?.company || '',
-        status: value?.status || '',
-        age: value.startAge && value.endAge ? [Number(value.startAge), Number(value.endAge)] : [18, 30],
+        company: value?.companyId || '',
+        status: value?.statusWorking || '',
+        age: value.ageFrom && value.ageTo ? [Number(value.ageFrom), Number(value.ageTo)] : [18, 30],
         date:
-          value.startDate && value.endDate
-            ? [dayjs(value.startDate), dayjs(value.endDate)]
+          value.dateFrom && value.dateTo
+            ? [dayjs(value.dateFrom), dayjs(value.dateTo)]
             : [today.startOf('month'), today.endOf('month')]
       })
     }
@@ -151,7 +152,10 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
           onChange={handleCompanyChange}
           value={
             state.company
-              ? { value: state.company, label: listCompany.find((opt) => opt.value === state.company)?.label || '' }
+              ? {
+                  value: state.company,
+                  label: listCompany?.find((opt) => opt.value === state.company)?.label || ''
+                }
               : null
           }
           renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
@@ -161,12 +165,15 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
       <Box sx={{ p: 2, pb: 2 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Trạng thái làm việc`}</InputLabel>
         <Autocomplete
-          options={OPTIONSTTWORKER}
+          options={STATUS_WORKING_EMPLOYEE}
           getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
           onChange={handleStatusChange}
           value={
             state.status
-              ? { value: state.status, label: OPTIONSTTWORKER.find((opt) => opt.value === state.status)?.label || '' }
+              ? {
+                  value: state.status,
+                  label: STATUS_WORKING_EMPLOYEE.find((opt) => opt.value === state.status)?.label || ''
+                }
               : null
           }
           renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}

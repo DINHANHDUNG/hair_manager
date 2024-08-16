@@ -17,6 +17,11 @@ export const NetWork = {
   staffId: (staffId: number) => `staff/${staffId}`,
   staffActive: (staffId: number) => `staff/${staffId}/active`,
 
+  //Employee
+  employee: 'employee',
+  employeeId: (employeeId: number) => `employee/${employeeId}`,
+  employeeActive: (employeeId: number) => `employee/${employeeId}/active`,
+
   //Company
   company: 'company',
   companyId: (companyId: number) => `company/${companyId}`,
