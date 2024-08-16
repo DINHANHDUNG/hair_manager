@@ -17,28 +17,18 @@ import TableDataGrid from '../../../components/table-data-grid/TableComponentDat
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
 import FormAddEditCompany from './FormAddEditCompany'
-
-interface CompanyRow {
-  id: number
-  companyCode: string
-  companyName: string
-  address: string
-  taxCode: string
-  phoneNumber: string
-  representativeName: string
-  representativeTitle: string
-  representativePhone: string
-  note: string
-  email: string
-  inIndustrialZone: string
-}
+import { useDeleteCompanyMutation, useGetListCompanyQuery } from '../../../app/services/company'
+import { CompanyType } from '../../../types/company'
+import Toast from '../../../components/toast'
+import { useDialogs } from '@toolpad/core/useDialogs'
 
 const CompanyPage = React.memo(() => {
+  const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
-  const initialKeyword = searchParams.get('keyword') || ''
+  const initialSearchKey = searchParams.get('searchKey') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -46,11 +36,29 @@ const CompanyPage = React.memo(() => {
   })
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    keyword: initialKeyword
+    searchKey: initialSearchKey
   })
+
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CompanyType>()
+  const [rowsData, setRowsData] = React.useState<CompanyType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
+
+  const {
+    data: dataApiCompany,
+    isLoading,
+    refetch
+  } = useGetListCompanyQuery({
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
+    ...filters
+  })
+
+  const [deleteCompany, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteCompanyMutation()
+
+  const rows: GridRowsProp = rowsData || []
+  const rowTotal = dataApiCompany?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -62,53 +70,8 @@ const CompanyPage = React.memo(() => {
 
   const handleCloseForm = () => {
     setOpenFormAdd(false)
+    setItemSelectedEidt({} as CompanyType)
   }
-
-  const rows: GridRowsProp = [
-    {
-      id: 1,
-      companyCode: 'C001',
-      companyName: 'Công ty A',
-      address: '123 Đường A',
-      taxCode: '0101234567',
-      phoneNumber: '0987654321',
-      representativeName: 'Nguyễn Văn A',
-      representativeTitle: 'Giám đốc',
-      representativePhone: '0912345678',
-      note: 'Ghi chú A',
-      email: 'a@company.com',
-      inIndustrialZone: 'KCN A'
-    },
-    {
-      id: 2,
-      companyCode: 'C002',
-      companyName: 'Công ty B',
-      address: '456 Đường B',
-      taxCode: '0202345678',
-      phoneNumber: '0978654321',
-      representativeName: 'Trần Thị B',
-      representativeTitle: 'Phó Giám đốc',
-      representativePhone: '0923456789',
-      note: 'Ghi chú B',
-      email: 'b@company.com',
-      inIndustrialZone: 'KCN B'
-    },
-    {
-      id: 3,
-      companyCode: 'C003',
-      companyName: 'Công ty C',
-      address: '789 Đường C',
-      taxCode: '0303456789',
-      phoneNumber: '0967543210',
-      representativeName: 'Lê Văn C',
-      representativeTitle: 'Trưởng phòng',
-      representativePhone: '0934567890',
-      note: 'Ghi chú C',
-      email: 'c@company.com',
-      inIndustrialZone: 'KCN C'
-    }
-    // Thêm các dòng dữ liệu khác theo yêu cầu
-  ]
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -122,8 +85,19 @@ const CompanyPage = React.memo(() => {
   }
 
   const onRowClick = (params: GridRowParams) => {
-    console.log('params', params.row)
+    console.log('params', params)
     handleClickDetail()
+  }
+
+  const handleDelete = async (id: number) => {
+    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+      title: 'Xác nhận lại',
+      okText: 'Có',
+      cancelText: 'Hủy'
+    })
+    if (confirmed) {
+      deleteCompany({ ids: [Number(id)] })
+    }
   }
 
   const data = {
@@ -131,15 +105,10 @@ const CompanyPage = React.memo(() => {
       {
         field: 'order',
         headerName: 'No.',
-        width: 50,
-        renderCell: (params: GridRenderCellParams) => {
-          const rowIndex = params.api.getRowIndexRelativeToVisibleRows(params.id)
-          const { page, pageSize } = params.api.state.pagination.paginationModel
-          return page * pageSize + (rowIndex + 1)
-        }
+        width: 50
       },
-      { field: 'companyCode', headerName: 'Mã công ty', flex: 1 },
-      { field: 'companyName', headerName: 'Tên công ty', flex: 1 },
+      { field: 'code', headerName: 'Mã công ty', flex: 1 },
+      { field: 'name', headerName: 'Tên công ty', flex: 1 },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'taxCode', headerName: 'MST', flex: 1 },
       { field: 'phoneNumber', headerName: 'SĐT', flex: 1 },
@@ -154,7 +123,7 @@ const CompanyPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (param: GridRenderCellParams<CompanyRow, number>) => {
+        getActions: (param: GridRenderCellParams<CompanyType, number>) => {
           console.log('param', param)
 
           return [
@@ -163,9 +132,20 @@ const CompanyPage = React.memo(() => {
               label='Edit'
               className='textPrimary'
               color='inherit'
-              // onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.Company}/${params.id}`)}
+              onClick={() => {
+                setItemSelectedEidt(param.row)
+                handleClickOpenForm()
+              }}
+              disabled={!param.row.isActive}
             />,
-            <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
+            <GridActionsCellItem
+              onClick={() => handleDelete(param.row.id)}
+              icon={<DeleteOutlinedIcon />}
+              label='Delete'
+              className='textPrimary'
+              color='inherit'
+              disabled={!param.row.isActive}
+            />
           ]
         }
       }
@@ -193,14 +173,42 @@ const CompanyPage = React.memo(() => {
     [data.columns, filters]
   )
 
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+    }
+  }
+
   React.useEffect(() => {
     // Update URL parameters when pagination model changes
     setSearchParams({
       page: paginationModel.page.toString(),
       pageSize: paginationModel.pageSize.toString(),
-      keyword: filters.keyword
+      searchKey: filters.searchKey
     })
   }, [paginationModel, filters, setSearchParams])
+
+  React.useEffect(() => {
+    // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+    const updatedRows =
+      dataApiCompany?.data?.rows.map((row: CompanyType, index: number) => ({
+        ...row,
+        order: paginationModel.page * paginationModel.pageSize + index + 1
+      })) || []
+
+    setRowsData(updatedRows)
+  }, [dataApiCompany])
+
+  React.useEffect(() => {
+    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+  }, [loadingDelete])
 
   return (
     <>
@@ -212,8 +220,8 @@ const CompanyPage = React.memo(() => {
               id='search-input'
               startAdornment={<IconSearch sx={{ mr: 1 }} />}
               placeholder='Tìm kiếm'
-              value={filters?.['keyword']}
-              onChange={(e) => handleFilterChange('keyword', e.target.value)}
+              value={filters?.['searchKey']}
+              onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
           </Grid>
@@ -230,21 +238,32 @@ const CompanyPage = React.memo(() => {
           <TableDataGrid
             rows={rows}
             columns={columns}
-            isLoading={false}
+            isLoading={isLoading}
             paginationModel={paginationModel}
-            setPaginationModel={setPaginationModel}
+            setPaginationModel={(model) => {
+              setPaginationModel(model)
+            }}
             onRowSelectionChange={onRowSelectionChange}
             onRowClick={onRowClick}
             filterMode='server'
             headerFilters={false}
+            totalCount={rowTotal}
+            otherProps={{
+              getRowClassName: (params: GridRenderCellParams<CompanyType, number>) =>
+                !params.row.isActive ? 'even' : 'odd'
+            }}
+
+            // checkboxSelection
           />
         </div>
 
         <FormAddEditCompany
+          itemSelectedEdit={itemSelectedEdit}
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
-            console.log('save')
+            refetch()
+            handleCloseForm()
           }}
         />
       </MainCard>

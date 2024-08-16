@@ -28,9 +28,11 @@ import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { StaffType } from '../../../types/staff'
 import DetailStaffDrawer from './DetailStaffDrawer'
 import FormAddStaff from './FormAddStaff'
+import { useDialogs } from '@toolpad/core'
 
 const StaffPage = React.memo(() => {
   const navigate = useNavigate()
+  const dialogs = useDialogs()
   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -95,6 +97,17 @@ const StaffPage = React.memo(() => {
   const onRowClick = (params: GridRowParams) => {
     setItemSelected(params.row)
     handleClickDetail()
+  }
+
+  const handleDelete = async (id: number) => {
+    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+      title: 'Xác nhận lại',
+      okText: 'Có',
+      cancelText: 'Hủy'
+    })
+    if (confirmed) {
+      deleteStaff({ ids: [Number(id)] })
+    }
   }
 
   const data = {
@@ -170,7 +183,7 @@ const StaffPage = React.memo(() => {
               label='Delete'
               className='textPrimary'
               color='inherit'
-              onClick={() => deleteStaff({ ids: [Number(params.id)] })}
+              onClick={() => handleDelete(params.row.id)}
             />
           ]
         }

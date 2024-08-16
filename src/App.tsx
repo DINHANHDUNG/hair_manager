@@ -10,6 +10,7 @@ import { useAppSelector } from './app/hooks'
 import { customTheme } from './app/selectedStore'
 import router from './routers'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
+import { DialogsProvider } from '@toolpad/core/useDialogs'
 
 //Chart
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
@@ -22,14 +23,16 @@ function App() {
   const customization = useAppSelector(customTheme)
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={themes(customization)}>
-        <CssBaseline />
-        <SnackbarProvider maxSnack={3}>
-          <NavigationScroll>
-            <RouterProvider router={router} />
-          </NavigationScroll>
-        </SnackbarProvider>
-      </ThemeProvider>
+      <DialogsProvider>
+        <ThemeProvider theme={themes(customization)}>
+          <CssBaseline />
+          <SnackbarProvider maxSnack={3}>
+            <NavigationScroll>
+              <RouterProvider router={router} />
+            </NavigationScroll>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </DialogsProvider>
     </StyledEngineProvider>
   )
 }
