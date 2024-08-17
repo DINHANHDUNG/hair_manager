@@ -2,28 +2,33 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { Alert, Grid, IconButton, InputAdornment } from '@mui/material'
-import { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { useChange_pass_staffMutation } from '../../../../app/services/auth'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyTextField from '../../../../components/input/MyTextField'
+import Toast from '../../../../components/toast'
 import { gridSpacingForm } from '../../../../constants'
+import { StaffType } from '../../../../types/staff'
 
 type FormValues = {
-  oldPassword: string
+  // oldPassword: string
   newPassword: string
-  comfirmPassword: string
+  repeatPassword: string
 }
 
+type Field = 'newPassword' | 'repeatPassword'
+
 const validationSchema = yup.object({
-  oldPassword: yup.string().max(255).required('Trường này là bắt buộc'),
+  // oldPassword: yup.string().max(255).required('Trường này là bắt buộc'),
   newPassword: yup
     .string()
     .max(255)
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.passwordRegex, 'Vui lòng nhập đúng định dạng'),
-  comfirmPassword: yup
+  repeatPassword: yup
     .string()
     .max(255)
     .required('Trường này là bắt buộc')
@@ -31,7 +36,14 @@ const validationSchema = yup.object({
     .oneOf([yup.ref('newPassword')], 'Mật khẩu xác nhận không khớp')
 })
 
-export default function TabChangePassword() {
+interface Props {
+  data: StaffType
+  reloadData?: () => void
+}
+
+export default function TabChangePassword(Props: Props) {
+  const { data, reloadData } = Props
+  const [changePass, { isLoading, isSuccess, isError, error }] = useChange_pass_staffMutation()
   //   const { open, handleClose, handleSave } = Props
   const [showPassword, setShowPassword] = useState(false)
 
@@ -48,18 +60,52 @@ export default function TabChangePassword() {
     control,
     handleSubmit,
     // setValue,
-    // reset,
+    reset,
+    setError,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema)
   })
 
   // Xử lý khi form được submit
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data)
-
+  const onSubmit: SubmitHandler<FormValues> = (value) => {
+    // console.log(data)
+    changePass({ accountId: data.id, ...value })
     // handleSave(data)
   }
+
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (isSuccess) {
+      reloadData && reloadData()
+      reset()
+    }
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' })
+    }
+  }
+
+  useEffect(() => {
+    if (!isLoading && isError) {
+      const newError = error as {
+        data: {
+          errors: string
+          keyError: Field
+          message: string
+          status: string
+        }
+      }
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation(isLoading, isError, isSuccess, 'Cập nhật thành công', 'Cập nhật không thành công')
+  }, [isLoading])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -71,7 +117,7 @@ export default function TabChangePassword() {
         </Grid>
       </Grid>
       <Grid container spacing={gridSpacingForm}>
-        <Grid item xs={12} sm={6} md={6} lg={4}>
+        {/* <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField
             name='oldPassword'
             control={control}
@@ -95,7 +141,7 @@ export default function TabChangePassword() {
               )
             }}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField
@@ -124,7 +170,7 @@ export default function TabChangePassword() {
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField
-            name='comfirmPassword'
+            name='repeatPassword'
             control={control}
             label='Xác nhận mật khẩu'
             errors={errors}

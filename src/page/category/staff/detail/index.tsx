@@ -160,7 +160,7 @@ const StaffDetailPage = () => {
               <TabSalary />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={3}>
-              <TabChangePassword />
+              <TabChangePassword data={dataStaff} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={4}>
               <TabWorkProgress />

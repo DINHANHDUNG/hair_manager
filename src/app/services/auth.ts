@@ -25,6 +25,13 @@ export const authApi = createApi({
         }
       }
     }),
+    change_pass_staff: builder.mutation({
+      query: (data) => ({
+        url: NetWork.account_changePass,
+        method: POST,
+        data: data
+      })
+    }),
     getAccount: builder.query({
       query: () => ({
         url: NetWork.account,
@@ -49,4 +56,4 @@ export const authApi = createApi({
 })
 
 // Export hooks for usage in functional components
-export const { useLoginMutation, useGetAccountQuery, useGetRolesQuery } = authApi
+export const { useLoginMutation, useGetAccountQuery, useGetRolesQuery, useChange_pass_staffMutation } = authApi

@@ -7,6 +7,7 @@ export const NetWork = {
 
   //Account
   account: 'account',
+  account_changePass: 'account/change-password',
   role: 'role',
 
   //Pokemon
