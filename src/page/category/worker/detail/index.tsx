@@ -4,13 +4,15 @@ import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import { useSnackbar } from 'notistack'
 import { useState } from 'react'
-import User1 from '../../../../assets/images/users/user-round.svg'
+import { useParams } from 'react-router-dom'
+import { useGetEmployeeByIdQuery } from '../../../../app/services/employee'
 import MyButton from '../../../../components/button/MyButton'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
 import Avatar from '../../../../components/ui-component/extended/Avatar'
 import { gridSpacing } from '../../../../constants'
-import TabInfoStaff from './TabInfo'
+import { EmployeeType } from '../../../../types/employee'
+import TabInfoEmployee from './TabInfo'
 import TabInfoRelationship from './TabInfoRelationship'
 import TabWorkProgress from './TabWorkProgress'
 
@@ -29,6 +31,19 @@ const VisuallyHiddenInput = styled('input')({
 const WorkerDetailPage = () => {
   const { enqueueSnackbar } = useSnackbar()
   const [tab, setTab] = useState(0)
+  const params = useParams()
+  const employeeId = params?.id ? Number(params?.id) : null
+
+  const { data: fetchEmployee, refetch } = useGetEmployeeByIdQuery(
+    {
+      employeeId: employeeId || 0
+    },
+    {
+      skip: !employeeId
+    }
+  )
+
+  const dataEmployee = fetchEmployee?.data || ({} as EmployeeType)
 
   const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
     setTab(newValue)
@@ -63,14 +78,14 @@ const WorkerDetailPage = () => {
             <SubCard title='Ảnh đại diện' sx={{ mb: 2 }}>
               <Grid item xs={12} container alignItems={'center'} justifyContent={'center'} flexDirection={'column'}>
                 <MyButton component='label' role={undefined} variant='text' tabIndex={-1} sx={{ border: 'none' }}>
-                  <Avatar alt='John Doe' src={User1} sx={{ mb: 2 }} />
+                  <Avatar alt='John Doe' src={dataEmployee.avatar} sx={{ mb: 2 }} />
                   <VisuallyHiddenInput type='file' onChange={handleFileChange} />
                 </MyButton>
                 {/* <Typography variant='caption' sx={{ mb: 2 }}>
                   Nhấn vào ảnh để thay đổi
                 </Typography> */}
                 <Typography variant='h3' sx={{ mb: 2 }}>
-                  ĐINH ANH DŨNG
+                  {dataEmployee.name}
                 </Typography>
               </Grid>
             </SubCard>
@@ -79,7 +94,7 @@ const WorkerDetailPage = () => {
                 Số điện thoại
               </Typography>
               <Typography variant='caption' sx={{ mb: 2 }}>
-                0333968599{' '}
+                {dataEmployee.phoneNumber}
                 <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
                   <ContentCopyIcon fontSize='inherit' />
                 </IconButton>
@@ -87,7 +102,7 @@ const WorkerDetailPage = () => {
               <p></p>
               <Typography variant='h4'>Email</Typography>
               <Typography variant='caption' sx={{ mb: 2 }} onClick={() => handleCopy('dinhanhdung03011999@gmail.com')}>
-                dinhanhdung03011999@gmail.com{' '}
+                {dataEmployee.email}
                 <IconButton color='inherit' size='small' disableRipple>
                   <ContentCopyIcon fontSize='inherit' />
                 </IconButton>
@@ -95,7 +110,7 @@ const WorkerDetailPage = () => {
             </SubCard>
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={8}>
-            <SubCard title='Ảnh đại diện'>
+            <SubCard title='Tất cả thông tin'>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs variant='scrollable' value={tab} onChange={handleChangeTab} aria-label='basic tabs example'>
                   <Tab label='Thông tin cá nhân' {...a11yProps(0)} />
@@ -104,10 +119,10 @@ const WorkerDetailPage = () => {
                 </Tabs>
               </Box>
               <CustomTabPanel value={tab} index={0}>
-                <TabInfoStaff />
+                <TabInfoEmployee data={dataEmployee} reloadData={() => refetch()} />
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={1}>
-                <TabInfoRelationship />
+                <TabInfoRelationship data={dataEmployee} reloadData={() => refetch()} />
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={2}>
                 <TabWorkProgress />
