@@ -83,7 +83,6 @@ export default function FormAddStaff(Props: Props) {
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data)
     const date = moment(data.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
     console.log(moment(isoDateStr).format('DD/MM/YYYY'))

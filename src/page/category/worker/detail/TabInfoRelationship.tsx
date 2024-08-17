@@ -1,78 +1,130 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
 import { useEffect } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { useUpdateEmployeeMutation } from '../../../../app/services/employee'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyTextField from '../../../../components/input/MyTextField'
+import Toast from '../../../../components/toast'
 import { gridSpacingForm } from '../../../../constants'
+import { EmployeeType } from '../../../../types/employee'
 
 type FormValues = {
-  nanme: string
-  sex: string
-  birthday?: string
-  email?: string
-  address: string
-  phonenumber: string
-  relationship: string
+  representativeName: string
+  representativePhone: string
+  representativePosition: string
 }
 
+type Field = 'representativeName' | 'representativePhone' | 'representativePosition'
+
 const validationSchema = yup.object({
-  nanme: yup
+  representativeName: yup
     .string()
     .max(255)
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
-  sex: yup.string().required('Trường này là bắt buộc'),
-  // birthday: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  // email: yup.string().required('Trường này là bắt buộc').email('Email không hợp lệ'),
-  address: yup.string().required('Trường này là bắt buộc').max(255),
-  relationship: yup.string().required('Trường này là bắt buộc').max(255),
-  phonenumber: yup
+  representativePosition: yup.string().required('Trường này là bắt buộc').max(255),
+  representativePhone: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng')
 })
 
-export default function TabInfoRelationship() {
-  //   const { open, handleClose, handleSave } = Props
+interface Props {
+  data: EmployeeType
+  reloadData?: () => void
+}
+
+export default function TabInforepresentativePosition(Props: Props) {
+  const { data, reloadData } = Props
+
+  const [updateEmployee, { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error }] =
+    useUpdateEmployeeMutation()
   // Khởi tạo react-hook-form với schema xác thực
   const {
     control,
     handleSubmit,
-    // setValue,
+    setValue,
     reset,
+    setError,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema)
   })
 
   // Xử lý khi form được submit
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data)
-
-    // handleSave(data)
+  const onSubmit: SubmitHandler<FormValues> = (value) => {
+    updateEmployee({ ...data, ...value })
   }
 
   useEffect(() => {
     reset()
   }, [open])
 
+  useEffect(() => {
+    setValue('representativeName', data?.representativeName)
+    setValue('representativePhone', data?.representativePhone)
+    setValue('representativePosition', data?.representativePosition)
+  }, [data])
+
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (isSuccess) reloadData && reloadData()
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' })
+    }
+  }
+
+  useEffect(() => {
+    if (!loadingUpdate && isErrorUpdate) {
+      const newError = error as {
+        data: {
+          errors: string
+          keyError: Field
+          message: string
+          status: string
+        }
+      }
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation(loadingUpdate, isErrorUpdate, isSuccessUpdate, 'Cập nhật thành công', 'Cập nhật không thành công')
+  }, [loadingUpdate])
+
   return (
     // <SubCard>
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={gridSpacingForm}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <MyTextField name='nanme' control={control} label='Họ và tên' errors={errors} variant='outlined' />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6} lg={6}>
-          <MyTextField name='phonenumber' control={control} label='Số điện thoại' errors={errors} variant='outlined' />
+          <MyTextField
+            name='representativeName'
+            control={control}
+            label='Họ và tên'
+            errors={errors}
+            variant='outlined'
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <MyTextField
-            name='relationship'
+            name='representativePhone'
+            control={control}
+            label='Số điện thoại'
+            errors={errors}
+            variant='outlined'
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={6}>
+          <MyTextField
+            name='representativePosition'
             control={control}
             label='Chức vụ người đại diện'
             errors={errors}

@@ -449,7 +449,8 @@ const WorkerPage = React.memo(() => {
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
-            console.log('save')
+            refetch()
+            handleCloseForm()
           }}
         />
       </MainCard>
