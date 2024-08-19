@@ -198,7 +198,7 @@ const CompanyPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiCompany?.data?.rows.map((row: CompanyType, index: number) => ({
+      dataApiCompany?.data?.rows?.map((row: CompanyType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []

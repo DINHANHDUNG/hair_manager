@@ -85,10 +85,6 @@ export default function FormAddStaff(Props: Props) {
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const date = moment(data.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
-    console.log(moment(isoDateStr).format('DD/MM/YYYY'))
-
-    // const date = dayjs(data.birthDay, 'DD/MM/YYYY')
-    // const isoDateStr = date.toISOString()
     addStaff({ ...data, birthDay: isoDateStr })
   }
 

@@ -249,7 +249,7 @@ const StaffPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiStaff?.data?.rows.map((row: StaffType, index: number) => ({
+      dataApiStaff?.data?.rows?.map((row: StaffType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []

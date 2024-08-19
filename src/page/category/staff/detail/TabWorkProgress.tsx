@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent'
-import { Grid, IconButton, Typography, useMediaQuery } from '@mui/material'
-import { useMemo, useRef, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { Chip, Grid, IconButton, Typography, useMediaQuery } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { COLORS } from '../../../../common/colors'
-import { OPTIONSTATUSWORK, OPTIONTYPEWORK } from '../../../../common/contants'
+import { OPTIONTYPEWORK, STATUS_WORKING_EMPLOYEE } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
@@ -14,68 +14,72 @@ import MySelect from '../../../../components/select/MySelect'
 import { CustomTimelineItem } from '../../../../components/timeLine/CustomTimelineItem'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
 import { gridSpacingForm } from '../../../../constants'
-import { useTheme } from '@mui/material/styles'
 //Icon
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import AppsIcon from '@mui/icons-material/Apps'
-import CodeIcon from '@mui/icons-material/Code'
-import CoffeeIcon from '@mui/icons-material/Coffee'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import FormatListNumberedRtlIcon from '@mui/icons-material/FormatListNumberedRtl'
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoom'
-import TripOriginIcon from '@mui/icons-material/TripOrigin'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import WorkIcon from '@mui/icons-material/Work'
 import Timeline from '@mui/lab/Timeline'
 
 import { GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid'
+import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
+import moment from 'moment'
+import { handleMutation } from '../../../../app/hooks'
+import {
+  useAddHistoryStaffMutation,
+  useDeleteHistoryStaffMutation,
+  useGetListHistoryStaffQuery,
+  useUpdateHistoryStaffMutation
+} from '../../../../app/services/staff'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
-
-interface tasksType {
-  time: string
-  date: string
-  description: string
-  status: string
-  typeWork: string
-  icon?: React.ReactElement
-}
+import { HistoryStaffType, StaffType } from '../../../../types/staff'
 
 type FormValues = {
-  description: string
+  note: string
   date: string
-  typeWork: string
+  type: string
   status: string
 }
 
+type Field = 'type' | 'date' | 'note' | 'status'
+
 const validationSchema = yup.object({
-  description: yup.string().max(255).required('Trường này là bắt buộc'),
-  typeWork: yup.string().max(255).required('Trường này là bắt buộc'),
+  note: yup.string().max(255).required('Trường này là bắt buộc'),
+  type: yup.string().max(255).required('Trường này là bắt buộc'),
   status: yup.string().max(255).required('Trường này là bắt buộc'),
   date: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng')
 })
 
-const renderContentLeft = (item: tasksType) => {
+const renderContentLeft = (item: HistoryStaffType) => {
   return (
     <>
       <Typography variant='h6' color='GrayText'>
-        {item.time}
+        {item.date
+          ? dayjs(item.date)
+              .locale('vi')
+              .format('dddd')
+              ?.replace(/^\w/, (c) => c.toUpperCase())
+          : ''}
       </Typography>
       <Typography variant='caption' color='GrayText'>
-        {item.date}
+        {item.date ? dayjs(item.date).format('DD/MM/YYYY') : ''}
       </Typography>
     </>
   )
 }
 
-const renderContentRight = (item: tasksType) => {
+const renderContentRight = (item: HistoryStaffType) => {
+  const labelType = OPTIONTYPEWORK.find((e) => e.value === item.type)?.label || ''
+  const labelStatus = STATUS_WORKING_EMPLOYEE.find((e) => e.value === item.status)?.label || ''
   return (
     <>
       <Typography variant='h6' color='black'>
-        {item.description}
+        {item.note}
       </Typography>
       <Typography variant='caption' color='GrayText'>
-        {item.status} | {item.typeWork}
+        {labelStatus} | {labelType}
       </Typography>
     </>
   )
@@ -88,9 +92,17 @@ const renderColumn = (colDef: { field: string; headerName: string }) => {
   }
 }
 
-export default function TabWorkProgress() {
+interface Props {
+  dataStaff: StaffType
+  reloadData?: () => void
+}
+
+export default function TabWorkProgress(Props: Props) {
+  const { dataStaff } = Props
+  const dialogs = useDialogs()
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('lg'))
+
   const myFormRef = useRef<Element | null>(null)
   const [typeList, setTypeList] = useState(false)
   const [idUpdate, setIdUpdate] = useState<number>()
@@ -98,120 +110,119 @@ export default function TabWorkProgress() {
     page: 0,
     pageSize: 10
   })
+  const [rowsData, setRowsData] = useState<HistoryStaffType[]>()
+
+  const {
+    data: dataApi,
+    isLoading,
+    refetch
+  } = useGetListHistoryStaffQuery({
+    staffId: dataStaff.id
+  })
+  const [deleteHistoryStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteHistoryStaffMutation()
+  const [addHistoryStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
+    useAddHistoryStaffMutation()
+  const [
+    updateHistoryStaff,
+    { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error: errorUpdate }
+  ] = useUpdateHistoryStaffMutation()
+
+  const rows: GridRowsProp = rowsData || []
+  const rowTotal = dataApi?.data?.length || 0
 
   const data = [
     {
       field: 'order',
       headerName: 'No.',
       // flex: 1,
-      width: 50,
-      renderCell: (params: GridRenderCellParams) => {
-        const rowIndex = params.api.getRowIndexRelativeToVisibleRows(params.id)
-        const { page, pageSize } = params.api.state.pagination.paginationModel
-        return page * pageSize + (rowIndex + 1)
+      width: 50
+    },
+    {
+      field: 'date',
+      headerName: 'Ngày',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params: GridRenderCellParams<HistoryStaffType, number>) =>
+        params.row.date ? moment(params.row.date).format('DD/MM/YYYY') : ''
+    },
+    { field: 'note', headerName: 'Nội dung', flex: 1, minWidth: 150 },
+    {
+      field: 'status',
+      headerName: 'Trạng thái',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params: GridRenderCellParams<HistoryStaffType, number>) => {
+        const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.status)?.label || ''
+        return (
+          label && (
+            <Chip
+              size='small'
+              label={label}
+              sx={{
+                color: theme.palette.background.default,
+                bgcolor: theme.palette.success.dark
+              }}
+            />
+          )
+        )
       }
     },
-    { field: 'date', headerName: 'Ngày', flex: 1, minWidth: 120 },
-    { field: 'description', headerName: 'Nội dung', flex: 1, minWidth: 150 },
-    { field: 'status', headerName: 'Trạng thái', flex: 1, minWidth: 150 },
-    { field: 'typeWork', headerName: 'Hình thức', flex: 1, minWidth: 150 },
+    {
+      field: 'type',
+      headerName: 'Hình thức',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params: GridRenderCellParams<HistoryStaffType, number>) => {
+        const label = OPTIONTYPEWORK.find((e) => e.value === params.row.type)?.label || ''
+        return (
+          label && (
+            <Chip
+              size='small'
+              label={label}
+              sx={{
+                color: theme.palette.background.default,
+                bgcolor: theme.palette.success.dark
+              }}
+            />
+          )
+        )
+      }
+    },
     {
       field: 'actions',
       headerName: 'Hành động',
       type: 'actions',
       flex: 1,
       minWidth: 150,
-      getActions: () => {
+      getActions: (param: GridRenderCellParams<HistoryStaffType, number>) => {
         return [
           <GridActionsCellItem
             icon={<EditOutlinedIcon />}
             label='edit'
             className='textPrimary'
             color='inherit'
-            onClick={() => editItem()}
+            onClick={() => editItem(param.row)}
           />,
-          <GridActionsCellItem icon={<DeleteOutlinedIcon />} label='Delete' className='textPrimary' color='inherit' />
+          <GridActionsCellItem
+            onClick={() => handleDelete(param.row.id)}
+            icon={<DeleteOutlinedIcon />}
+            label='Delete'
+            className='textPrimary'
+            color='inherit'
+          />
         ]
       }
     }
   ]
 
-  const tasks = [
-    {
-      time: 'Thứ 7',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Start Work',
-      icon: <WorkIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 6',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Payment transaction [method: Credit Card, typeWork: sale, amount: $90,020, status: Processing ]',
-      icon: <CoffeeIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 6',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Sent a notification to the client by e-mail.',
-      icon: <MeetingRoomIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 5',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'he order was placed.',
-      icon: <CodeIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 5',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Lunch Break',
-      icon: <TripOriginIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 3',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Continue Coding',
-      icon: <CodeIcon sx={{ color: COLORS.bgButton }} />
-    },
-    {
-      time: 'Thứ 5',
-      date: '20/05/2024',
-      status: 'Đang làm việc',
-      typeWork: 'Chính thức',
-      description: 'Client Meeting',
-      icon: <MeetingRoomIcon sx={{ color: COLORS.bgButton }} />
-    },
-    { time: 'Thứ 5', date: '20/05/2024', description: 'End Work', status: 'Đang làm việc', typeWork: 'Thử việc' }
-  ] as tasksType[]
-
-  const rows: GridRowsProp = tasks.map((task, index) => ({
-    id: index,
-    order: index + 1,
-    date: task.date,
-    status: task.status,
-    typeWork: task.typeWork,
-    description: task.description
-  }))
-
-  const columns: GridColDef[] = useMemo(() => data.map((colDef) => renderColumn(colDef)), [data])
+  const columns: GridColDef[] = useMemo(() => data.map((colDef) => renderColumn(colDef)), [data, dataApi])
 
   const {
     control,
     handleSubmit,
     setValue,
     reset,
+    setError,
     clearErrors,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
@@ -220,31 +231,77 @@ export default function TabWorkProgress() {
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    const date = moment(data.date).startOf('day')
+    const isoDateStr = date?.toISOString()
     console.log(data)
-    reset()
+    if (idUpdate) {
+      updateHistoryStaff({ ...data, StaffId: dataStaff.id, date: isoDateStr, id: idUpdate })
+    } else {
+      addHistoryStaff({ ...data, StaffId: dataStaff.id, date: isoDateStr })
+    }
     setIdUpdate(0)
     // handleSave(data)
   }
 
-  const editItem = () => {
-    setIdUpdate(1)
-    setValue('date', dayjs('2022-04-17T15:30').toString())
-    setValue(
-      'description',
-      'Payment transaction [method: Credit Card, typeWork: sale, amount: $90,020, status: Processing ]'
-    )
-    setValue('status', 'WORKING')
-    setValue('typeWork', 'PROBATION')
+  const handleDelete = async (id: number) => {
+    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+      title: 'Xác nhận lại',
+      okText: 'Có',
+      cancelText: 'Hủy'
+    })
+    if (confirmed) {
+      deleteHistoryStaff({ ids: [Number(id)] })
+    }
+  }
+
+  const editItem = (item: HistoryStaffType) => {
+    setIdUpdate(item.id)
+    setValue('date', dayjs(item.date).toString())
+    setValue('note', item.note)
+    setValue('status', item.status)
+    setValue('type', item.type)
     clearErrors()
     scrollFormAddEdit()
   }
 
   const addItem = () => {
     setIdUpdate(0)
-    setValue('date', dayjs('2022-04-17T15:30').toString())
     reset()
     clearErrors()
     scrollFormAddEdit()
+  }
+
+  const handleFormMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    error: unknown,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (!loading && isError) {
+      const newError = error as {
+        data: {
+          errors: string
+          keyError: Field
+          message: string
+          status: string
+        }
+      }
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation({
+      successMessage,
+      errorMessage,
+      isError,
+      isSuccess,
+      loading,
+      refetch: () => {
+        refetch()
+        reset()
+      }
+    })
   }
 
   const scrollFormAddEdit = () => {
@@ -252,6 +309,43 @@ export default function TabWorkProgress() {
       myFormRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
+
+  useEffect(() => {
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError,
+      isSuccess,
+      loading: loadingDelete,
+      refetch
+    })
+  }, [loadingDelete])
+
+  useEffect(() => {
+    // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+    const updatedRows =
+      dataApi?.data?.map((row: HistoryStaffType, index: number) => ({
+        ...row,
+        order: paginationModel.page * paginationModel.pageSize + index + 1
+      })) || []
+
+    setRowsData(updatedRows)
+  }, [dataApi])
+
+  useEffect(() => {
+    handleFormMutation(loadingAdd, isErrorAdd, isSuccessAdd, error, 'Thêm mới thành công', 'Thêm mới không thành công')
+  }, [loadingAdd])
+
+  useEffect(() => {
+    handleFormMutation(
+      loadingUpdate,
+      isErrorUpdate,
+      isSuccessUpdate,
+      errorUpdate,
+      'Cập nhật thành công',
+      'Cập nhật không thành công'
+    )
+  }, [loadingUpdate])
 
   return (
     <Grid container spacing={gridSpacingForm}>
@@ -275,9 +369,11 @@ export default function TabWorkProgress() {
             <TableDataGrid
               rows={rows}
               columns={columns}
-              isLoading={false}
+              isLoading={isLoading}
               paginationModel={paginationModel}
-              setPaginationModel={setPaginationModel}
+              setPaginationModel={(model) => {
+                setPaginationModel(model)
+              }}
               // onRowSelectionChange={onRowSelectionChange}
               // onRowClick={onRowClick}
               // checkboxSelection
@@ -286,6 +382,7 @@ export default function TabWorkProgress() {
               }}
               filterMode='server'
               headerFilters={false}
+              totalCount={rowTotal}
             />
           ) : (
             <Timeline
@@ -295,14 +392,15 @@ export default function TabWorkProgress() {
                 }
               }}
             >
-              {tasks.map((task, index) => (
-                <CustomTimelineItem
-                  key={index}
-                  leftContent={renderContentLeft(task)}
-                  rightContent={renderContentRight(task)}
-                  icon={task.icon}
-                />
-              ))}
+              {dataApi?.data &&
+                [...dataApi.data]?.reverse()?.map((task: HistoryStaffType, index: number) => (
+                  <CustomTimelineItem
+                    key={index}
+                    leftContent={renderContentLeft(task)}
+                    rightContent={renderContentRight(task)}
+                    // icon={task.icon}
+                  />
+                ))}
             </Timeline>
           )}
         </SubCard>
@@ -317,13 +415,13 @@ export default function TabWorkProgress() {
                   control={control}
                   label='Trạng thái'
                   errors={errors}
-                  options={OPTIONSTATUSWORK}
+                  options={STATUS_WORKING_EMPLOYEE}
                   variant='outlined'
                 />
               </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <MySelect
-                  name='typeWork'
+                  name='type'
                   control={control}
                   label='Hình thức'
                   errors={errors}
@@ -345,7 +443,7 @@ export default function TabWorkProgress() {
                 <MyTextField
                   multiline
                   rows={4}
-                  name='description'
+                  name='note'
                   control={control}
                   label='Mô tả'
                   errors={errors}

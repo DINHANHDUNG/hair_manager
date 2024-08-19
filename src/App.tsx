@@ -12,6 +12,16 @@ import router from './routers'
 import { LicenseInfo } from '@mui/x-data-grid-pro'
 import { DialogsProvider } from '@toolpad/core/useDialogs'
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/vi' // Import ngôn ngữ tiếng Việt
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+dayjs.tz.setDefault('Asia/Ho_Chi_Minh') // Đặt múi giờ mặc định
+
 //Chart
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
 
