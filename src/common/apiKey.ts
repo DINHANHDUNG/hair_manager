@@ -17,6 +17,9 @@ export const NetWork = {
   staff: 'staff',
   staffId: (staffId: number) => `staff/${staffId}`,
   staffActive: (staffId: number) => `staff/${staffId}/active`,
+  staffHistory: `staff-history`,
+  staffHistoryList: (staffId: number) => `staff-history/staff/${staffId}`,
+  staffHistoryId: (staffHistoryId: number) => `staff-history/${staffHistoryId}`,
 
   //Employee
   employee: 'employee',

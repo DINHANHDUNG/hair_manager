@@ -381,7 +381,7 @@ const WorkerPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiEmployee?.data?.rows.map((row: EmployeeType, index: number) => ({
+      dataApiEmployee?.data?.rows?.map((row: EmployeeType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []

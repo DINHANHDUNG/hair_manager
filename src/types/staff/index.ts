@@ -24,3 +24,16 @@ export type StaffType = {
   accountId: number
   account: AccountType
 }
+
+export type HistoryStaffType = {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  status: string
+  type: string
+  date: string
+  note: string
+  staffId: number
+  staff: StaffType
+}

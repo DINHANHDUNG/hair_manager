@@ -91,7 +91,7 @@ export default function TabInfoEmployee(Props: Props) {
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (value) => {
-    const date = moment(data.birthDay).startOf('day')
+    const date = moment(value.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
     console.log(moment(isoDateStr).format('DD/MM/YYYY'))
     updateEmployee({ ...value, id: data.id, birthDay: isoDateStr })

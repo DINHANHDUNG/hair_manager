@@ -163,7 +163,7 @@ const StaffDetailPage = () => {
               <TabChangePassword data={dataStaff} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={4}>
-              <TabWorkProgress />
+              <TabWorkProgress dataStaff={dataStaff} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={5}>
               <TabAlertLevels />

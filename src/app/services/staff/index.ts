@@ -53,6 +53,42 @@ export const staffApi = createApi({
         method: PATCH,
         params: { active: data.active }
       })
+    }),
+    //History
+    getListHistoryStaff: builder.query({
+      query: (params: { staffId: number }) => ({
+        url: NetWork.staffHistoryList(params.staffId),
+        method: GET,
+        providesTags: (result: ReponseData2<{ rows: StaffType[] }>) => (result ? [{ type: 'Staff', id: 'LIST' }] : []) // Cung cấp tag 'Staff' với id 'LIST'
+      })
+    }),
+    getHistoryStaffById: builder.query({
+      query: (params: { staffId: number }) => ({
+        url: NetWork.staffId(params.staffId),
+        method: GET
+      })
+    }),
+    addHistoryStaff: builder.mutation({
+      query: (data) => ({
+        url: NetWork.staffHistory,
+        method: POST,
+        data: data
+      })
+    }),
+    updateHistoryStaff: builder.mutation({
+      query: (data) => ({
+        url: NetWork.staffHistoryId(data.id),
+        method: PUT,
+        data: data
+      })
+    }),
+    deleteHistoryStaff: builder.mutation({
+      query: (data: { ids: Array<number> }) => ({
+        url: NetWork.staffHistory,
+        method: DELETE,
+        data: data
+        // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
+      })
     })
   })
 })
@@ -64,5 +100,10 @@ export const {
   useActiveStaffMutation,
   useAddStaffMutation,
   useGetStaffByIdQuery,
-  useUpdateStaffMutation
+  useUpdateStaffMutation,
+  useAddHistoryStaffMutation,
+  useDeleteHistoryStaffMutation,
+  useGetHistoryStaffByIdQuery,
+  useGetListHistoryStaffQuery,
+  useUpdateHistoryStaffMutation
 } = staffApi

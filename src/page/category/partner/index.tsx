@@ -197,7 +197,7 @@ const PartnerPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiPartner?.data?.rows.map((row: PartnerType, index: number) => ({
+      dataApiPartner?.data?.rows?.map((row: PartnerType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
