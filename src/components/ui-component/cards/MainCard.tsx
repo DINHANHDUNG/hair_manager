@@ -1,14 +1,14 @@
-import React, { ReactNode, ForwardedRef } from 'react'
+import React, { ForwardedRef, ReactNode } from 'react'
 
 // material-ui
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import { Grid, IconButton } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-import { Grid, IconButton } from '@mui/material'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 // constant
 const headerSX = {
   '& .MuiCardHeader-action': { mr: 0 }
@@ -72,7 +72,7 @@ const MainCard = React.forwardRef<HTMLDivElement, MainCardProps>(
             sx={headerSX}
             title={
               back ? (
-                <Grid container xs={12} display={'flex'} alignItems={'center'}>
+                <Grid item xs={12} display={'flex'} alignItems={'center'}>
                   <IconButton color='inherit' size='small' disableRipple onClick={() => navigate(-1)}>
                     <ArrowBackIosIcon fontSize='inherit' />
                   </IconButton>
@@ -91,7 +91,7 @@ const MainCard = React.forwardRef<HTMLDivElement, MainCardProps>(
             title={
               <Typography variant='h3'>
                 {back ? (
-                  <Grid container xs={12} display={'flex'} alignItems={'center'}>
+                  <Grid item xs={12} display={'flex'} alignItems={'center'}>
                     <IconButton color='inherit' size='small' disableRipple onClick={() => navigate(-1)}>
                       <ArrowBackIosIcon fontSize='inherit' />
                     </IconButton>

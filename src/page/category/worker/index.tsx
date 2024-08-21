@@ -304,8 +304,6 @@ const WorkerPage = React.memo(() => {
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
     const handleClose = () => {
-      console.log(key)
-
       if (key === 'age') {
         setFilters((prevFilters) => ({
           ...prevFilters,

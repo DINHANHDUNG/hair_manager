@@ -8,6 +8,7 @@ import { staffApi } from './services/staff'
 import { companyApi } from './services/company'
 import { partnerApi } from './services/partner'
 import { employeeApi } from './services/employee'
+import { salaryAdvanceApi } from './services/salaryAdvance'
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +21,8 @@ export const store = configureStore({
     [staffApi.reducerPath]: staffApi.reducer,
     [companyApi.reducerPath]: companyApi.reducer,
     [partnerApi.reducerPath]: partnerApi.reducer,
-    [employeeApi.reducerPath]: employeeApi.reducer
+    [employeeApi.reducerPath]: employeeApi.reducer,
+    [salaryAdvanceApi.reducerPath]: salaryAdvanceApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -29,7 +31,8 @@ export const store = configureStore({
       staffApi.middleware,
       companyApi.middleware,
       partnerApi.middleware,
-      employeeApi.middleware
+      employeeApi.middleware,
+      salaryAdvanceApi.middleware
     )
 })
 

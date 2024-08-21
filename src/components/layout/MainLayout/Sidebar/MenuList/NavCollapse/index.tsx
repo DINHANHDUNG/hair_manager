@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { matchPath, useLocation } from 'react-router-dom'
 
 // material-ui
 import Collapse from '@mui/material/Collapse'
@@ -20,53 +19,72 @@ import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { useAppSelector } from '../../../../../../app/hooks'
 import { customTheme } from '../../../../../../app/selectedStore'
 import { MenuItem } from '../../../../../../types'
-
+interface NavCollapseProps {
+  menu: MenuItem
+  level: number
+}
 // ==============================|| SIDEBAR MENU LIST COLLAPSE ITEMS ||============================== //
 
-const NavCollapse = ({ menu, level }: { menu: MenuItem; level: number }) => {
+const NavCollapse: React.FC<NavCollapseProps> = ({ menu, level }) => {
   const theme = useTheme()
   const customization = useAppSelector(customTheme)
-
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState<string>('')
 
+  const { pathname } = useLocation()
+
   const handleClick = () => {
     setOpen(!open)
-    setSelected(!selected ? menu?.id : '')
-    // if (menu?.id !== 'authentication' && menu?.children && menu?.children[0]?.url) {
-    //   navigate(menu?.children[0]?.url)
-    // }
+    setSelected(selected === menu.id ? '' : menu.id)
   }
 
-  const { pathname } = useLocation()
-  const checkOpenForParent = (child: Array<MenuItem>, id: string) => {
-    child?.forEach((item: MenuItem) => {
-      if (item.url === pathname) {
-        setOpen(true)
-        setSelected(id)
-      }
-    })
-  }
-
-  // menu collapse for sub-levels
   useEffect(() => {
     setOpen(false)
     setSelected('')
     if (menu.children) {
-      menu.children.forEach((item: MenuItem) => {
-        if (item?.children && item?.children?.length > 0) {
-          checkOpenForParent(item?.children, menu.id)
-        }
-        if (item.url === pathname) {
-          setSelected(menu?.id)
-          setOpen(true)
+      menu.children.forEach((item) => {
+        if (item.url) {
+          // Check if the URL is matched exactly or with dynamic parameter
+          const exactMatch = matchPath({ path: item.url, end: true }, pathname)
+          const dynamicMatch = matchPath(
+            { path: item.url.replace(/\/:[^/]+/, ''), end: true },
+            pathname.replace(/\/:[^/]+/, '')
+          )
+          console.log(pathname.replace(/\/:[^/]+/, ''), item.url)
+
+          if (item.children) {
+            checkOpenForParent(item.children, menu.id)
+          }
+
+          if (exactMatch || dynamicMatch) {
+            setSelected(menu.id)
+            setOpen(true)
+          }
         }
       })
     }
   }, [pathname, menu.children])
 
-  // menu collapse & item
-  const menus = menu.children?.map((item: MenuItem) => {
+  const checkOpenForParent = (children: MenuItem[], id: string) => {
+    children.forEach((item) => {
+      if (item.url) {
+        // Check if the URL is matched exactly or with dynamic parameter
+        const exactMatch = matchPath({ path: item.url, end: true }, pathname)
+        const dynamicMatch = matchPath(
+          { path: item.url.replace(/\/:[^/]+/, ''), end: true },
+          pathname.replace(/\/:[^/]+/, '')
+        )
+        if (exactMatch || dynamicMatch) {
+          setOpen(true)
+          setSelected(id)
+        } else if (item.children) {
+          checkOpenForParent(item.children, id)
+        }
+      }
+    })
+  }
+
+  const menus = menu.children?.map((item) => {
     switch (item.type) {
       case 'collapse':
         return <NavCollapse key={item.id} menu={item} level={level + 1} />
@@ -97,6 +115,8 @@ const NavCollapse = ({ menu, level }: { menu: MenuItem; level: number }) => {
   return (
     <>
       <ListItemButton
+        aria-expanded={open}
+        aria-controls={`collapse-${menu.id}`}
         sx={{
           borderRadius: `${customization.borderRadius}px`,
           mb: 0.5,
@@ -152,11 +172,6 @@ const NavCollapse = ({ menu, level }: { menu: MenuItem; level: number }) => {
       </Collapse>
     </>
   )
-}
-
-NavCollapse.propTypes = {
-  menu: PropTypes.object,
-  level: PropTypes.number
 }
 
 export default NavCollapse

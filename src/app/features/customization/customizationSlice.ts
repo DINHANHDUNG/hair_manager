@@ -10,7 +10,7 @@ export interface CustomizationState {
 }
 
 const initialState: CustomizationState = {
-  isOpen: [] as Array<string>, // for active default menu
+  isOpen: [''] as Array<string>, // for active default menu
   defaultId: 'default',
   fontFamily: config.fontFamily,
   borderRadius: config.borderRadius,
@@ -22,7 +22,12 @@ const customizationSlice = createSlice({
   initialState: initialState,
   reducers: {
     menuOpen: (state, action) => {
-      state.isOpen = action.payload.id ? [action.payload.id] : []
+      const { parentId, id } = action.payload
+      if (parentId) {
+        state.isOpen = [parentId, id]
+      } else {
+        state.isOpen = [id]
+      }
     },
     setMenu: (state, action) => {
       state.opened = action.payload.opened

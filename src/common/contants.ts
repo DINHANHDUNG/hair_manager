@@ -57,3 +57,13 @@ export const STATUS_ADVANCE_SALARY = [
   { value: 'ACCEPTED', label: 'Đã duyệt' },
   { value: 'REJECTED', label: 'Từ chối' }
 ]
+
+export const OPTION_COMPLETION = [
+  { value: 'true', label: 'Đã hoàn ứng' },
+  { value: 'false', label: 'Chưa hoàn' }
+]
+
+export const OPTION_HUMAN_RESOURCES = [
+  { value: 'STAFF', label: 'Nhân viên' },
+  { value: 'EMPLOYEE', label: 'Công nhân' }
+]
