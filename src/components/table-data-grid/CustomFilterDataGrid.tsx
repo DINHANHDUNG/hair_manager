@@ -27,9 +27,7 @@ export const CustomSelectFilterDataGrid = ({
         <MenuItem value=''>
           <em>None</em>
         </MenuItem>
-        {data.map((e) => (
-          <MenuItem value={e.value}>{e.label}</MenuItem>
-        ))}
+        {data?.map((e) => <MenuItem value={e.value}>{e.label}</MenuItem>)}
       </Select>
     </FormControl>
   )

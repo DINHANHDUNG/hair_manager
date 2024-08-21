@@ -50,7 +50,7 @@ const MyTextFieldSelect: React.FC<MyTextFieldSelectProps> = ({
               }
             }}
           >
-            {options.map((option) => (
+            {options?.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>

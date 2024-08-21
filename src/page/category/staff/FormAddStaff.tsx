@@ -65,7 +65,7 @@ const validationSchema = yup.object({
 export default function FormAddStaff(Props: Props) {
   const { open, handleClose, handleSave } = Props
   const { data: dataRole } = useGetRolesQuery({})
-  const listRole = dataRole?.data.map((e: RoleType) => ({ ...e, value: e.id, label: e.name })) || []
+  const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.name })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()

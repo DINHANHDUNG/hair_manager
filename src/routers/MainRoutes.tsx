@@ -25,6 +25,9 @@ const CompanyPage = Loadable(lazy(() => import('../page/category/company')))
 const WorkerPage = Loadable(lazy(() => import('../page/category/worker')))
 const WorkerDetailPage = Loadable(lazy(() => import('../page/category/worker/detail')))
 
+//Salary
+const SalaryAdvancePage = Loadable(lazy(() => import('../page/category/salary/salary_advance')))
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -100,6 +103,10 @@ const MainRoutes = {
         {
           path: ROUTES.CATEGORY_CHILD.WORKER_DETAIL,
           element: <WorkerDetailPage />
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.SALARY_ADVANCE,
+          element: <SalaryAdvancePage />
         }
       ]
     },

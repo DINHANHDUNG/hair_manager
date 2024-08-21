@@ -212,7 +212,7 @@ const StaffPage = React.memo(() => {
   }
 
   const columns: GridColDef[] = React.useMemo(
-    () => data.columns.map((colDef) => renderColumn(colDef)),
+    () => data.columns?.map((colDef) => renderColumn(colDef)),
     [data.columns, filters, dataApiStaff]
   )
 

@@ -36,7 +36,7 @@ export default function SelectColumn(Props: Props) {
             }}
             name='radio-buttons-group'
           >
-            {list.map((e, index) => (
+            {list?.map((e, index) => (
               <FormControlLabel key={index} value={e.value} control={<Radio />} label={e.label} />
             ))}
           </RadioGroup>
