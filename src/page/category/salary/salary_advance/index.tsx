@@ -1,7 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput } from '@mui/material'
+import { Button, Card, CardContent, Grid, OutlinedInput, Theme, Typography } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -13,16 +13,21 @@ import {
 } from '@mui/x-data-grid'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
-import MainCard from '../../../components/ui-component/cards/MainCard'
-import { gridSpacing } from '../../../constants'
-import FormAddEditPartner from './FormAddEdit'
-import { PartnerType } from '../../../types/partner'
+import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
+import MainCard from '../../../../components/ui-component/cards/MainCard'
+import { gridSpacing } from '../../../../constants'
+import { PartnerType } from '../../../../types/partner'
 import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../../app/services/partner'
-import Toast from '../../../components/toast'
+import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../../../app/services/partner'
+import Toast from '../../../../components/toast'
+import { useTheme } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import { IconArrowUp, IconArrowDown } from '@tabler/icons-react'
+import FormAddEditSalaryAdvance from './FormAddEdit'
 
-const PartnerPage = React.memo(() => {
+const SalaryAdvancePage = React.memo(() => {
+  const theme = useTheme()
+  const classes = styleSalaryAdvancePage(theme)
   const dialogs = useDialogs()
   //   const navigate = useNavigate()
   //   const theme = useTheme()
@@ -98,6 +103,7 @@ const PartnerPage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
+      return
       deletePartner({ ids: [Number(id)] })
     }
   }
@@ -109,14 +115,12 @@ const PartnerPage = React.memo(() => {
         headerName: 'No.',
         width: 50
       },
-      { field: 'code', headerName: 'Mã đối tác', flex: 1 },
-      { field: 'name', headerName: 'Tên đơn vị', flex: 1 },
-      { field: 'address', headerName: 'Địa chỉ', flex: 1 },
-      { field: 'taxCode', headerName: 'MST', flex: 1 },
-      { field: 'phoneNumber', headerName: 'SĐT', flex: 1 },
-      { field: 'representativeName', headerName: 'Người đại diện', flex: 1 },
-      { field: 'representativePosition', headerName: 'Chức danh NĐD', flex: 1 },
-      { field: 'representativePhone', headerName: 'Số điện thoại NĐD', flex: 1 },
+      { field: 'name', headerName: 'Tên nhân sự', flex: 1 },
+      { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
+      { field: 'money', headerName: 'Số tiền', flex: 1 },
+      { field: 'date', headerName: 'Ngày ứng', flex: 1 },
+      { field: 'date', headerName: 'Ngày hoàn ứng', flex: 1 },
+      { field: 'status', headerName: 'Trạng thái hoàn ứng', flex: 1 },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -153,12 +157,6 @@ const PartnerPage = React.memo(() => {
 
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
-      case 'phoneNumber':
-      case 'representativePhone':
-        return {
-          ...colDef,
-          minWidth: 150
-        }
       default:
         return {
           ...colDef,
@@ -171,6 +169,21 @@ const PartnerPage = React.memo(() => {
     () => data.columns?.map((colDef) => renderColumn(colDef)),
     [data.columns, filters]
   )
+
+  const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
+    return (
+      <Grid item xs={12} sm={6} md={6} lg={3}>
+        <Card
+          sx={{
+            bgcolor: theme.palette.background.paper,
+            height: '100%'
+          }}
+        >
+          <CardContent className={classes.CardContent}>{element}</CardContent>
+        </Card>
+      </Grid>
+    )
+  }
 
   const handleMutation = (
     loading: boolean,
@@ -201,7 +214,7 @@ const PartnerPage = React.memo(() => {
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
-
+    return
     setRowsData(updatedRows)
   }, [dataApiPartner])
 
@@ -211,7 +224,65 @@ const PartnerPage = React.memo(() => {
 
   return (
     <>
-      <MainCard title={'Danh sách đối tác'}>
+      <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Tổng số nhân sự'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
+                {'7652'}
+              </Typography>
+              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Ứng lương'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
+                {'60.000.000 VNĐ'}
+              </Typography>
+              <Typography variant='caption'>{'Tăng 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Tổng số nhân sự'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
+                {'60.000.000 VNĐ'}
+              </Typography>
+              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Còn lại'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
+                {'120.000.000 VNĐ'}
+              </Typography>
+              {/* <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography> */}
+            </Grid>
+          }
+        />
+      </Grid>
+      <MainCard title={'Ứng lương nhân sự'}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput
@@ -254,7 +325,7 @@ const PartnerPage = React.memo(() => {
           />
         </div>
 
-        <FormAddEditPartner
+        <FormAddEditSalaryAdvance
           itemSelectedEdit={itemSelectedEdit}
           open={openFormAdd}
           handleClose={handleCloseForm}
@@ -268,4 +339,18 @@ const PartnerPage = React.memo(() => {
   )
 })
 
-export default PartnerPage
+export default SalaryAdvancePage
+
+const styleSalaryAdvancePage = makeStyles({
+  CardContent: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' },
+  TextCard: { fontWeight: '500', fontSize: 13, marginBottom: 2 },
+  TextCardValue: { marginBottom: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' },
+  iconArrow: { marginRight: 2 },
+  CardContent1: (theme: Theme) => ({
+    backgroundColor: theme.palette.background.paper,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    flexWrap: 'wrap'
+  })
+})

@@ -1,11 +1,12 @@
 // assets
-import { IconCategory, IconUsersGroup } from '@tabler/icons-react'
+import { IconCategory, IconUsersGroup, IconCoinBitcoin } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = {
   IconCategory,
-  IconUsersGroup
+  IconUsersGroup,
+  IconCoinBitcoin
 }
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -53,6 +54,31 @@ const categorys = {
           type: 'item',
           breadcrumbs: false,
           url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.COMPANY}`
+          // target: true
+        }
+      ]
+    },
+    {
+      id: 'list-salary',
+      title: 'Lương thưởng',
+      type: 'collapse',
+      icon: icons.IconCoinBitcoin,
+
+      children: [
+        {
+          id: 'category-salary-advance',
+          title: 'Ứng lương',
+          type: 'item',
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_ADVANCE}`
+          // target: true
+        },
+        {
+          id: 'category-salary-pay',
+          title: 'Thanh toán lương',
+          type: 'item',
+          breadcrumbs: false,
+          url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY}`
           // target: true
         }
       ]

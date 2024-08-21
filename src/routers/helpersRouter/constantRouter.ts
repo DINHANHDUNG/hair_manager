@@ -24,7 +24,9 @@ const ROUTES = {
     PARTER: 'partner',
     COMPANY: 'company',
     WORKER: 'worker',
-    WORKER_DETAIL: 'worker/:id'
+    WORKER_DETAIL: 'worker/:id',
+    SALARY_ADVANCE: 'salary-advance',
+    SALARY_PAY: 'salary-pay'
   }
 }
 
