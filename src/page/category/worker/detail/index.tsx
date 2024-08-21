@@ -72,7 +72,7 @@ const WorkerDetailPage = () => {
   }
   return (
     <>
-      <MainCard title={'Thông tin chi tiết công nhân'}>
+      <MainCard back title={'Thông tin chi tiết công nhân'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={12} md={12} lg={4}>
             <SubCard title='Ảnh đại diện' sx={{ mb: 2 }}>
@@ -95,17 +95,21 @@ const WorkerDetailPage = () => {
               </Typography>
               <Typography variant='caption' sx={{ mb: 2 }}>
                 {dataEmployee.phoneNumber}
-                <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
-                  <ContentCopyIcon fontSize='inherit' />
-                </IconButton>
+                {dataEmployee.phoneNumber && (
+                  <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
+                    <ContentCopyIcon fontSize='inherit' />
+                  </IconButton>
+                )}
               </Typography>
               <p></p>
               <Typography variant='h4'>Email</Typography>
               <Typography variant='caption' sx={{ mb: 2 }} onClick={() => handleCopy('dinhanhdung03011999@gmail.com')}>
                 {dataEmployee.email}
-                <IconButton color='inherit' size='small' disableRipple>
-                  <ContentCopyIcon fontSize='inherit' />
-                </IconButton>
+                {dataEmployee.email && (
+                  <IconButton color='inherit' size='small' disableRipple>
+                    <ContentCopyIcon fontSize='inherit' />
+                  </IconButton>
+                )}
               </Typography>
             </SubCard>
           </Grid>
@@ -125,7 +129,7 @@ const WorkerDetailPage = () => {
                 <TabInfoRelationship data={dataEmployee} reloadData={() => refetch()} />
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={2}>
-                <TabWorkProgress />
+                <TabWorkProgress dataEmployee={dataEmployee} reloadData={() => refetch()} />
               </CustomTabPanel>
             </SubCard>
           </Grid>

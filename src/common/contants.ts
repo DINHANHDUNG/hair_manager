@@ -51,3 +51,9 @@ export const STATUS_WORKING_EMPLOYEE = [
   { value: 'IN_PARTNER', label: 'Ở đối tác' },
   { value: 'OUT', label: 'Ra ngoài' }
 ]
+
+export const STATUS_ADVANCE_SALARY = [
+  { value: 'WAITING_ACCEPT', label: 'Chờ duyệt' },
+  { value: 'ACCEPTED', label: 'Đã duyệt' },
+  { value: 'REJECTED', label: 'Từ chối' }
+]

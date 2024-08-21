@@ -211,7 +211,7 @@ const PartnerPage = React.memo(() => {
 
   return (
     <>
-      <MainCard title={'Danh sách đối tác'}>
+      <MainCard title={'Danh sách đối tác'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput

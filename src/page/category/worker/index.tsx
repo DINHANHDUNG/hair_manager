@@ -295,15 +295,17 @@ const WorkerPage = React.memo(() => {
           ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
           : ''
     },
-    { key: 'status', label: `${STATUS_WORKING_EMPLOYEE.find((e) => e.value === initialStatus)?.label || ''}` },
+    { key: 'statusWorking', label: `${STATUS_WORKING_EMPLOYEE.find((e) => e.value === initialStatus)?.label || ''}` },
     {
-      key: 'company',
+      key: 'companyId',
       label: `${listCompany.find((e: CompanyType) => e.value === initialCompany)?.label || ''}`
     }
   ]
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
     const handleClose = () => {
+      console.log(key)
+
       if (key === 'age') {
         setFilters((prevFilters) => ({
           ...prevFilters,
@@ -391,7 +393,7 @@ const WorkerPage = React.memo(() => {
 
   return (
     <>
-      <MainCard title={'Danh sách công nhân'}>
+      <MainCard title={'Danh sách công nhân'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <OutlinedInput

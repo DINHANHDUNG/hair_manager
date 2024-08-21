@@ -25,6 +25,9 @@ export const NetWork = {
   employee: 'employee',
   employeeId: (employeeId: number) => `employee/${employeeId}`,
   employeeActive: (employeeId: number) => `employee/${employeeId}/active`,
+  employeeHistory: `employee-history`,
+  employeeHistoryList: (employeeId: number) => `employee-history/employee/${employeeId}`,
+  employeeHistoryId: (employeeHistoryId: number) => `employee-history/${employeeHistoryId}`,
 
   //Company
   company: 'company',

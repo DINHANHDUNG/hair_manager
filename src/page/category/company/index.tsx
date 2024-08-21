@@ -212,7 +212,7 @@ const CompanyPage = React.memo(() => {
 
   return (
     <>
-      <MainCard title={'Danh sách công ty'}>
+      <MainCard title={'Danh sách công ty'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput

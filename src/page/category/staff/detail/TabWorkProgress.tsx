@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { OPTIONTYPEWORK, STATUS_WORKING_EMPLOYEE } from '../../../../common/contants'
+import { OPTIONSTATUSWORK, OPTIONTYPEWORK } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
@@ -72,7 +72,7 @@ const renderContentLeft = (item: HistoryStaffType) => {
 
 const renderContentRight = (item: HistoryStaffType) => {
   const labelType = OPTIONTYPEWORK.find((e) => e.value === item.type)?.label || ''
-  const labelStatus = STATUS_WORKING_EMPLOYEE.find((e) => e.value === item.status)?.label || ''
+  const labelStatus = OPTIONSTATUSWORK.find((e) => e.value === item.status)?.label || ''
   return (
     <>
       <Typography variant='h6' color='black'>
@@ -152,7 +152,7 @@ export default function TabWorkProgress(Props: Props) {
       flex: 1,
       minWidth: 150,
       renderCell: (params: GridRenderCellParams<HistoryStaffType, number>) => {
-        const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.status)?.label || ''
+        const label = OPTIONSTATUSWORK.find((e) => e.value === params.row.status)?.label || ''
         return (
           label && (
             <Chip
@@ -233,7 +233,6 @@ export default function TabWorkProgress(Props: Props) {
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const date = moment(data.date).startOf('day')
     const isoDateStr = date?.toISOString()
-    console.log(data)
     if (idUpdate) {
       updateHistoryStaff({ ...data, StaffId: dataStaff.id, date: isoDateStr, id: idUpdate })
     } else {
@@ -415,7 +414,7 @@ export default function TabWorkProgress(Props: Props) {
                   control={control}
                   label='Trạng thái'
                   errors={errors}
-                  options={STATUS_WORKING_EMPLOYEE}
+                  options={OPTIONSTATUSWORK}
                   variant='outlined'
                 />
               </Grid>

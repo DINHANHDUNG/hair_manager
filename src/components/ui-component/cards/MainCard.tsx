@@ -6,7 +6,9 @@ import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
-
+import { Grid, IconButton } from '@mui/material'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import { Navigate, useNavigate } from 'react-router-dom'
 // constant
 const headerSX = {
   '& .MuiCardHeader-action': { mr: 0 }
@@ -26,6 +28,7 @@ interface MainCardProps {
   sx?: object
   title?: ReactNode
   elevation?: number
+  back?: boolean
 }
 
 // ==============================|| CUSTOM MAIN CARD ||============================== //
@@ -44,10 +47,12 @@ const MainCard = React.forwardRef<HTMLDivElement, MainCardProps>(
       shadow,
       sx = {},
       title,
+      back,
       ...others
     }: MainCardProps,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const navigate = useNavigate()
     return (
       <Card
         ref={ref}
@@ -62,9 +67,43 @@ const MainCard = React.forwardRef<HTMLDivElement, MainCardProps>(
         }}
       >
         {/* card header and action */}
-        {!darkTitle && title && <CardHeader sx={headerSX} title={title} action={secondary} />}
+        {!darkTitle && title && (
+          <CardHeader
+            sx={headerSX}
+            title={
+              back ? (
+                <Grid container xs={12} display={'flex'} alignItems={'center'}>
+                  <IconButton color='inherit' size='small' disableRipple onClick={() => navigate(-1)}>
+                    <ArrowBackIosIcon fontSize='inherit' />
+                  </IconButton>
+                  {title}
+                </Grid>
+              ) : (
+                title
+              )
+            }
+            action={secondary}
+          />
+        )}
         {darkTitle && title && (
-          <CardHeader sx={headerSX} title={<Typography variant='h3'>{title}</Typography>} action={secondary} />
+          <CardHeader
+            sx={headerSX}
+            title={
+              <Typography variant='h3'>
+                {back ? (
+                  <Grid container xs={12} display={'flex'} alignItems={'center'}>
+                    <IconButton color='inherit' size='small' disableRipple onClick={() => navigate(-1)}>
+                      <ArrowBackIosIcon fontSize='inherit' />
+                    </IconButton>
+                    {title}
+                  </Grid>
+                ) : (
+                  title
+                )}
+              </Typography>
+            }
+            action={secondary}
+          />
         )}
 
         {/* content & header divider */}

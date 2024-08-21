@@ -113,12 +113,16 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
         footerRowSelected: (count) => (checkboxSelection ? `Đã chọn ${count}` : '')
       }}
       disableColumnReorder={true} //Tắt di chuyển cột
+      disableRowSelectionOnClick
       sx={{
         '.MuiDataGrid-columnSeparator': {
           display: 'none'
         },
         '&.MuiDataGrid-root': {
           border: 'none'
+        },
+        '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
+          outline: 'none !important'
         },
         [`& .${gridClasses.cell}`]: {
           py: 1,

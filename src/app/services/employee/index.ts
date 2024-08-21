@@ -46,6 +46,43 @@ export const employeeApi = createApi({
         data: data
         // invalidatesTags: [{ type: 'Employee', id: 'LIST' }] // Vô hiệu hóa tag 'Employee' với id 'LIST' để gọi lại getListEmployee
       })
+    }),
+    //History
+    getListHistoryEmployee: builder.query({
+      query: (params: { employeeId: number }) => ({
+        url: NetWork.employeeHistoryList(params.employeeId),
+        method: GET,
+        providesTags: (result: ReponseData2<{ rows: EmployeeType[] }>) =>
+          result ? [{ type: 'Employee', id: 'LIST' }] : [] // Cung cấp tag 'Employee' với id 'LIST'
+      })
+    }),
+    getHistoryEmployeeById: builder.query({
+      query: (params: { employeeId: number }) => ({
+        url: NetWork.employeeId(params.employeeId),
+        method: GET
+      })
+    }),
+    addHistoryEmployee: builder.mutation({
+      query: (data) => ({
+        url: NetWork.employeeHistory,
+        method: POST,
+        data: data
+      })
+    }),
+    updateHistoryEmployee: builder.mutation({
+      query: (data) => ({
+        url: NetWork.employeeHistoryId(data.id),
+        method: PUT,
+        data: data
+      })
+    }),
+    deleteHistoryEmployee: builder.mutation({
+      query: (data: { ids: Array<number> }) => ({
+        url: NetWork.employeeHistory,
+        method: DELETE,
+        data: data
+        // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
+      })
     })
   })
 })
@@ -56,5 +93,10 @@ export const {
   useDeleteEmployeeMutation,
   useAddEmployeeMutation,
   useGetEmployeeByIdQuery,
-  useUpdateEmployeeMutation
+  useUpdateEmployeeMutation,
+  useAddHistoryEmployeeMutation,
+  useDeleteHistoryEmployeeMutation,
+  useGetHistoryEmployeeByIdQuery,
+  useGetListHistoryEmployeeQuery,
+  useUpdateHistoryEmployeeMutation
 } = employeeApi

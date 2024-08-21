@@ -282,7 +282,7 @@ const SalaryAdvancePage = React.memo(() => {
           }
         />
       </Grid>
-      <MainCard title={'Ứng lương nhân sự'}>
+      <MainCard title={'Ứng lương nhân sự'} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput

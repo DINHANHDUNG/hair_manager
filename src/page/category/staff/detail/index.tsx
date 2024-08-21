@@ -1,4 +1,5 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { Grid, IconButton, Tab, Tabs, Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
@@ -76,7 +77,7 @@ const StaffDetailPage = () => {
   }
   return (
     <>
-      <MainCard title={'Thông tin chi tiết nhân viên'}>
+      <MainCard back title={'Thông tin chi tiết nhân viên'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={6} lg={4}>
             <SubCard title='Ảnh đại diện'>
@@ -122,17 +123,21 @@ const StaffDetailPage = () => {
               </Typography>
               <Typography variant='caption' sx={{ mb: 2 }}>
                 {dataStaff?.phoneNumber}
-                <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
-                  <ContentCopyIcon fontSize='inherit' />
-                </IconButton>
+                {dataStaff?.phoneNumber && (
+                  <IconButton color='inherit' size='small' disableRipple onClick={() => handleCopy('0333968599')}>
+                    <ContentCopyIcon fontSize='inherit' />
+                  </IconButton>
+                )}
               </Typography>
               <p></p>
               <Typography variant='h4'>Email</Typography>
               <Typography variant='caption' sx={{ mb: 2 }} onClick={() => handleCopy('dinhanhdung03011999@gmail.com')}>
                 {dataStaff?.email}
-                <IconButton color='inherit' size='small' disableRipple>
-                  <ContentCopyIcon fontSize='inherit' />
-                </IconButton>
+                {dataStaff?.email && (
+                  <IconButton color='inherit' size='small' disableRipple>
+                    <ContentCopyIcon fontSize='inherit' />
+                  </IconButton>
+                )}
               </Typography>
             </SubCard>
           </Grid>

@@ -33,3 +33,10 @@ export const handleMutation = (props: {
     props.isSuccess && Toast({ text: props.successMessage, variant: 'success' }) && props.refetch()
   }
 }
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const convertDataLabel = ({ data, key, value }: { data: any; key: string; value: string }) => {
+  const newData = data.map((e: any) => ({ ...e, label: e?.[key] || '', value: e?.[value] || '' }))
+  return newData || []
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
