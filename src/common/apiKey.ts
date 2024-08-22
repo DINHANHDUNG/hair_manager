@@ -35,5 +35,9 @@ export const NetWork = {
 
   //Partner
   partner: 'partner',
-  partnerId: (partnerId: number) => `partner/${partnerId}`
+  partnerId: (partnerId: number) => `partner/${partnerId}`,
+
+  //SalaryAdvance
+  salaryAdvance: 'salary-advance',
+  salaryAdvanceId: (salaryAdvanceId: number) => `salary-advance/${salaryAdvanceId}`
 }

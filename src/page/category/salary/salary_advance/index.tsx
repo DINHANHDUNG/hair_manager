@@ -1,7 +1,13 @@
+import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Card, CardContent, Grid, OutlinedInput, Theme, Typography } from '@mui/material'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
+import { Button, Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -11,19 +17,23 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { useDialogs } from '@toolpad/core'
+import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { OPTION_COMPLETION, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
+import SelectColumn from '../../../../components/filterTableCustom/SelectColumn'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
-import MainCard from '../../../../components/ui-component/cards/MainCard'
-import { gridSpacing } from '../../../../constants'
-import { PartnerType } from '../../../../types/partner'
-import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../../../app/services/partner'
 import Toast from '../../../../components/toast'
-import { useTheme } from '@mui/material/styles'
-import { makeStyles } from '@mui/styles'
-import { IconArrowUp, IconArrowDown } from '@tabler/icons-react'
+import MainCard from '../../../../components/ui-component/cards/MainCard'
+import { ChipCustom } from '../../../../components/ui-component/chipCustom'
+import { gridSpacing } from '../../../../constants'
+import FilterTableAdvanced from './FilterTableSalaryAdvance'
 import FormAddEditSalaryAdvance from './FormAddEdit'
+import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
+import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
+import { removeNullOrEmpty } from '../../../../help'
 
 const SalaryAdvancePage = React.memo(() => {
   const theme = useTheme()
@@ -36,36 +46,83 @@ const SalaryAdvancePage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
+  const initialStartDate = searchParams.get('dateFrom') || ''
+  const initialEndDate = searchParams.get('dateTo') || ''
+  const initialKey = searchParams.get('key') || 'codeStaff'
+  const initialStatusAdvance = searchParams.get('statusAdvance') || ''
+  const initialIsRefund = searchParams.get('isRefund') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
     page: initialPage
   })
+  // const abc = { "phoneNumberStaff", "phoneNumberEmployee"}
+  //Start filter
+  const listFilter = [
+    { value: 'codeStaff', label: 'Mã nhân viên' },
+    { value: 'nameStaff', label: 'Tên nhân viên' },
+    { value: 'codeEmployee', label: 'Mã công nhân' },
+    { value: 'nameEmployee', label: 'Tên công nhân' },
+    { value: 'identificationCardStaff', label: 'Căn cước nhân viên' },
+    { value: 'identificationCardEmployee', label: 'Căn cước công nhân' },
+    { value: 'phoneNumberStaff', label: 'SĐT nhân viên' },
+    { value: 'phoneNumberEmployee', label: 'SĐT công nhân' }
+  ]
+  const [openFilter, setOpenFilter] = React.useState(false)
+  const anchorRef = React.useRef<HTMLDivElement>(null)
+  const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
+  const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
+
+  const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
+      return
+    }
+    setOpenFilter(false)
+  }
+
+  const handleToggle = () => {
+    setOpenFilter((prevOpen) => !prevOpen)
+  }
+
+  const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
+      return
+    }
+    setOpenFilterAdvanced(false)
+  }
+  const handleToggleFilterAdvanced = () => {
+    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+  }
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    searchKey: initialSearchKey
+    searchKey: initialSearchKey,
+    key: initialKey,
+    dateFrom: initialStartDate,
+    dateTo: initialEndDate,
+    statusAdvance: initialStatusAdvance,
+    isRefund: initialIsRefund
   })
 
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<PartnerType>()
-  const [rowsData, setRowsData] = React.useState<PartnerType[]>()
+  console.log('filters', filters)
+
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryAdvanceType>()
+  const [rowsData, setRowsData] = React.useState<SalaryAdvanceType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
 
   const {
-    data: dataApiPartner,
+    data: dataApiSalaryAdvance,
     isLoading,
     refetch
-  } = useGetListPartnerQuery({
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-    ...filters
-  })
+  } = useGetListSalaryAdvanceQuery(
+    removeNullOrEmpty({ page: paginationModel.page + 1, limit: paginationModel.pageSize, ...filters })
+  )
 
-  const [deletePartner, { isLoading: loadingDelete, isSuccess, isError }] = useDeletePartnerMutation()
+  const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiPartner?.data?.totalCount || 0
+  const rowTotal = dataApiSalaryAdvance?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -77,7 +134,7 @@ const SalaryAdvancePage = React.memo(() => {
 
   const handleCloseForm = () => {
     setOpenFormAdd(false)
-    setItemSelectedEidt({} as PartnerType)
+    setItemSelectedEidt({} as SalaryAdvanceType)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -86,6 +143,65 @@ const SalaryAdvancePage = React.memo(() => {
       [field]: value
     }))
   }
+
+  const listRenderFilter = [
+    {
+      key: 'date',
+      label:
+        initialStartDate && initialEndDate
+          ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
+          : ''
+    },
+    {
+      key: 'statusAdvance',
+      label: `${STATUS_ADVANCE_SALARY.find((e) => e.value === initialStatusAdvance)?.label || ''}`
+    },
+    { key: 'isRefund', label: `${OPTION_COMPLETION.find((e) => e.value === initialIsRefund)?.label || ''}` }
+  ]
+
+  const RenderFilter = ({ label, key }: { label: string; key: string }) => {
+    const handleClose = () => {
+      if (key === 'date') {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          ['dateTo']: '',
+          ['dateFrom']: ''
+        }))
+        return
+      }
+      handleFilterChange(key, '')
+    }
+    return (
+      label?.length > 0 && (
+        <ChipCustom
+          size='medium'
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
+              {label}
+              <IconButton color='inherit' size='small' onClick={handleClose}>
+                <CloseIcon fontSize='inherit' />
+              </IconButton>
+            </Box>
+          }
+        />
+      )
+    )
+  }
+
+  const prevOpen = React.useRef(openFilter)
+  const prevOpenAdvanced = React.useRef(openFilterAdvanced)
+  React.useEffect(() => {
+    if (prevOpen.current === true && openFilter === false) {
+      anchorRef?.current?.focus()
+    }
+
+    if (prevOpenAdvanced.current === true && openFilterAdvanced === false) {
+      anchorAdvancedRef?.current?.focus()
+    }
+
+    prevOpen.current = openFilter
+    prevOpenAdvanced.current = openFilterAdvanced
+  }, [openFilter, openFilterAdvanced])
 
   const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
     console.log(rowSelectionModel, details)
@@ -103,8 +219,7 @@ const SalaryAdvancePage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      return
-      deletePartner({ ids: [Number(id)] })
+      deleteSalaryAdvance({ ids: [Number(id)] })
     }
   }
 
@@ -115,18 +230,47 @@ const SalaryAdvancePage = React.memo(() => {
         headerName: 'No.',
         width: 50
       },
-      { field: 'name', headerName: 'Tên nhân sự', flex: 1 },
-      { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
+      {
+        field: 'name',
+        headerName: 'Tên nhân sự',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.employeeId ? params.row.employee.name : params.row.staffId ? params.row.staff.name : ''
+      },
+      {
+        field: 'phoneNumber',
+        headerName: 'Số điện thoại',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.employeeId
+            ? params.row.employee.phoneNumber
+            : params.row.staffId
+              ? params.row.staff.phoneNumber
+              : ''
+      },
       { field: 'money', headerName: 'Số tiền', flex: 1 },
-      { field: 'date', headerName: 'Ngày ứng', flex: 1 },
-      { field: 'date', headerName: 'Ngày hoàn ứng', flex: 1 },
-      { field: 'status', headerName: 'Trạng thái hoàn ứng', flex: 1 },
+      {
+        field: 'date',
+        headerName: 'Ngày ứng',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.dateAdvance ? moment(params.row.dateAdvance).format('DD/MM/YYYY') : ''
+      },
+      {
+        field: 'statusAdvance',
+        headerName: 'Trạng thái hoàn ứng',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) => {
+          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusAdvance)?.label
+          return show || ''
+        }
+      },
       {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (param: GridRenderCellParams<PartnerType, number>) => {
+        getActions: (param: GridRenderCellParams<SalaryAdvanceType, number>) => {
           console.log('param', param)
 
           return [
@@ -139,7 +283,6 @@ const SalaryAdvancePage = React.memo(() => {
                 setItemSelectedEidt(param.row)
                 handleClickOpenForm()
               }}
-              disabled={!param.row.isActive}
             />,
             <GridActionsCellItem
               onClick={() => handleDelete(param.row.id)}
@@ -147,7 +290,6 @@ const SalaryAdvancePage = React.memo(() => {
               label='Delete'
               className='textPrimary'
               color='inherit'
-              disabled={!param.row.isActive}
             />
           ]
         }
@@ -199,24 +341,36 @@ const SalaryAdvancePage = React.memo(() => {
   }
 
   React.useEffect(() => {
-    // Update URL parameters when pagination model changes
-    setSearchParams({
+    // Tạo một object params rỗng
+    const params: { [key: string]: string } = {}
+
+    // Tạo một mảng các trường cần kiểm tra
+    const fields = {
       page: paginationModel.page.toString(),
       pageSize: paginationModel.pageSize.toString(),
-      searchKey: filters.searchKey
+      ...filters
+    } as { [key: string]: string } // Sử dụng type assertion
+
+    // Lặp qua các trường và chỉ thêm vào params nếu trường đó hợp lệ
+    Object.keys(fields).forEach((field) => {
+      const value = fields[field]
+      if (value) {
+        params[field] = value
+      }
     })
+
+    setSearchParams(params)
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiPartner?.data?.rows?.map((row: PartnerType, index: number) => ({
+      dataApiSalaryAdvance?.data?.rows?.map((row: SalaryAdvanceType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
-    return
     setRowsData(updatedRows)
-  }, [dataApiPartner])
+  }, [dataApiSalaryAdvance])
 
   React.useEffect(() => {
     handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
@@ -284,7 +438,7 @@ const SalaryAdvancePage = React.memo(() => {
       </Grid>
       <MainCard title={'Ứng lương nhân sự'} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <OutlinedInput
               size='small'
               id='search-input'
@@ -294,6 +448,16 @@ const SalaryAdvancePage = React.memo(() => {
               onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
+            <Tooltip ref={anchorRef} title='Lọc theo trường'>
+              <IconButton color='inherit' size='small' onClick={handleToggle}>
+                <SettingsOutlinedIcon fontSize='medium' />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
+              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
+                <TuneOutlinedIcon fontSize='medium' />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
@@ -303,7 +467,11 @@ const SalaryAdvancePage = React.memo(() => {
             </div>
           </Grid>
         </Grid>
-
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={12} display={'flex'} flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'}>
+            {listRenderFilter?.map((val) => RenderFilter({ label: val.label, key: val.key }))}
+          </Grid>
+        </Grid>
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
             rows={rows}
@@ -318,10 +486,10 @@ const SalaryAdvancePage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
-            otherProps={{
-              getRowClassName: (params: GridRenderCellParams<PartnerType, number>) =>
-                !params.row.isActive ? 'even' : 'odd'
-            }}
+            // otherProps={{
+            //   getRowClassName: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+            //     !params.row.isActive ? 'even' : 'odd'
+            // }}
           />
         </div>
 
@@ -333,6 +501,36 @@ const SalaryAdvancePage = React.memo(() => {
             refetch()
             handleCloseForm()
           }}
+        />
+
+        <SelectColumn
+          handleComfirm={(value) => {
+            handleFilterChange('key', value)
+            setOpenFilter(false)
+          }}
+          value={filters?.key}
+          list={listFilter}
+          open={openFilter}
+          anchorRef={anchorRef}
+          handleClose={handleClose}
+        />
+
+        <FilterTableAdvanced
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          handleComfirm={(value: any) => {
+            setFilters((prevFilters) => ({
+              ...prevFilters,
+              ['isRefund']: value.isRefund,
+              ['statusAdvance']: value.statusAdvance,
+              ['dateFrom']: value.date?.[0],
+              ['dateTo']: value.date?.[1]
+            }))
+            setOpenFilterAdvanced(false)
+          }}
+          value={filters}
+          open={openFilterAdvanced}
+          anchorRef={anchorAdvancedRef}
+          handleClose={handleCloseFilterAdvanced}
         />
       </MainCard>
     </>

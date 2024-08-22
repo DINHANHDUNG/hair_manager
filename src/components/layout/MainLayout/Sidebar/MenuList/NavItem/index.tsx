@@ -1,6 +1,6 @@
 import { forwardRef, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, matchPath, useLocation } from 'react-router-dom'
 
 // material-ui
 import Avatar from '@mui/material/Avatar'
@@ -30,7 +30,6 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
   const dispatch = useDispatch()
   const { pathname } = useLocation()
   const customization = useAppSelector(customTheme)
-
   const matchesSM = useMediaQuery(theme.breakpoints.down('lg'))
 
   const Icon = item.icon
@@ -65,15 +64,10 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
 
   // active menu item on page load
   useEffect(() => {
-    const currentIndex = document.location.pathname
-      .toString()
-      .split('/')
-      .findIndex((id) => id === item.id)
-    if (currentIndex > -1) {
+    if (item.url && matchPath(item.url, pathname)) {
       dispatch(menuOpen({ id: item.id }))
     }
-    // eslint-disable-next-line
-  }, [pathname])
+  }, [pathname, item.url, dispatch, item.id])
 
   return (
     <ListItemButton
