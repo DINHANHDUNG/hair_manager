@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { NetWork } from '../../../common/apiKey'
-import { DELETE, GET, POST, PUT } from '../../../common/contants'
+import { DELETE, GET, PATCH, POST, PUT } from '../../../common/contants'
 import { ReponseData2 } from '../../../types'
 import { axiosBaseQuery } from '../../baseQuery'
 import { SalaryAdvanceType } from '../../../types/salaryAdvance'
@@ -20,8 +20,8 @@ export const salaryAdvanceApi = createApi({
       })
     }),
     getSalaryAdvanceById: builder.query({
-      query: (params: { employeeId: number }) => ({
-        url: NetWork.salaryAdvanceId(params.employeeId),
+      query: (params: { salaryAdvanceId: number }) => ({
+        url: NetWork.salaryAdvanceId(params.salaryAdvanceId),
         method: GET
       })
     }),
@@ -46,6 +46,13 @@ export const salaryAdvanceApi = createApi({
         data: data
         // invalidatesTags: [{ type: 'SalaryAdvance', id: 'LIST' }] // Vô hiệu hóa tag 'SalaryAdvance' với id 'LIST' để gọi lại getListSalaryAdvance
       })
+    }),
+    changeStatusSalaryAdvance: builder.mutation({
+      query: (data: { salaryAdvanceId: number; params: { statusAdvance: string } }) => ({
+        url: NetWork.salaryAdvanceStatus(data.salaryAdvanceId),
+        method: PATCH,
+        params: data.params
+      })
     })
   })
 })
@@ -56,5 +63,6 @@ export const {
   useDeleteSalaryAdvanceMutation,
   useAddSalaryAdvanceMutation,
   useGetSalaryAdvanceByIdQuery,
-  useUpdateSalaryAdvanceMutation
+  useUpdateSalaryAdvanceMutation,
+  useChangeStatusSalaryAdvanceMutation
 } = salaryAdvanceApi

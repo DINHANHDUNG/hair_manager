@@ -1,29 +1,32 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
+import dayjs from 'dayjs'
+import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { convertDataLabel } from '../../../../app/hooks'
+import { useGetListEmployeeQuery } from '../../../../app/services/employee'
+import {
+  useAddSalaryAdvanceMutation,
+  useGetSalaryAdvanceByIdQuery,
+  useUpdateSalaryAdvanceMutation
+} from '../../../../app/services/salaryAdvance'
+import { useGetListStaffQuery } from '../../../../app/services/staff'
+import { OPTION_COMPLETION, OPTION_HUMAN_RESOURCES, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
 import MyButton from '../../../../components/button/MyButton'
 import SubmitButton from '../../../../components/button/SubmitButton'
-import MyTextField from '../../../../components/input/MyTextField'
-import { CustomDialog } from '../../../../components/dialog/CustomDialog'
-import { gridSpacingForm } from '../../../../constants'
-import Toast from '../../../../components/toast'
-import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
-import { useAddSalaryAdvanceMutation, useUpdateSalaryAdvanceMutation } from '../../../../app/services/salaryAdvance'
-import { NumericFormatCustom } from '../../../../components/input'
-import moment from 'moment'
-import { OPTION_COMPLETION, OPTION_HUMAN_RESOURCES, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
-import MySelect from '../../../../components/select/MySelect'
-import MyAutocomplete from '../../../../components/select/MyAutocomplete'
-import { useGetListEmployeeQuery } from '../../../../app/services/employee'
-import { useGetListStaffQuery } from '../../../../app/services/staff'
-import { convertDataLabel } from '../../../../app/hooks'
-import { StaffType } from '../../../../types/staff'
-import { EmployeeType } from '../../../../types/employee'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
-
+import { CustomDialog } from '../../../../components/dialog/CustomDialog'
+import { NumericFormatCustom } from '../../../../components/input'
+import MyTextField from '../../../../components/input/MyTextField'
+import MyAutocomplete from '../../../../components/select/MyAutocomplete'
+import MySelect from '../../../../components/select/MySelect'
+import Toast from '../../../../components/toast'
+import { gridSpacingForm } from '../../../../constants'
+import { OptionType } from '../../../../types'
+import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -55,7 +58,7 @@ type FormValues = {
 const validationSchema = yup.object({
   money: yup
     .number()
-    .transform((value, originalValue) => (originalValue.trim() === '' ? null : value))
+    .transform((value, originalValue) => (originalValue === '' ? null : value))
     .typeError('Trường này phải là số')
     .required('Trường này là bắt buộc'),
   dateAdvance: yup
@@ -83,6 +86,18 @@ const validationSchema = yup.object({
 export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
   const [addSalaryAdvance, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddSalaryAdvanceMutation()
+  const {
+    data: fetchData,
+    isLoading,
+    refetch
+  } = useGetSalaryAdvanceByIdQuery(
+    {
+      salaryAdvanceId: itemSelectedEdit?.id || 0
+    },
+    {
+      skip: !itemSelectedEdit?.id
+    }
+  )
 
   const [
     editSalaryAdvance,
@@ -107,27 +122,27 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     resolver: yupResolver(validationSchema)
   })
 
-  console.log('errors', errors)
-
   const onSubmit: SubmitHandler<FormValues> = (value) => {
     const date = moment(value.dateAdvance).startOf('day')
     const isoDateStr = date?.toISOString()
-    const staff = value?.staffId as StaffType
-    const employee = value?.employeeId as EmployeeType
+    const staff = value?.staffId as OptionType
+    const employee = value?.employeeId as OptionType
     const check = value.isStaff === 'STAFF'
+    console.log(check, employee, staff)
+
     if (itemSelectedEdit?.id)
       return editSalaryAdvance({
         ...value,
         id: itemSelectedEdit.id,
         dateAdvance: isoDateStr,
-        staffId: check ? staff.id : null,
-        employeeId: !check ? employee.id : null
+        staffId: check ? staff.value : null,
+        employeeId: !check ? employee.value : null
       })
     addSalaryAdvance({
       ...value,
       dateAdvance: isoDateStr,
-      staffId: check ? staff.id : null,
-      employeeId: !check ? employee.id : null
+      staffId: check ? staff.value : null,
+      employeeId: !check ? employee.value : null
     })
   }
 
@@ -144,10 +159,6 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
       isSuccess && Toast({ text: successMessage, variant: 'success' })
     }
   }
-
-  useEffect(() => {
-    if (!itemSelectedEdit?.id) reset()
-  }, [open])
 
   useEffect(() => {
     if (!loadingAdd && isErrorAdd) {
@@ -181,27 +192,38 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     handleMutation(loadingEdit, isErrorEdit, isSuccessEdit, 'Cập nhật thành công', 'Cập nhật không thành công')
   }, [loadingEdit])
 
-  // useEffect(() => {
-  //   setValue('name', itemSelectedEdit?.name || '')
-  //   setValue('email', itemSelectedEdit?.email)
-  //   setValue('address', itemSelectedEdit?.address || '')
-  //   setValue('phoneNumber', itemSelectedEdit?.phoneNumber || '')
-  //   setValue('code', itemSelectedEdit?.code)
-  //   setValue('noteAdvance', itemSelectedEdit?.noteAdvance || '')
-  //   setValue('representativeName', itemSelectedEdit?.representativeName)
-  //   setValue('representativePosition', itemSelectedEdit?.representativePosition)
-  //   setValue('representativePhone', itemSelectedEdit?.representativePhone)
-  // }, [itemSelectedEdit])
-
   const isStaff = watch('isStaff') // Theo dõi giá trị isStaff
 
   useEffect(() => {
-    if (isStaff) {
+    if (isStaff === 'STAFF') {
       setValue('employeeId', {})
     } else {
       setValue('staffId', {})
     }
   }, [isStaff, setValue])
+
+  useEffect(() => {
+    if (!isLoading && fetchData?.data) {
+      const newData = fetchData?.data
+      setValue('isStaff', newData?.employeeId ? 'EMPLOYEE' : newData?.staffId ? 'STAFF' : '')
+      setValue('money', newData?.money || '')
+      setValue('dateAdvance', dayjs(newData?.dateAdvance).toString())
+      setValue('isRefund', newData?.isRefund || false)
+      setValue('noteAdvance', newData?.noteAdvance || '')
+      setValue('statusAdvance', newData?.statusAdvance)
+      setValue('staffId', newData?.staffId ? { value: newData?.staff.id, label: newData?.staff.name } : {})
+      setValue('employeeId', newData?.employeeId ? { value: newData?.employee.id, label: newData?.employee.name } : {})
+    }
+  }, [isLoading, fetchData, open])
+
+  useEffect(() => {
+    if (!itemSelectedEdit?.id) reset()
+  }, [open, itemSelectedEdit])
+
+  useEffect(() => {
+    if (itemSelectedEdit?.id) refetch()
+  }, [open, itemSelectedEdit?.id, refetch])
+
   return (
     <CustomDialog
       title={itemSelectedEdit?.id ? 'Chỉnh sửa ứng lương' : 'Thêm mới ứng lương'}

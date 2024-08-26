@@ -15,6 +15,8 @@ import MySelect from '../../../../components/select/MySelect'
 import Toast from '../../../../components/toast'
 import { gridSpacingForm } from '../../../../constants'
 import { StaffType } from '../../../../types/staff'
+import { useGetRolesQuery } from '../../../../app/services/auth'
+import { RoleType } from '../../../../types/account'
 
 type FormValues = {
   name: string
@@ -26,6 +28,7 @@ type FormValues = {
   ethnic: string
   identificationCard: string
   addressOrigin: string
+  roleId: number
 }
 
 const validationSchema = yup.object({
@@ -38,6 +41,7 @@ const validationSchema = yup.object({
   birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
   email: yup.string().required('Trường này là bắt buộc').email('Email không hợp lệ'),
   address: yup.string().required('Trường này là bắt buộc').max(255),
+  roleId: yup.number().required('Trường này là bắt buộc').max(255),
   identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
@@ -57,7 +61,8 @@ interface Props {
 }
 export default function TabInfoStaff(Props: Props) {
   const { data, reloadData } = Props
-
+  const { data: dataRole } = useGetRolesQuery({})
+  const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
   const [updateStaff, { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error }] =
     useUpdateStaffMutation()
   //   const { open, handleClose, handleSave } = Props
@@ -96,6 +101,7 @@ export default function TabInfoStaff(Props: Props) {
     setValue('email', data?.email)
     setValue('addressOrigin', data?.addressOrigin)
     setValue('address', data?.address)
+    setValue('roleId', data?.account?.role?.id)
     setValue('birthDay', dayjs(data?.birthDay).toString())
   }, [data])
 
@@ -109,6 +115,7 @@ export default function TabInfoStaff(Props: Props) {
     | 'identificationCard'
     | 'phoneNumber'
     | 'ethnic'
+    | 'roleId'
 
   const handleMutation = (
     loading: boolean,
@@ -190,6 +197,16 @@ export default function TabInfoStaff(Props: Props) {
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
           <MyTextField name='email' control={control} label='Email' errors={errors} variant='outlined' />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={4}>
+          <MySelect
+            name='roleId'
+            control={control}
+            label='Chức vụ'
+            errors={errors}
+            options={listRole}
+            variant='outlined'
+          />
         </Grid>
       </Grid>
       <Grid container spacing={gridSpacingForm}>

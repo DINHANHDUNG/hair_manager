@@ -1,12 +1,11 @@
+import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
-import MoneyOutlined from '@mui/icons-material/AddBoxOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Button, Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
+import { Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
 import { Box } from '@mui/system'
@@ -24,26 +23,24 @@ import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { OPTION_COMPLETION, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
+import { currency } from '../../../../app/hooks'
+import { useDeleteSalaryRefundMutation, useGetListSalaryRefundQuery } from '../../../../app/services/salaryRefund'
+import { STATUS_ADVANCE_SALARY } from '../../../../common/contants'
 import SelectColumn from '../../../../components/filterTableCustom/SelectColumn'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../../components/toast'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../../../constants'
-import FilterTableAdvanced from './FilterTableSalaryAdvance'
-import FormAddEditSalaryAdvance from './FormAddEdit'
-import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
-import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
 import { removeNullOrEmpty } from '../../../../help'
-import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
-import { currency } from '../../../../app/hooks'
-import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
 import { SalaryRefundType } from '../../../../types/salaryRefund'
+import FilterTableRefundd from './FilterTableSalaryRefund'
+import FormAddEditSalaryRefund from './FormAddEdit'
+import FormChangeStatusSalaryRefund from './FormChangeStatusSalaryRefund'
 
-const SalaryAdvancePage = React.memo(() => {
+const SalaryRefundPage = React.memo(() => {
   const theme = useTheme()
-  const classes = styleSalaryAdvancePage(theme)
+  const classes = styleSalaryRefundPage(theme)
   const dialogs = useDialogs()
   //   const navigate = useNavigate()
   //   const theme = useTheme()
@@ -55,8 +52,7 @@ const SalaryAdvancePage = React.memo(() => {
   const initialStartDate = searchParams.get('dateFrom') || ''
   const initialEndDate = searchParams.get('dateTo') || ''
   const initialKey = searchParams.get('key') || 'nameStaff'
-  const initialStatusAdvance = searchParams.get('statusAdvance') || ''
-  const initialIsRefund = searchParams.get('isRefund') || ''
+  const initialStatusRefund = searchParams.get('statusRefund') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -76,8 +72,8 @@ const SalaryAdvancePage = React.memo(() => {
   ]
   const [openFilter, setOpenFilter] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
-  const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
-  const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
+  const [openFilterRefundd, setOpenFilterRefundd] = React.useState(false)
+  const anchorRefunddRef = React.useRef<HTMLDivElement>(null)
 
   const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
@@ -90,14 +86,14 @@ const SalaryAdvancePage = React.memo(() => {
     setOpenFilter((prevOpen) => !prevOpen)
   }
 
-  const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
+  const handleCloseFilterRefundd = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorRefunddRef.current && anchorRefunddRef.current.contains(event.target as Node)) {
       return
     }
-    setOpenFilterAdvanced(false)
+    setOpenFilterRefundd(false)
   }
-  const handleToggleFilterAdvanced = () => {
-    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+  const handleToggleFilterRefundd = () => {
+    setOpenFilterRefundd((prevOpen) => !prevOpen)
   }
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
@@ -105,30 +101,30 @@ const SalaryAdvancePage = React.memo(() => {
     key: initialKey,
     dateFrom: initialStartDate,
     dateTo: initialEndDate,
-    statusAdvance: initialStatusAdvance,
-    isRefund: initialIsRefund
+    statusRefund: initialStatusRefund
   })
 
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryAdvanceType>()
-  const [rowsData, setRowsData] = React.useState<SalaryAdvanceType[]>()
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryRefundType>()
+  const [rowsData, setRowsData] = React.useState<SalaryRefundType[]>()
+
+  console.log('rowsData', rowsData)
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
-  const [openFormAddRefund, setOpenFormAddRefund] = React.useState(false)
-  const [openFormChangeStatusSalaryAdvance, setOpenFormChangeStatusSalaryAdvance] = React.useState(false)
+  const [openFormChangeStatusSalaryRefund, setOpenFormChangeStatusSalaryRefund] = React.useState(false)
 
   const {
-    data: dataApiSalaryAdvance,
+    data: dataApiSalaryRefund,
     isLoading,
     refetch
-  } = useGetListSalaryAdvanceQuery(
+  } = useGetListSalaryRefundQuery(
     removeNullOrEmpty({ page: paginationModel.page + 1, limit: paginationModel.pageSize, ...filters })
   )
 
-  const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()
+  const [deleteSalaryRefund, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryRefundMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiSalaryAdvance?.data?.totalCount || 0
+  const rowTotal = dataApiSalaryRefund?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -140,25 +136,16 @@ const SalaryAdvancePage = React.memo(() => {
 
   const handleCloseForm = () => {
     setOpenFormAdd(false)
-    setItemSelectedEidt({} as SalaryAdvanceType)
+    setItemSelectedEidt({} as SalaryRefundType)
   }
 
-  const handleClickOpenFormRefund = () => {
-    setOpenFormAddRefund(true)
+  const handleClickOpenFormChangeStatusSalaryRefund = () => {
+    setOpenFormChangeStatusSalaryRefund(true)
   }
 
-  const handleCloseFormRefund = () => {
-    setOpenFormAddRefund(false)
-    setItemSelectedEidt({} as SalaryAdvanceType)
-  }
-
-  const handleClickOpenFormChangeStatusSalaryAdvance = () => {
-    setOpenFormChangeStatusSalaryAdvance(true)
-  }
-
-  const handleCloseFormChangeStatusSalaryAdvance = () => {
-    setOpenFormChangeStatusSalaryAdvance(false)
-    setItemSelectedEidt({} as SalaryAdvanceType)
+  const handleCloseFormChangeStatusSalaryRefund = () => {
+    setOpenFormChangeStatusSalaryRefund(false)
+    setItemSelectedEidt({} as SalaryRefundType)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -177,10 +164,9 @@ const SalaryAdvancePage = React.memo(() => {
           : ''
     },
     {
-      key: 'statusAdvance',
-      label: `${STATUS_ADVANCE_SALARY.find((e) => e.value === initialStatusAdvance)?.label || ''}`
-    },
-    { key: 'isRefund', label: `${OPTION_COMPLETION.find((e) => e.value === initialIsRefund)?.label || ''}` }
+      key: 'statusRefund',
+      label: `${STATUS_ADVANCE_SALARY.find((e) => e.value === initialStatusRefund)?.label || ''}`
+    }
   ]
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
@@ -213,19 +199,19 @@ const SalaryAdvancePage = React.memo(() => {
   }
 
   const prevOpen = React.useRef(openFilter)
-  const prevOpenAdvanced = React.useRef(openFilterAdvanced)
+  const prevOpenRefundd = React.useRef(openFilterRefundd)
   React.useEffect(() => {
     if (prevOpen.current === true && openFilter === false) {
       anchorRef?.current?.focus()
     }
 
-    if (prevOpenAdvanced.current === true && openFilterAdvanced === false) {
-      anchorAdvancedRef?.current?.focus()
+    if (prevOpenRefundd.current === true && openFilterRefundd === false) {
+      anchorRefunddRef?.current?.focus()
     }
 
     prevOpen.current = openFilter
-    prevOpenAdvanced.current = openFilterAdvanced
-  }, [openFilter, openFilterAdvanced])
+    prevOpenRefundd.current = openFilterRefundd
+  }, [openFilter, openFilterRefundd])
 
   const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
     console.log(rowSelectionModel, details)
@@ -243,7 +229,7 @@ const SalaryAdvancePage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      deleteSalaryAdvance({ ids: [Number(id)] })
+      deleteSalaryRefund({ ids: [Number(id)] })
     }
   }
 
@@ -258,45 +244,49 @@ const SalaryAdvancePage = React.memo(() => {
         field: 'name',
         headerName: 'Tên nhân sự',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
-          params.row.employeeId ? params.row.employee.name : params.row.staffId ? params.row.staff.name : ''
+        renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) =>
+          params.row?.salaryAdvance?.employeeId
+            ? params?.row?.salaryAdvance?.employee?.name
+            : params?.row?.salaryAdvance?.staffId
+              ? params?.row?.salaryAdvance?.staff?.name
+              : ''
       },
       {
         field: 'phoneNumber',
         headerName: 'Số điện thoại',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
-          params.row.employeeId
-            ? params.row.employee.phoneNumber
-            : params.row.staffId
-              ? params.row.staff.phoneNumber
+        renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) =>
+          params?.row?.salaryAdvance?.employeeId
+            ? params?.row?.salaryAdvance?.employee?.phoneNumber
+            : params?.row?.salaryAdvance?.staffId
+              ? params?.row?.salaryAdvance?.staff?.phoneNumber
               : ''
       },
       {
         field: 'money',
         headerName: 'Số tiền',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+        renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) =>
           params.row.money ? currency(params.row.money) : ''
       },
       {
         field: 'date',
         headerName: 'Ngày ứng',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
-          params.row.dateAdvance ? moment(params.row.dateAdvance).format('DD/MM/YYYY') : ''
+        renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) =>
+          params.row.dateRefund ? moment(params.row.dateRefund).format('DD/MM/YYYY') : ''
       },
       {
-        field: 'statusAdvance',
-        headerName: 'TT Hoàn ứng',
+        field: 'statusRefund',
+        headerName: 'TT hoàn ứng',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) => {
-          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusAdvance)?.label
+        renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) => {
+          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusRefund)?.label
           return show || ''
         }
       },
       {
-        field: 'noteAdvance',
+        field: 'noteRefund',
         headerName: 'Ghi chú',
         flex: 1
       },
@@ -305,22 +295,8 @@ const SalaryAdvancePage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (param: GridRenderCellParams<SalaryAdvanceType, number>) => {
+        getActions: (param: GridRenderCellParams<SalaryRefundType, number>) => {
           return [
-            <GridActionsCellItem
-              icon={
-                <Tooltip title='Thêm hoàn ứng'>
-                  <MoneyOutlined />
-                </Tooltip>
-              }
-              label='Thêm hoàn ứng'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => {
-                setItemSelectedEidt(param.row)
-                handleClickOpenFormRefund()
-              }}
-            />,
             <GridActionsCellItem
               icon={
                 <Tooltip title='Đổi trạng thái ứng lương'>
@@ -332,7 +308,7 @@ const SalaryAdvancePage = React.memo(() => {
               color='inherit'
               onClick={() => {
                 setItemSelectedEidt(param.row)
-                handleClickOpenFormChangeStatusSalaryAdvance()
+                handleClickOpenFormChangeStatusSalaryRefund()
               }}
             />,
             <GridActionsCellItem
@@ -435,12 +411,12 @@ const SalaryAdvancePage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiSalaryAdvance?.data?.rows?.map((row: SalaryAdvanceType, index: number) => ({
+      dataApiSalaryRefund?.data?.rows?.map((row: SalaryRefundType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
     setRowsData(updatedRows)
-  }, [dataApiSalaryAdvance])
+  }, [dataApiSalaryRefund])
 
   React.useEffect(() => {
     handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
@@ -506,7 +482,7 @@ const SalaryAdvancePage = React.memo(() => {
           }
         />
       </Grid>
-      <MainCard title={'Ứng lương nhân sự'} sx={{ height: '84%' }}>
+      <MainCard title={'Hoàn ứng nhân sự'} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <OutlinedInput
@@ -514,7 +490,7 @@ const SalaryAdvancePage = React.memo(() => {
               id='search-input'
               startAdornment={<IconSearch sx={{ mr: 1 }} />}
               placeholder='Tìm kiếm'
-              defaultValue={filters?.['searchKey']}
+              value={filters?.['searchKey']}
               onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
@@ -523,18 +499,11 @@ const SalaryAdvancePage = React.memo(() => {
                 <SettingsOutlinedIcon fontSize='medium' />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
-              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
+            <Tooltip title='Lọc nâng cao' ref={anchorRefunddRef}>
+              <IconButton color='inherit' size='small' onClick={handleToggleFilterRefundd}>
                 <TuneOutlinedIcon fontSize='medium' />
               </IconButton>
             </Tooltip>
-          </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <div>
-              <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
-                Thêm mới
-              </Button>
-            </div>
           </Grid>
         </Grid>
         <Grid container spacing={gridSpacing}>
@@ -557,14 +526,15 @@ const SalaryAdvancePage = React.memo(() => {
             headerFilters={false}
             totalCount={rowTotal}
             // otherProps={{
-            //   getRowClassName: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+            //   getRowClassName: (params: GridRenderCellParams<SalaryRefundType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'
             // }}
           />
         </div>
 
-        <FormAddEditSalaryAdvance
+        <FormAddEditSalaryRefund
           itemSelectedEdit={itemSelectedEdit}
+          itemSelectedSalaryAdvance={itemSelectedEdit?.salaryAdvance}
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
@@ -573,24 +543,13 @@ const SalaryAdvancePage = React.memo(() => {
           }}
         />
 
-        <FormAddEditSalaryRefund
-          itemSelectedEdit={{} as SalaryRefundType}
-          itemSelectedSalaryAdvance={itemSelectedEdit}
-          open={openFormAddRefund}
-          handleClose={handleCloseFormRefund}
-          handleSave={() => {
-            refetch()
-            handleCloseFormRefund()
-          }}
-        />
-
-        <FormChangeStatusSalaryAdvance
+        <FormChangeStatusSalaryRefund
           itemSelectedEdit={itemSelectedEdit}
-          open={openFormChangeStatusSalaryAdvance}
-          handleClose={handleCloseFormChangeStatusSalaryAdvance}
+          open={openFormChangeStatusSalaryRefund}
+          handleClose={handleCloseFormChangeStatusSalaryRefund}
           handleSave={() => {
             refetch()
-            handleCloseFormChangeStatusSalaryAdvance()
+            handleCloseFormChangeStatusSalaryRefund()
           }}
         />
 
@@ -606,31 +565,30 @@ const SalaryAdvancePage = React.memo(() => {
           handleClose={handleClose}
         />
 
-        <FilterTableAdvanced
+        <FilterTableRefundd
           /* eslint-disable @typescript-eslint/no-explicit-any */
           handleComfirm={(value: any) => {
             setFilters((prevFilters) => ({
               ...prevFilters,
-              ['isRefund']: value.isRefund,
-              ['statusAdvance']: value.statusAdvance,
+              ['statusRefund']: value.statusRefund,
               ['dateFrom']: value.date?.[0],
               ['dateTo']: value.date?.[1]
             }))
-            setOpenFilterAdvanced(false)
+            setOpenFilterRefundd(false)
           }}
           value={filters}
-          open={openFilterAdvanced}
-          anchorRef={anchorAdvancedRef}
-          handleClose={handleCloseFilterAdvanced}
+          open={openFilterRefundd}
+          anchorRef={anchorRefunddRef}
+          handleClose={handleCloseFilterRefundd}
         />
       </MainCard>
     </>
   )
 })
 
-export default SalaryAdvancePage
+export default SalaryRefundPage
 
-const styleSalaryAdvancePage = makeStyles({
+const styleSalaryRefundPage = makeStyles({
   CardContent: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' },
   TextCard: { fontWeight: '500', fontSize: 13, marginBottom: 2 },
   TextCardValue: { marginBottom: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' },

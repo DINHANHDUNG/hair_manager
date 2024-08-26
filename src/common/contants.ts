@@ -12,14 +12,14 @@ export const OPTIONGENDER = [
   { value: 'OTHER', label: 'Khác' }
 ]
 
-export const OPTIONSPOSITION = [
-  { value: 'ADMIN', label: 'Admin' },
-  { value: 'GIAMDOC', label: 'Giám đốc' },
-  { value: 'KETOAN', label: 'Kế toán' },
-  { value: 'HCNS', label: 'Hành chính nhân sự' },
-  { value: 'TUYENDUNG', label: 'Tuyển dụng' },
-  { value: 'SALE', label: 'Bán hàng' }
-]
+// export const OPTIONSPOSITION = [
+//   { value: 'ADMIN', label: 'Admin' },
+//   { value: 'GIAMDOC', label: 'Giám đốc' },
+//   { value: 'KETOAN', label: 'Kế toán' },
+//   { value: 'HCNS', label: 'Hành chính nhân sự' },
+//   { value: 'TUYENDUNG', label: 'Tuyển dụng' },
+//   { value: 'SALE', label: 'Bán hàng' }
+// ]
 
 export const OPTIONSTATUSWORK = [
   { value: 'WORKING', label: 'Đang làm việc' },
@@ -44,12 +44,12 @@ export const OPTIONSTTWORKER = [
 ]
 
 export const STATUS_WORKING_EMPLOYEE = [
-  { value: 'WAITING', label: 'Đang chờ' },
-  { value: 'FAIL', label: 'Thất bại' },
-  { value: 'IN_HOME', label: 'Ở nhà' },
+  { value: 'WAITING', label: 'Chờ phỏng vấn' },
+  { value: 'FAIL', label: 'Phỏng vấn trượt' },
+  { value: 'IN_HOME', label: 'Đang làm việc' },
   { value: 'IN_COMPANY', label: 'Trong công ty' },
-  { value: 'IN_PARTNER', label: 'Ở đối tác' },
-  { value: 'OUT', label: 'Ra ngoài' }
+  { value: 'IN_PARTNER', label: 'Cho đối tác mượn' },
+  { value: 'OUT', label: 'Đã nghỉ việc' }
 ]
 
 export const STATUS_ADVANCE_SALARY = [
