@@ -13,6 +13,7 @@ export interface AccountType {
   active: boolean
   staff: StaffType
   roles: string[]
+  role: RoleType
 }
 
 export interface RoleType {
@@ -21,6 +22,7 @@ export interface RoleType {
   updatedAt: string
   deletedAt: string
   name: string
+  nameVI: string
   isActive: boolean
   permission: string
 }

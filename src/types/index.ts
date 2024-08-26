@@ -62,3 +62,8 @@ export interface MenuItem {
     color?: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
   }
 }
+
+export interface OptionType {
+  value: string | number
+  label: string
+}

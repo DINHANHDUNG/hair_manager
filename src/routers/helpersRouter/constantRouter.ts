@@ -26,6 +26,7 @@ const ROUTES = {
     WORKER: 'worker',
     WORKER_DETAIL: 'worker/:id',
     SALARY_ADVANCE: 'salary-advance',
+    SALARY_REFUND: 'salary-refund',
     SALARY_PAY: 'salary-pay'
   }
 }

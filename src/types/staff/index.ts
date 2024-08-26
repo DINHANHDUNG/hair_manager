@@ -1,4 +1,4 @@
-import { AccountType } from '../account'
+import { AccountType, RoleType } from '../account'
 
 export type StaffType = {
   id: number
@@ -21,6 +21,8 @@ export type StaffType = {
   representativeName: string
   representativePhone: string
   representativePosition: string
+  role: RoleType
+  roleId: number
   accountId: number
   account: AccountType
 }

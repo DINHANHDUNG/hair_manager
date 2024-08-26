@@ -39,5 +39,11 @@ export const NetWork = {
 
   //SalaryAdvance
   salaryAdvance: 'salary-advance',
-  salaryAdvanceId: (salaryAdvanceId: number) => `salary-advance/${salaryAdvanceId}`
+  salaryAdvanceId: (salaryAdvanceId: number) => `salary-advance/${salaryAdvanceId}`,
+  salaryAdvanceStatus: (salaryAdvanceId: number) => `salary-advance/${salaryAdvanceId}/status-advance`,
+
+  //SalaryRefund
+  salaryRefund: 'salary-refund',
+  salaryRefundId: (salaryRefundId: number) => `salary-refund/${salaryRefundId}`,
+  salaryRefundStatus: (salaryRefundId: number) => `salary-refund/${salaryRefundId}/status-refund`
 }

@@ -5,16 +5,13 @@ import * as yup from 'yup'
 import SubmitButton from '../../../../components/button/SubmitButton'
 import { NumericFormatCustom } from '../../../../components/input'
 import MyTextField from '../../../../components/input/MyTextField'
-import MySelect from '../../../../components/select/MySelect'
 import { gridSpacingForm } from '../../../../constants'
 
 type FormValues = {
-  position: string
   salary: string
 }
 
 const validationSchema = yup.object({
-  position: yup.string().max(255).required('Trường này là bắt buộc'),
   salary: yup.string().max(255).required('Trường này là bắt buộc')
 })
 
@@ -39,11 +36,6 @@ export default function TabSalary() {
     // handleSave(data)
   }
 
-  const selectOptions = [
-    { value: '0', label: 'Giám đốc' },
-    { value: '1', label: 'Phó giám đốc' }
-  ]
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={gridSpacingForm}>
@@ -54,17 +46,6 @@ export default function TabSalary() {
         </Grid>
       </Grid>
       <Grid container spacing={gridSpacingForm}>
-        <Grid item xs={12} sm={6} md={6} lg={6}>
-          <MySelect
-            name='position'
-            control={control}
-            label='Chức vụ'
-            errors={errors}
-            options={selectOptions}
-            variant='outlined'
-          />
-        </Grid>
-
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <MyTextField
             name='salary'

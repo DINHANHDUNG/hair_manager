@@ -124,8 +124,6 @@ const CompanyPage = React.memo(() => {
         type: 'actions',
         flex: 1,
         getActions: (param: GridRenderCellParams<CompanyType, number>) => {
-          console.log('param', param)
-
           return [
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}

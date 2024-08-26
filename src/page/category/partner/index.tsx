@@ -123,8 +123,6 @@ const PartnerPage = React.memo(() => {
         type: 'actions',
         flex: 1,
         getActions: (param: GridRenderCellParams<PartnerType, number>) => {
-          console.log('param', param)
-
           return [
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
