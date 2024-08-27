@@ -218,7 +218,7 @@ export default function TabSalary(Props: Props) {
       basicMoney: data?.basicMoney ?? null,
       officialMoney: data?.officialMoney ?? null,
       probationMoney: data?.probationMoney ?? null,
-      StaffId: dataStaff.id,
+      staffId: dataStaff.id,
       date: isoDateStr
     }
     if (idUpdate) {
