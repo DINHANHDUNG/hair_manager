@@ -89,6 +89,41 @@ export const staffApi = createApi({
         data: data
         // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
       })
+    }),
+    //Salary
+    getListSalaryStaff: builder.query({
+      query: (params: { staffId: number }) => ({
+        url: NetWork.staffSalaryList(params.staffId),
+        method: GET
+      })
+    }),
+    getSalaryStaffById: builder.query({
+      query: (params: { staffId: number }) => ({
+        url: NetWork.staffId(params.staffId),
+        method: GET
+      })
+    }),
+    addSalaryStaff: builder.mutation({
+      query: (data) => ({
+        url: NetWork.staffSalary,
+        method: POST,
+        data: data
+      })
+    }),
+    updateSalaryStaff: builder.mutation({
+      query: (data) => ({
+        url: NetWork.staffSalaryId(data.id),
+        method: PUT,
+        data: data
+      })
+    }),
+    deleteSalaryStaff: builder.mutation({
+      query: (data: { ids: Array<number> }) => ({
+        url: NetWork.staffSalary,
+        method: DELETE,
+        data: data
+        // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
+      })
     })
   })
 })
@@ -101,9 +136,16 @@ export const {
   useAddStaffMutation,
   useGetStaffByIdQuery,
   useUpdateStaffMutation,
+  //History
   useAddHistoryStaffMutation,
   useDeleteHistoryStaffMutation,
   useGetHistoryStaffByIdQuery,
   useGetListHistoryStaffQuery,
-  useUpdateHistoryStaffMutation
+  useUpdateHistoryStaffMutation,
+  //Salary
+  useAddSalaryStaffMutation,
+  useDeleteSalaryStaffMutation,
+  useGetSalaryStaffByIdQuery,
+  useGetListSalaryStaffQuery,
+  useUpdateSalaryStaffMutation
 } = staffApi

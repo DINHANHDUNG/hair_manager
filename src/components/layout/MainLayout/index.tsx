@@ -15,13 +15,14 @@ import Sidebar from './Sidebar'
 import { IconChevronRight } from '@tabler/icons-react'
 import { setMenu } from '../../../app/features/customization/customizationSlice'
 import { useAppSelector } from '../../../app/hooks'
-import { customTheme } from '../../../app/selectedStore'
+import { authStore, customTheme } from '../../../app/selectedStore'
 import { drawerWidth } from '../../../constants'
 import menuItems from '../../menu-items'
 import Breadcrumbs from '../../ui-component/extended/Breadcrumbs'
 import Customization from '../customization'
 import { useGetAccountQuery } from '../../../app/services/auth'
 import LoadingModal from '../../ui-component/LoadingModal'
+import { useEffect } from 'react'
 
 // Define the type for the props used in Main styled component
 interface MainProps {
@@ -67,8 +68,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' && pr
 // ==============================|| MAIN LAYOUT ||============================== //
 
 const MainLayout = () => {
-  const { isLoading } = useGetAccountQuery({})
-
+  const { isLoading, refetch } = useGetAccountQuery({})
+  const auth = useAppSelector(authStore)
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'))
   // Handle left drawer
@@ -77,6 +78,12 @@ const MainLayout = () => {
   const handleLeftDrawerToggle = () => {
     dispatch(setMenu({ opened: !leftDrawerOpened }))
   }
+
+  useEffect(() => {
+    if (auth.accessToken) {
+      refetch()
+    }
+  }, [auth.accessToken])
 
   return (
     <Box sx={{ display: 'flex' }}>

@@ -15,7 +15,6 @@ import { StaffType } from '../../../../types/staff'
 import TabAlertLevels from './TabAlertLevels'
 import TabChangePassword from './TabChangePassword'
 import TabInfoStaff from './TabInfo'
-import TabInfoRelationship from './TabInfoRelationship'
 import TabKPI from './TabKPI'
 import TabSalary from './TabSalary'
 import TabWorkProgress from './TabWorkProgress'
@@ -146,33 +145,33 @@ const StaffDetailPage = () => {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs variant='scrollable' value={tab} onChange={handleChangeTab} aria-label='basic tabs example'>
                 <Tab label='Thông tin cá nhân' {...a11yProps(0)} />
-                <Tab label='Người đại diện' {...a11yProps(1)} />
-                <Tab label='Lương thưởng' {...a11yProps(2)} />
-                <Tab label='Đổi mật khẩu' {...a11yProps(3)} />
-                <Tab label='Lịch sử làm việc' {...a11yProps(4)} />
-                <Tab label='Mức độ cảnh báo' {...a11yProps(5)} />
-                <Tab label='KPI' {...a11yProps(6)} />
+                {/* <Tab label='Người đại diện' {...a11yProps(1)} /> */}
+                <Tab label='Lương thưởng' {...a11yProps(1)} />
+                <Tab label='Đổi mật khẩu' {...a11yProps(2)} />
+                <Tab label='Lịch sử làm việc' {...a11yProps(3)} />
+                <Tab label='Mức độ cảnh báo' {...a11yProps(4)} />
+                <Tab label='KPI' {...a11yProps(5)} />
               </Tabs>
             </Box>
             <CustomTabPanel value={tab} index={0}>
               <TabInfoStaff data={dataStaff} reloadData={() => refetch()} />
             </CustomTabPanel>
-            <CustomTabPanel value={tab} index={1}>
+            {/* <CustomTabPanel value={tab} index={1}>
               <TabInfoRelationship data={dataStaff} reloadData={() => refetch()} />
+            </CustomTabPanel> */}
+            <CustomTabPanel value={tab} index={1}>
+              <TabSalary dataStaff={dataStaff} />
             </CustomTabPanel>
             <CustomTabPanel value={tab} index={2}>
-              <TabSalary />
-            </CustomTabPanel>
-            <CustomTabPanel value={tab} index={3}>
               <TabChangePassword data={dataStaff} />
             </CustomTabPanel>
-            <CustomTabPanel value={tab} index={4}>
+            <CustomTabPanel value={tab} index={3}>
               <TabWorkProgress dataStaff={dataStaff} />
             </CustomTabPanel>
-            <CustomTabPanel value={tab} index={5}>
+            <CustomTabPanel value={tab} index={4}>
               <TabAlertLevels />
             </CustomTabPanel>
-            <CustomTabPanel value={tab} index={6}>
+            <CustomTabPanel value={tab} index={5}>
               <TabKPI />
             </CustomTabPanel>
           </Grid>

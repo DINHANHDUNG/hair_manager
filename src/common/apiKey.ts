@@ -8,6 +8,7 @@ export const NetWork = {
   //Account
   account: 'account',
   account_changePass: 'account/change-password',
+  changePass_acc: 'staff/change-password',
   role: 'role',
 
   //Pokemon
@@ -20,6 +21,9 @@ export const NetWork = {
   staffHistory: `staff-history`,
   staffHistoryList: (staffId: number) => `staff-history/staff/${staffId}`,
   staffHistoryId: (staffHistoryId: number) => `staff-history/${staffHistoryId}`,
+  staffSalary: `salary-staff`,
+  staffSalaryList: (staffId: number) => `salary-staff/staff/${staffId}`,
+  staffSalaryId: (staffSalaryId: number) => `salary-staff/${staffSalaryId}`,
 
   //Employee
   employee: 'employee',

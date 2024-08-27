@@ -32,6 +32,13 @@ export const authApi = createApi({
         data: data
       })
     }),
+    change_pass_acc: builder.mutation({
+      query: (data) => ({
+        url: NetWork.changePass_acc,
+        method: POST,
+        data: data
+      })
+    }),
     getAccount: builder.query({
       query: () => ({
         url: NetWork.account,
@@ -40,7 +47,7 @@ export const authApi = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          dispatch(setUser(data))
+          dispatch(setUser(data?.data))
         } catch (err) {
           console.error('Get Account failed', err)
         }
@@ -56,4 +63,10 @@ export const authApi = createApi({
 })
 
 // Export hooks for usage in functional components
-export const { useLoginMutation, useGetAccountQuery, useGetRolesQuery, useChange_pass_staffMutation } = authApi
+export const {
+  useLoginMutation,
+  useGetAccountQuery,
+  useGetRolesQuery,
+  useChange_pass_staffMutation,
+  useChange_pass_accMutation
+} = authApi
