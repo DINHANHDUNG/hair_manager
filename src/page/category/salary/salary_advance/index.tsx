@@ -35,7 +35,7 @@ import FilterTableAdvanced from './FilterTableSalaryAdvance'
 import FormAddEditSalaryAdvance from './FormAddEdit'
 import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
 import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
-import { removeNullOrEmpty } from '../../../../help'
+import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
 import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
 import { currency } from '../../../../app/hooks'
 import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
@@ -122,7 +122,13 @@ const SalaryAdvancePage = React.memo(() => {
     isLoading,
     refetch
   } = useGetListSalaryAdvanceQuery(
-    removeNullOrEmpty({ page: paginationModel.page + 1, limit: paginationModel.pageSize, ...filters })
+    removeNullOrEmpty({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      ...filters,
+      dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
+      dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
+    })
   )
 
   const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()

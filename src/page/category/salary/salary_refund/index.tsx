@@ -32,7 +32,7 @@ import Toast from '../../../../components/toast'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../../../constants'
-import { removeNullOrEmpty } from '../../../../help'
+import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
 import { SalaryRefundType } from '../../../../types/salaryRefund'
 import FilterTableRefundd from './FilterTableSalaryRefund'
 import FormAddEditSalaryRefund from './FormAddEdit'
@@ -118,7 +118,13 @@ const SalaryRefundPage = React.memo(() => {
     isLoading,
     refetch
   } = useGetListSalaryRefundQuery(
-    removeNullOrEmpty({ page: paginationModel.page + 1, limit: paginationModel.pageSize, ...filters })
+    removeNullOrEmpty({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      ...filters,
+      dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
+      dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
+    })
   )
 
   const [deleteSalaryRefund, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryRefundMutation()
