@@ -39,3 +39,16 @@ export type HistoryStaffType = {
   staffId: number
   staff: StaffType
 }
+
+export type SalaryStaffType = {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  basicMoney: number
+  officialMoney: number
+  probationMoney: number
+  date: string
+  staffId: number
+  staff: StaffType
+}

@@ -29,6 +29,9 @@ type FormValues = {
   identificationCard: string
   addressOrigin: string
   roleId: number
+  representativeName: string
+  representativePhone: string
+  representativePosition: string
 }
 
 const validationSchema = yup.object({
@@ -50,6 +53,17 @@ const validationSchema = yup.object({
   ethnic: yup.string().required('Trường này là bắt buộc').max(255),
   addressOrigin: yup.string().required('Trường này là bắt buộc').max(255),
   phoneNumber: yup
+    .string()
+    .required('Trường này là bắt buộc')
+    .max(11)
+    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+  representativeName: yup
+    .string()
+    .max(255)
+    .required('Trường này là bắt buộc')
+    .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
+  representativePosition: yup.string().required('Trường này là bắt buộc').max(255),
+  representativePhone: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(11)
@@ -102,6 +116,9 @@ export default function TabInfoStaff(Props: Props) {
     setValue('addressOrigin', data?.addressOrigin)
     setValue('address', data?.address)
     setValue('roleId', data?.account?.role?.id)
+    setValue('representativeName', data?.representativeName)
+    setValue('representativePhone', data?.representativePhone)
+    setValue('representativePosition', data?.representativePosition)
     setValue('birthDay', dayjs(data?.birthDay).toString())
   }, [data])
 
@@ -116,6 +133,9 @@ export default function TabInfoStaff(Props: Props) {
     | 'phoneNumber'
     | 'ethnic'
     | 'roleId'
+    | 'representativePosition'
+    | 'representativePhone'
+    | 'representativeName'
 
   const handleMutation = (
     loading: boolean,
@@ -205,6 +225,33 @@ export default function TabInfoStaff(Props: Props) {
             label='Chức vụ'
             errors={errors}
             options={listRole}
+            variant='outlined'
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={4}>
+          <MyTextField
+            name='representativeName'
+            control={control}
+            label='Họ và tên'
+            errors={errors}
+            variant='outlined'
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={4}>
+          <MyTextField
+            name='representativePhone'
+            control={control}
+            label='Số điện thoại'
+            errors={errors}
+            variant='outlined'
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6} lg={4}>
+          <MyTextField
+            name='representativePosition'
+            control={control}
+            label='Chức vụ người đại diện'
+            errors={errors}
             variant='outlined'
           />
         </Grid>

@@ -5,12 +5,9 @@ import { useNavigate } from 'react-router-dom'
 // material-ui
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
-import Grid from '@mui/material/Grid'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -19,7 +16,6 @@ import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 
 // third-party
@@ -29,25 +25,30 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import User1 from '../../../../../assets/images/users/user-round.svg'
 
 // assets
-import { IconLogout, IconSettings, IconUser } from '@tabler/icons-react'
+import { IconLockAccess, IconLogout, IconSettings } from '@tabler/icons-react'
 import { logout } from '../../../../../app/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '../../../../../app/hooks'
-import { customTheme } from '../../../../../app/selectedStore'
+import { authStore, customTheme } from '../../../../../app/selectedStore'
 import MainCard from '../../../../ui-component/cards/MainCard'
 import Transitions from '../../../../ui-component/extended/Transitions'
+import ChangePassword from '../../../../dialog/ChangePassword'
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
   const theme = useTheme()
   const customization = useAppSelector(customTheme)
+  const auth = useAppSelector(authStore).user
+  console.log('auth', auth)
+
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [sdm, setSdm] = useState(true)
-  const [notification, setNotification] = useState(false)
+  // const [sdm, setSdm] = useState(true)
+  // const [notification, setNotification] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [open, setOpen] = useState(false)
+  const [openModalChangePass, setOpenModalChangePass] = useState(false)
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -66,6 +67,10 @@ const ProfileSection = () => {
   const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number, route = '') => {
     setSelectedIndex(index)
     handleClose(event)
+
+    if (index === 1) {
+      setOpenModalChangePass(true)
+    }
 
     if (route && route !== '') {
       navigate(route)
@@ -154,12 +159,12 @@ const ProfileSection = () => {
                   <Box sx={{ p: 2, pb: 0 }}>
                     <Stack sx={{ mb: 1 }}>
                       <Stack direction='row' spacing={0.5} alignItems='center'>
-                        <Typography variant='h4'>Good Morning,</Typography>
-                        <Typography component='span' variant='h4' sx={{ fontWeight: 400 }}>
-                          Johne Doe
-                        </Typography>
+                        <Typography variant='h4'>{auth?.staff?.name}</Typography>
+                        <Typography variant='h4'>({auth?.role?.nameVI})</Typography>
                       </Stack>
-                      <Typography variant='subtitle2'>Project Admin</Typography>
+                      <Typography component='span' variant='subtitle2' sx={{ fontWeight: 400 }}>
+                        Tài khoản: {auth?.username}
+                      </Typography>
                     </Stack>
                     {/* <OutlinedInput
                       sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
@@ -181,7 +186,7 @@ const ProfileSection = () => {
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                     <Box sx={{ p: 2, pt: 0 }}>
-                      <Divider />
+                      {/* <Divider />
                       <Card
                         sx={{
                           bgcolor: theme.palette.primary.light,
@@ -224,7 +229,7 @@ const ProfileSection = () => {
                           </Grid>
                         </CardContent>
                       </Card>
-                      <Divider />
+                      <Divider /> */}
                       <List
                         component='nav'
                         sx={{
@@ -241,17 +246,27 @@ const ProfileSection = () => {
                           }
                         }}
                       >
-                        <ListItemButton
+                        {/* <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
-                          selected={selectedIndex === 0}
+                          // selected={selectedIndex === 0}
                           onClick={(event) => handleListItemClick(event, 0, '#')}
                         >
                           <ListItemIcon>
                             <IconSettings stroke={1.5} size='1.3rem' />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant='body2'>Account Settings</Typography>} />
-                        </ListItemButton>
+                          <ListItemText primary={<Typography variant='body2'>Cài đặt tài khoản</Typography>} />
+                        </ListItemButton> */}
                         <ListItemButton
+                          sx={{ borderRadius: `${customization.borderRadius}px` }}
+                          // selected={selectedIndex === 1}
+                          onClick={(event) => handleListItemClick(event, 1, '#changepass')}
+                        >
+                          <ListItemIcon>
+                            <IconLockAccess stroke={1.5} size='1.3rem' />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography variant='body2'>Đổi mật khẩu</Typography>} />
+                        </ListItemButton>
+                        {/* <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={selectedIndex === 1}
                           onClick={(event) => handleListItemClick(event, 1, '#')}
@@ -278,7 +293,7 @@ const ProfileSection = () => {
                               </Grid>
                             }
                           />
-                        </ListItemButton>
+                        </ListItemButton> */}
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={selectedIndex === 4}
@@ -287,7 +302,7 @@ const ProfileSection = () => {
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size='1.3rem' />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant='body2'>Logout</Typography>} />
+                          <ListItemText primary={<Typography variant='body2'>Đăng xuất</Typography>} />
                         </ListItemButton>
                       </List>
                     </Box>
@@ -298,6 +313,7 @@ const ProfileSection = () => {
           </Transitions>
         )}
       </Popper>
+      <ChangePassword handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
     </>
   )
 }
