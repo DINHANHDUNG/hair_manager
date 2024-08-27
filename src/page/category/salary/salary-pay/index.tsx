@@ -1,0 +1,561 @@
+import MoneyOffOutlined from '@mui/icons-material/MoneyOffOutlined'
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import IconSearch from '@mui/icons-material/Search'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import { Button, Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import {
+  GridActionsCellItem,
+  GridCallbackDetails,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowParams,
+  GridRowSelectionModel,
+  GridRowsProp
+} from '@mui/x-data-grid'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { useDialogs } from '@toolpad/core'
+import dayjs from 'dayjs'
+import * as React from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { currency } from '../../../../app/hooks'
+import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
+import MyButton from '../../../../components/button/MyButton'
+import SelectColumn from '../../../../components/filterTableCustom/SelectColumn'
+import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
+import Toast from '../../../../components/toast'
+import MainCard from '../../../../components/ui-component/cards/MainCard'
+import { VisuallyHiddenInput } from '../../../../components/ui-component/visuallyHiddenInput'
+import { gridSpacing } from '../../../../constants'
+import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
+import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
+import { SalaryRefundType } from '../../../../types/salaryRefund'
+import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
+import FormAddEditSalaryAdvance from './FormAddEdit'
+import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
+
+const SalaryPayPage = React.memo(() => {
+  const theme = useTheme()
+  const classes = styleSalaryPayPage(theme)
+  const dialogs = useDialogs()
+  //   const navigate = useNavigate()
+  //   const theme = useTheme()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const initialPage = parseInt(searchParams.get('page') || '0') || 0
+  const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
+  const initialSearchKey = searchParams.get('searchKey') || ''
+  const initialMonth = searchParams.get('month') || ''
+  const initialStartDate = searchParams.get('dateFrom') || ''
+  const initialEndDate = searchParams.get('dateTo') || ''
+  const initialKey = searchParams.get('key') || 'nameStaff'
+
+  const [paginationModel, setPaginationModel] = React.useState({
+    pageSize: initialPageSize,
+    page: initialPage
+  })
+
+  const listFilter = [
+    // { value: 'codeStaff', label: 'Mã nhân viên' },
+    { value: 'nameStaff', label: 'Tên nhân viên' },
+    { value: 'codeEmployee', label: 'Mã công nhân' },
+    { value: 'nameEmployee', label: 'Tên công nhân' },
+    { value: 'identificationCardStaff', label: 'Căn cước nhân viên' },
+    { value: 'identificationCardEmployee', label: 'Căn cước công nhân' },
+    { value: 'phoneNumberStaff', label: 'SĐT nhân viên' },
+    { value: 'phoneNumberEmployee', label: 'SĐT công nhân' }
+  ]
+  //Start filter
+  const [openFilter, setOpenFilter] = React.useState(false)
+  const anchorRef = React.useRef<HTMLDivElement>(null)
+
+  const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
+      return
+    }
+    setOpenFilter(false)
+  }
+
+  const handleToggle = () => {
+    setOpenFilter((prevOpen) => !prevOpen)
+  }
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const fileExtension = file.name.split('.').pop()?.toLowerCase()
+      const validExtensions = ['xlsx', 'xls']
+
+      if (fileExtension && validExtensions.includes(fileExtension)) {
+        console.log('Selected file is a valid Excel file:', file)
+        // Xử lý file Excel ở đây
+      } else {
+        console.log('Selected file is not a valid Excel file.')
+        // Hiển thị thông báo lỗi cho người dùng
+      }
+    }
+  }
+
+  const [filters, setFilters] = React.useState<{ [field: string]: string }>({
+    searchKey: initialSearchKey,
+    key: initialKey,
+    dateFrom: initialStartDate,
+    dateTo: initialEndDate,
+    month: initialMonth
+  })
+
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryAdvanceType>()
+  const [rowsData, setRowsData] = React.useState<SalaryAdvanceType[]>()
+
+  const [openDetail, setOpenDetail] = React.useState(false)
+  const [openFormAdd, setOpenFormAdd] = React.useState(false)
+  const [openFormAddRefund, setOpenFormAddRefund] = React.useState(false)
+  const [openFormChangeStatusSalaryAdvance, setOpenFormChangeStatusSalaryAdvance] = React.useState(false)
+
+  const {
+    data: dataApiSalaryAdvance,
+    isLoading,
+    refetch
+  } = useGetListSalaryAdvanceQuery(
+    removeNullOrEmpty({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      ...filters,
+      dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
+      dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
+    })
+  )
+
+  const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()
+
+  const rows: GridRowsProp = rowsData || []
+  const rowTotal = dataApiSalaryAdvance?.data?.totalCount || 0
+
+  const handleClickDetail = () => {
+    setOpenDetail(!openDetail)
+  }
+
+  const handleClickOpenForm = () => {
+    setOpenFormAdd(true)
+  }
+
+  const handleCloseForm = () => {
+    setOpenFormAdd(false)
+    setItemSelectedEidt({} as SalaryAdvanceType)
+  }
+
+  const handleCloseFormRefund = () => {
+    setOpenFormAddRefund(false)
+    setItemSelectedEidt({} as SalaryAdvanceType)
+  }
+
+  const handleCloseFormChangeStatusSalaryAdvance = () => {
+    setOpenFormChangeStatusSalaryAdvance(false)
+    setItemSelectedEidt({} as SalaryAdvanceType)
+  }
+
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [field]: value
+    }))
+  }
+
+  const prevOpen = React.useRef(openFilter)
+
+  React.useEffect(() => {
+    if (prevOpen.current === true && openFilter === false) {
+      anchorRef?.current?.focus()
+    }
+
+    prevOpen.current = openFilter
+  }, [openFilter])
+
+  const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
+    console.log(rowSelectionModel, details)
+  }
+
+  const onRowClick = (params: GridRowParams) => {
+    console.log('params', params.row)
+    handleClickDetail()
+  }
+
+  const handleDelete = async (id: number) => {
+    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+      title: 'Xác nhận lại',
+      okText: 'Có',
+      cancelText: 'Hủy'
+    })
+    if (confirmed) {
+      deleteSalaryAdvance({ ids: [Number(id)] })
+    }
+  }
+
+  const data = {
+    columns: [
+      {
+        field: 'order',
+        headerName: 'No.',
+        width: 50
+      },
+      {
+        field: 'code',
+        headerName: 'Mã nhân sự',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.employeeId ? params.row.employee.name : params.row.staffId ? params.row.staff.name : ''
+      },
+      {
+        field: 'name',
+        headerName: 'Tên nhân sự',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.employeeId ? params.row.employee.name : params.row.staffId ? params.row.staff.name : ''
+      },
+      {
+        field: 'money1',
+        headerName: 'Cần thanh toán',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.money ? currency(params.row.money) : ''
+      },
+      {
+        field: 'money',
+        headerName: 'Tổng lương',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+          params.row.money ? currency(params.row.money) : ''
+      },
+      {
+        field: 'noteAdvance',
+        headerName: 'Lương tháng',
+        flex: 1
+      },
+      {
+        field: 'actions',
+        headerName: 'Hành động',
+        type: 'actions',
+        flex: 1,
+        getActions: (param: GridRenderCellParams<SalaryAdvanceType, number>) => {
+          return [
+            <GridActionsCellItem
+              icon={
+                <Tooltip title='Thanh toán'>
+                  <MoneyOffOutlined />
+                </Tooltip>
+              }
+              label='Thanh toán'
+              className='textPrimary'
+              color='inherit'
+              // onClick={() => {
+              //   setItemSelectedEidt(param.row)
+              //   handleClickOpenFormChangeStatusSalaryAdvance()
+              // }}
+            />,
+            <GridActionsCellItem
+              icon={
+                <Tooltip title='Cập nhật'>
+                  <EditOutlinedIcon />
+                </Tooltip>
+              }
+              label='Sửa'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => {
+                setItemSelectedEidt(param.row)
+                handleClickOpenForm()
+              }}
+            />,
+            <GridActionsCellItem
+              onClick={() => handleDelete(param.row.id)}
+              icon={
+                <Tooltip title='Xóa'>
+                  <DeleteOutlinedIcon />
+                </Tooltip>
+              }
+              label='Xóa'
+              className='textPrimary'
+              color='inherit'
+              // showInMenu
+            />
+          ]
+        }
+      }
+    ]
+  }
+
+  const renderColumn = (colDef: { field: string; headerName: string }) => {
+    switch (colDef.field) {
+      default:
+        return {
+          ...colDef,
+          minWidth: 120
+        }
+    }
+  }
+
+  const columns: GridColDef[] = React.useMemo(
+    () => data.columns?.map((colDef) => renderColumn(colDef)),
+    [data.columns, filters]
+  )
+
+  const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
+    return (
+      <Grid item xs={12} sm={6} md={6} lg={3}>
+        <Card
+          sx={{
+            bgcolor: theme.palette.background.paper,
+            height: '100%'
+          }}
+        >
+          <CardContent className={classes.CardContent}>{element}</CardContent>
+        </Card>
+      </Grid>
+    )
+  }
+
+  const handleMutation = (
+    loading: boolean,
+    isError: boolean,
+    isSuccess: boolean,
+    successMessage: string,
+    errorMessage: string
+  ) => {
+    if (!loading) {
+      isError && Toast({ text: errorMessage, variant: 'error' })
+      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+    }
+  }
+
+  React.useEffect(() => {
+    // Tạo một object params rỗng
+    const params: { [key: string]: string } = {}
+
+    // Tạo một mảng các trường cần kiểm tra
+    const fields = {
+      page: paginationModel.page.toString(),
+      pageSize: paginationModel.pageSize.toString(),
+      ...filters
+    } as { [key: string]: string } // Sử dụng type assertion
+
+    // Lặp qua các trường và chỉ thêm vào params nếu trường đó hợp lệ
+    Object.keys(fields).forEach((field) => {
+      const value = fields[field]
+      if (value) {
+        params[field] = value
+      }
+    })
+
+    setSearchParams(params)
+  }, [paginationModel, filters, setSearchParams])
+
+  React.useEffect(() => {
+    // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+    const updatedRows =
+      dataApiSalaryAdvance?.data?.rows?.map((row: SalaryAdvanceType, index: number) => ({
+        ...row,
+        order: paginationModel.page * paginationModel.pageSize + index + 1
+      })) || []
+    setRowsData(updatedRows)
+  }, [dataApiSalaryAdvance])
+
+  React.useEffect(() => {
+    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+  }, [loadingDelete])
+
+  return (
+    <>
+      <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Tổng số nhân sự'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
+                {'7652'}
+              </Typography>
+              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Ứng lương'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
+                {'60.000.000 VNĐ'}
+              </Typography>
+              <Typography variant='caption'>{'Tăng 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Hoàn ứng'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
+                {'60.000.000 VNĐ'}
+              </Typography>
+              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
+            </Grid>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+              <Typography className={classes.TextCard} variant='subtitle1'>
+                {'Còn lại'}
+              </Typography>
+              <Typography className={classes.TextCardValue} variant='h4'>
+                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
+                {'120.000.000 VNĐ'}
+              </Typography>
+              {/* <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography> */}
+            </Grid>
+          }
+        />
+      </Grid>
+      <MainCard title={'Thanh toán lương nhân sự'} sx={{ height: '84%' }}>
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
+            <OutlinedInput
+              size='small'
+              id='search-input'
+              startAdornment={<IconSearch sx={{ mr: 1 }} />}
+              placeholder='Tìm kiếm'
+              defaultValue={filters?.['searchKey']}
+              onChange={(e) => handleFilterChange('searchKey', e.target.value)}
+              fullWidth
+              sx={{ mr: 1 }}
+            />
+            <LocalizationProvider adapterLocale='vi' dateAdapter={AdapterDayjs}>
+              <DatePicker
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    onKeyDown: (e) => e.preventDefault() // Ngăn không cho xóa bằng bàn phím
+                  }
+                }}
+                value={dayjs(filters.month || new Date())}
+                openTo='month'
+                views={['month']}
+                onChange={(e) => handleFilterChange('month', e?.toString() || '')}
+              />
+            </LocalizationProvider>
+
+            <Tooltip ref={anchorRef} title='Lọc theo trường'>
+              <IconButton color='inherit' size='small' onClick={handleToggle}>
+                <SettingsOutlinedIcon fontSize='medium' />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div>
+              <MyButton component='label' role={undefined} variant='outlined' tabIndex={-1} sx={{ mr: 1 }}>
+                Import file
+                <VisuallyHiddenInput type='file' onChange={handleImport} />
+              </MyButton>
+              <Button variant='outlined' sx={{ mr: 1 }}>
+                Thanh toán
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
+
+        <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
+          <TableDataGrid
+            rows={rows}
+            columns={columns}
+            isLoading={isLoading}
+            paginationModel={paginationModel}
+            setPaginationModel={(model) => {
+              setPaginationModel(model)
+            }}
+            onRowSelectionChange={onRowSelectionChange}
+            onRowClick={onRowClick}
+            filterMode='server'
+            headerFilters={false}
+            totalCount={rowTotal}
+            checkboxSelection
+            // otherProps={{
+            //   getRowClassName: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
+            //     !params.row.isActive ? 'even' : 'odd'
+            // }}
+          />
+        </div>
+
+        <FormAddEditSalaryAdvance
+          itemSelectedEdit={itemSelectedEdit}
+          open={openFormAdd}
+          handleClose={handleCloseForm}
+          handleSave={() => {
+            refetch()
+            handleCloseForm()
+          }}
+        />
+
+        <FormAddEditSalaryRefund
+          itemSelectedEdit={{} as SalaryRefundType}
+          itemSelectedSalaryAdvance={itemSelectedEdit}
+          open={openFormAddRefund}
+          handleClose={handleCloseFormRefund}
+          handleSave={() => {
+            refetch()
+            handleCloseFormRefund()
+          }}
+        />
+
+        <FormChangeStatusSalaryAdvance
+          itemSelectedEdit={itemSelectedEdit}
+          open={openFormChangeStatusSalaryAdvance}
+          handleClose={handleCloseFormChangeStatusSalaryAdvance}
+          handleSave={() => {
+            refetch()
+            handleCloseFormChangeStatusSalaryAdvance()
+          }}
+        />
+
+        <SelectColumn
+          handleComfirm={(value) => {
+            handleFilterChange('key', value)
+            setOpenFilter(false)
+          }}
+          value={filters?.key}
+          list={listFilter}
+          open={openFilter}
+          anchorRef={anchorRef}
+          handleClose={handleClose}
+        />
+      </MainCard>
+    </>
+  )
+})
+
+export default SalaryPayPage
+
+const styleSalaryPayPage = makeStyles({
+  CardContent: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' },
+  TextCard: { fontWeight: '500', fontSize: 13, marginBottom: 2 },
+  TextCardValue: { marginBottom: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' },
+  iconArrow: { marginRight: 2 },
+  CardContent1: (theme: Theme) => ({
+    backgroundColor: theme.palette.background.paper,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    flexWrap: 'wrap'
+  })
+})
