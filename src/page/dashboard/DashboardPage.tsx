@@ -11,6 +11,7 @@ import { FooterBoxSection } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
+import { useGetStaticStaffTotalQuery } from '../../app/services/statistic'
 
 const Dashboard = React.memo(() => {
   const theme = useTheme()
@@ -20,6 +21,10 @@ const Dashboard = React.memo(() => {
     today.startOf('month'),
     today.endOf('month')
   ])
+
+  const { data: dataToTalStaff } = useGetStaticStaffTotalQuery({})
+  const percentageIncreaseStaff = dataToTalStaff?.data?.percentageIncrease
+  const currentMonthStaff = dataToTalStaff?.data?.currentMonth
 
   const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
     return (
@@ -61,7 +66,15 @@ const Dashboard = React.memo(() => {
                 icon={<IconUser stroke={1.5} size='1.3rem' />}
                 textTitle='Tổng số nhân viên'
               />
-              <FooterBoxSection elementLeft={'50-'} elementRight={'-20%'} colorRight={theme.palette.error.dark} />
+              <FooterBoxSection
+                elementLeft={currentMonthStaff || 0}
+                elementRight={percentageIncreaseStaff ? percentageIncreaseStaff.toString() + '%' : 0}
+                colorRight={
+                  percentageIncreaseStaff && percentageIncreaseStaff > 0
+                    ? theme.palette.success.dark
+                    : theme.palette.error.dark
+                }
+              />
             </>
           }
         />
