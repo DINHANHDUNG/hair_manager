@@ -46,9 +46,9 @@ type FormValues = {
 type Field = 'type' | 'date' | 'note' | 'status'
 
 const validationSchema = yup.object({
-  note: yup.string().max(255).required('Trường này là bắt buộc'),
-  type: yup.string().max(255).required('Trường này là bắt buộc'),
-  status: yup.string().max(255).required('Trường này là bắt buộc'),
+  note: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  type: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  status: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   date: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng')
 })
 

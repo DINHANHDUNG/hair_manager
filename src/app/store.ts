@@ -1,7 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
+
+//Slice
 import counterReducer from './features/counter/counterSlice'
 import authReducer from './features/auth/authSlice'
 import customizationReducer from './features/customization/customizationSlice'
+
+//Api
 import { pokemonApi } from './services/pokemon'
 import { authApi } from './services/auth'
 import { staffApi } from './services/staff'
@@ -10,6 +14,7 @@ import { partnerApi } from './services/partner'
 import { employeeApi } from './services/employee'
 import { salaryAdvanceApi } from './services/salaryAdvance'
 import { salaryRefundApi } from './services/salaryRefund'
+import { salaryPayApi } from './services/salaryPay'
 
 export const store = configureStore({
   reducer: {
@@ -24,7 +29,8 @@ export const store = configureStore({
     [partnerApi.reducerPath]: partnerApi.reducer,
     [employeeApi.reducerPath]: employeeApi.reducer,
     [salaryAdvanceApi.reducerPath]: salaryAdvanceApi.reducer,
-    [salaryRefundApi.reducerPath]: salaryRefundApi.reducer
+    [salaryRefundApi.reducerPath]: salaryRefundApi.reducer,
+    [salaryPayApi.reducerPath]: salaryPayApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -35,7 +41,8 @@ export const store = configureStore({
       partnerApi.middleware,
       employeeApi.middleware,
       salaryAdvanceApi.middleware,
-      salaryRefundApi.middleware
+      salaryRefundApi.middleware,
+      salaryPayApi.middleware
     )
 })
 

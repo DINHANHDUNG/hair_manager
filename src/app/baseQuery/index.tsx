@@ -30,9 +30,9 @@ export const axiosBaseQuery: BaseQueryFn<
       data,
       params,
       headers: {
-        ...headers,
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        ...headers
       }
     })
     return { data: result.data }

@@ -22,36 +22,36 @@ type FormValues = {
   name: string
   gender: string
   birthDay: string
-  email: string
-  address: string
+  email?: string
+  address?: string
   phoneNumber: string
-  ethnic: string
+  ethnic?: string
   identificationCard: string
-  addressOrigin: string
+  addressOrigin?: string
   roleId: number
-  representativeName: string
-  representativePhone: string
-  representativePosition: string
+  representativeName?: string
+  representativePhone?: string
+  representativePosition?: string
 }
 
 const validationSchema = yup.object({
   name: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
   gender: yup.string().required('Trường này là bắt buộc'),
   birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  email: yup.string().required('Trường này là bắt buộc').email('Email không hợp lệ'),
-  address: yup.string().required('Trường này là bắt buộc').max(255),
-  roleId: yup.number().required('Trường này là bắt buộc').max(255),
+  email: yup.string().email('Email không hợp lệ'),
+  address: yup.string().max(255, 'Độ dài không được quá 255'),
+  roleId: yup.number().required('Trường này là bắt buộc').max(255, 'Độ dài không được quá 255'),
   identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .matches(VALIDATE.cccdRegex, 'Vui lòng nhập đúng định dạng'),
-  ethnic: yup.string().required('Trường này là bắt buộc').max(255),
-  addressOrigin: yup.string().required('Trường này là bắt buộc').max(255),
+  ethnic: yup.string().max(255, 'Độ dài không được quá 255'),
+  addressOrigin: yup.string().max(255, 'Độ dài không được quá 255'),
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
@@ -59,13 +59,16 @@ const validationSchema = yup.object({
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
   representativeName: yup
     .string()
-    .max(255)
-    .required('Trường này là bắt buộc')
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+    .max(255, 'Độ dài không được quá 255')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
-  representativePosition: yup.string().required('Trường này là bắt buộc').max(255),
+  representativePosition: yup
+    .string()
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+    .max(255, 'Độ dài không được quá 255'),
   representativePhone: yup
     .string()
-    .required('Trường này là bắt buộc')
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng')
 })
@@ -98,7 +101,7 @@ export default function TabInfoStaff(Props: Props) {
     const date = moment(value.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
     console.log(isoDateStr, moment(isoDateStr).format('DD/MM/YYYY'))
-    updateStaff({ ...value, id: data.id, birthDay: isoDateStr })
+    updateStaff({ ...data, ...value, id: data.id, birthDay: isoDateStr })
     // handleSave(data)
   }
 

@@ -57,16 +57,16 @@ const validationSchema = yup.object({
   code: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .matches(VALIDATE.noSpace, 'Vui lòng nhập đúng định dạng'),
   name: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
   birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  address: yup.string().max(255).optional(),
-  addressOrigin: yup.string().max(255).optional(),
+  address: yup.string().max(255, 'Độ dài không được quá 255').optional(),
+  addressOrigin: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
@@ -74,18 +74,18 @@ const validationSchema = yup.object({
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
   email: yup.string().email('Email không hợp lệ').optional(),
   gender: yup.string().required('Trường này là bắt buộc'),
-  ethnic: yup.string().max(255).optional(),
+  ethnic: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .matches(VALIDATE.cccdRegex, 'Vui lòng nhập đúng định dạng'),
-  representativeName: yup.string().max(255).optional(),
+  representativeName: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   representativePhone: yup
     .string()
     .max(11)
     .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRegex.test(value)),
-  representativePosition: yup.string().max(255).optional()
+  representativePosition: yup.string().max(255, 'Độ dài không được quá 255').optional()
 })
 
 export default function FormAddEditWorker(Props: Props) {

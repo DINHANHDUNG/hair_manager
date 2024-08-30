@@ -1,108 +1,88 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
-import dayjs from 'dayjs'
-import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { convertDataLabel } from '../../../../app/hooks'
 import { useGetListEmployeeQuery } from '../../../../app/services/employee'
 import {
-  useAddSalaryAdvanceMutation,
-  useGetSalaryAdvanceByIdQuery,
-  useUpdateSalaryAdvanceMutation
-} from '../../../../app/services/salaryAdvance'
+  useAddSalaryPayMutation,
+  useGetSalaryPayByIdQuery,
+  useUpdateSalaryPayMutation
+} from '../../../../app/services/salaryPay'
 import { useGetListStaffQuery } from '../../../../app/services/staff'
-import { OPTION_COMPLETION, OPTION_HUMAN_RESOURCES, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
-import { VALIDATE } from '../../../../common/validate'
 import MyButton from '../../../../components/button/MyButton'
 import SubmitButton from '../../../../components/button/SubmitButton'
-import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../../components/dialog/CustomDialog'
 import { NumericFormatCustom } from '../../../../components/input'
 import MyTextField from '../../../../components/input/MyTextField'
 import MyAutocomplete from '../../../../components/select/MyAutocomplete'
-import MySelect from '../../../../components/select/MySelect'
 import Toast from '../../../../components/toast'
 import { gridSpacingForm } from '../../../../constants'
-import { OptionType } from '../../../../types'
-import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
+import { SalaryPayType } from '../../../../types/SalaryPay'
 interface Props {
   open: boolean
   handleClose: () => void
   handleSave: () => void
-  itemSelectedEdit?: SalaryAdvanceType
+  itemSelectedEdit?: SalaryPayType
 }
 
-type Field =
-  | 'money'
-  | 'dateAdvance'
-  | 'isRefund'
-  | 'noteAdvance'
-  | 'statusAdvance'
-  | 'staffId'
-  | 'employeeId'
-  | 'isStaff'
+type Field = 'totalMoney' | 'totalPayment' | 'note' | 'staffId' | 'employeeId' | 'isStaff'
 
 type FormValues = {
-  money: number
-  dateAdvance: string
-  isRefund: boolean
-  noteAdvance: string
-  statusAdvance: string
-  isStaff: string
+  totalMoney: number
+  totalPayment: number
+  note: string
+  isStaff?: string
   staffId?: object | undefined
   employeeId?: object | undefined
 }
 
 const validationSchema = yup.object({
-  money: yup
+  totalMoney: yup
     .number()
     .transform((value, originalValue) => (originalValue === '' ? null : value))
     .typeError('Trường này phải là số')
     .required('Trường này là bắt buộc'),
-  dateAdvance: yup
-    .string()
-    .required('Trường này là bắt buộc')
-    .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  isRefund: yup.boolean().required('Trường này là bắt buộc').typeError('Trường này là bắt buộc'),
-  noteAdvance: yup.string().max(255).required('Trường này là bắt buộc'),
-  statusAdvance: yup.string().max(255).required('Trường này là bắt buộc'),
-  isStaff: yup.string().required('Trường này là bắt buộc'),
+  totalPayment: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === '' ? null : value))
+    .typeError('Trường này phải là số')
+    .required('Trường này là bắt buộc'),
+  note: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  isStaff: yup.string(),
   staffId: yup.lazy((_, context) => {
     if (context.parent.isStaff === 'STAFF') {
-      return yup.object().required('Trường này là bắt buộc')
+      return yup.object().required('Không tìm thấy nhân viên')
     }
     return yup.object().optional()
   }),
   employeeId: yup.lazy((_, context) => {
     if (context.parent.isStaff === 'EMPLOYEE') {
-      return yup.object().required('Trường này là bắt buộc')
+      return yup.object().required('Không tìm thấy công nhân')
     }
     return yup.object().optional()
   })
 })
 
-export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
-  const [addSalaryAdvance, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
-    useAddSalaryAdvanceMutation()
+export default function FormAddEditSalaryPay({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
+  const [addSalaryPay, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
+    useAddSalaryPayMutation()
   const {
     data: fetchData,
     isLoading,
     refetch
-  } = useGetSalaryAdvanceByIdQuery(
+  } = useGetSalaryPayByIdQuery(
     {
-      salaryAdvanceId: itemSelectedEdit?.id || 0
+      salaryPayId: itemSelectedEdit?.id || 0
     },
     {
       skip: !itemSelectedEdit?.id
     }
   )
 
-  const [
-    editSalaryAdvance,
-    { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }
-  ] = useUpdateSalaryAdvanceMutation()
+  const [editSalaryPay, { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }] =
+    useUpdateSalaryPayMutation()
 
   const { data: dataApiEmployee } = useGetListEmployeeQuery({})
   const { data: dataApiStaff } = useGetListStaffQuery({})
@@ -123,26 +103,21 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
   })
 
   const onSubmit: SubmitHandler<FormValues> = (value) => {
-    const date = moment(value.dateAdvance).startOf('day')
-    const isoDateStr = date?.toISOString()
-    const staff = value?.staffId as OptionType
-    const employee = value?.employeeId as OptionType
-    const check = value.isStaff === 'STAFF'
-    console.log(check, employee, staff)
+    // const staff = value?.staffId as OptionType
+    // const employee = value?.employeeId as OptionType
+    // const check = value.isStaff === 'STAFF'
 
     if (itemSelectedEdit?.id)
-      return editSalaryAdvance({
-        ...value,
-        id: itemSelectedEdit.id,
-        dateAdvance: isoDateStr,
-        staffId: check ? staff.value : null,
-        employeeId: !check ? employee.value : null
+      return editSalaryPay({
+        totalMoney: value.totalMoney,
+        totalPayment: value.totalPayment,
+        note: value.note,
+        id: itemSelectedEdit.id
       })
-    addSalaryAdvance({
-      ...value,
-      dateAdvance: isoDateStr,
-      staffId: check ? staff.value : null,
-      employeeId: !check ? employee.value : null
+    addSalaryPay({
+      totalMoney: value.totalMoney,
+      totalPayment: value.totalPayment,
+      note: value.note
     })
   }
 
@@ -206,11 +181,9 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     if (!isLoading && fetchData?.data) {
       const newData = fetchData?.data
       setValue('isStaff', newData?.employeeId ? 'EMPLOYEE' : newData?.staffId ? 'STAFF' : '')
-      setValue('money', newData?.money || '')
-      setValue('dateAdvance', dayjs(newData?.dateAdvance).toString())
-      setValue('isRefund', newData?.isRefund || false)
-      setValue('noteAdvance', newData?.noteAdvance || '')
-      setValue('statusAdvance', newData?.statusAdvance)
+      setValue('totalMoney', newData?.totalMoney || '')
+      setValue('totalPayment', newData?.totalPayment || '')
+      setValue('note', newData?.note || '')
       setValue('staffId', newData?.staffId ? { value: newData?.staff.id, label: newData?.staff.name } : {})
       setValue('employeeId', newData?.employeeId ? { value: newData?.employee.id, label: newData?.employee.name } : {})
     }
@@ -226,7 +199,7 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
 
   return (
     <CustomDialog
-      title={itemSelectedEdit?.id ? 'Chỉnh sửa ứng lương' : 'Thêm mới ứng lương'}
+      title={itemSelectedEdit?.id ? 'Chỉnh sửa thanh toán lương' : 'Thêm mới thanh toán lương'}
       open={open}
       onClose={handleClose}
       maxWidth='md'
@@ -234,27 +207,29 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
+          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
             <MySelect
               name='isStaff'
               control={control}
               label='Nhân sự'
               errors={errors}
               options={OPTION_HUMAN_RESOURCES}
+              disabled
             />
-          </Grid>
+          </Grid> */}
           {isStaff === 'STAFF' && (
             <Grid item xs={12} sm={12} md={12} lg={6}>
               <MyAutocomplete
                 name='staffId'
                 control={control}
-                label='Chọn nhân viên'
+                label='Nhân viên'
                 errors={errors}
                 options={dataOptionStaff}
                 getOptionSelected={(option, value) => {
                   return option.value === value.value
                 }}
                 textFieldProps={{ variant: 'standard' }}
+                disabled
               />
             </Grid>
           )}
@@ -263,19 +238,20 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
               <MyAutocomplete
                 name='employeeId'
                 control={control}
-                label='Chọn công nhân'
+                label='Công nhân'
                 errors={errors}
                 options={dataOptionEmployee}
                 getOptionSelected={(option, value) => {
                   return option.value === value.value
                 }}
                 textFieldProps={{ variant: 'standard' }}
+                disabled
               />
             </Grid>
           )}
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField
-              name='money'
+              name='totalMoney'
               control={control}
               label='Số tiền'
               errors={errors}
@@ -288,29 +264,21 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyDatePicker
-              name='dateAdvance'
+            <MyTextField
+              name='totalPayment'
               control={control}
-              label='Ngày'
+              label='Số tiền'
               errors={errors}
-              variant='standard'
-              //   defaultValue={dayjs()}
+              textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
+              InputProps={{
+                /* eslint-disable @typescript-eslint/no-explicit-any */
+                inputComponent: NumericFormatCustom as any
+                /* eslint-enable @typescript-eslint/no-explicit-any */
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='isRefund' control={control} label='Hoàn ứng' errors={errors} options={OPTION_COMPLETION} />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect
-              name='statusAdvance'
-              control={control}
-              label='Tình trạng hoàn ứng'
-              errors={errors}
-              options={STATUS_ADVANCE_SALARY}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='noteAdvance' control={control} label='Ghi chú' errors={errors} />
+            <MyTextField name='note' control={control} label='Ghi chú' errors={errors} />
           </Grid>
         </Grid>
         <Grid container spacing={gridSpacingForm} sx={{ mt: 2 }}>

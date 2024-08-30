@@ -14,10 +14,10 @@ import { StaffType } from '../../../../types/staff'
 const validationSchema = yup.object({
   representativeName: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
-  representativePosition: yup.string().required('Trường này là bắt buộc').max(255),
+  representativePosition: yup.string().required('Trường này là bắt buộc').max(255, 'Độ dài không được quá 255'),
   representativePhone: yup
     .string()
     .required('Trường này là bắt buộc')

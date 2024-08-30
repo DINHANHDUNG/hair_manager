@@ -88,8 +88,8 @@ const AuthLogin = ({ ...others }) => {
       submit: null
     },
     validationSchema: Yup.object().shape({
-      username: Yup.string().max(255).required('Vui lòng nhập tài khoản'),
-      password: Yup.string().max(255).required('Vui lòng nhập mật khẩu')
+      username: Yup.string().max(255, 'Độ dài không được quá 255').required('Vui lòng nhập tài khoản'),
+      password: Yup.string().max(255, 'Độ dài không được quá 255').required('Vui lòng nhập mật khẩu')
     }),
     onSubmit: (values, { setSubmitting }) => {
       login({

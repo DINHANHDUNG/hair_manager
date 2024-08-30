@@ -1,4 +1,5 @@
 export const API_URL = process.env.REACT_APP_BASE_URL ?? ''
+export const URL_FILE_EXCEL = process.env.REACT_APP_URL_FILE_EXCEL ?? ''
 
 export const NetWork = {
   //Admin
@@ -49,5 +50,11 @@ export const NetWork = {
   //SalaryRefund
   salaryRefund: 'salary-refund',
   salaryRefundId: (salaryRefundId: number) => `salary-refund/${salaryRefundId}`,
-  salaryRefundStatus: (salaryRefundId: number) => `salary-refund/${salaryRefundId}/status-refund`
+  salaryRefundStatus: (salaryRefundId: number) => `salary-refund/${salaryRefundId}/status-refund`,
+
+  //SalaryPay
+  salaryPay: 'salary',
+  salaryPayUpload: 'salary/upload',
+  salaryPayId: (salaryPayId: number) => `salary/${salaryPayId}`,
+  salaryPayStatus: (salaryPayId: number) => `salary/${salaryPayId}/status-advance`
 }

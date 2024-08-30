@@ -22,15 +22,15 @@ type FormValues = {
 type Field = 'newPassword' | 'repeatPassword'
 
 const validationSchema = yup.object({
-  // oldPassword: yup.string().max(255).required('Trường này là bắt buộc'),
+  // oldPassword: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   newPassword: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.passwordRegex, 'Vui lòng nhập đúng định dạng'),
   repeatPassword: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.passwordRegex, 'Vui lòng nhập đúng định dạng')
     .oneOf([yup.ref('newPassword')], 'Mật khẩu xác nhận không khớp')

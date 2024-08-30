@@ -36,25 +36,25 @@ type FormValues = {
 }
 
 const validationSchema = yup.object({
-  code: yup.string().max(255).optional(),
-  name: yup.string().max(255).required('Trường này là bắt buộc'),
-  address: yup.string().max(255).required('Trường này là bắt buộc'),
+  code: yup.string().max(255, 'Độ dài không được quá 255').optional(),
+  name: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  address: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   taxCode: yup.string().required('Trường này là bắt buộc'),
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
-  representativeName: yup.string().max(255).optional(),
-  representativePosition: yup.string().max(255).optional(),
+  representativeName: yup.string().max(255, 'Độ dài không được quá 255').optional(),
+  representativePosition: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   representativePhone: yup
     .string()
     .max(11)
     .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRegex.test(value))
     .optional(),
-  note: yup.string().max(255).optional(),
+  note: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   email: yup.string().email('Vui lòng nhập đúng định dạng email').optional(),
-  industryName: yup.string().max(255).optional()
+  industryName: yup.string().max(255, 'Độ dài không được quá 255').optional()
 })
 
 export default function FormAddEditCompany({ open, handleClose, handleSave, itemSelectedEdit }: Props) {

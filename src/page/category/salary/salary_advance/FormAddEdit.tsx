@@ -66,8 +66,8 @@ const validationSchema = yup.object({
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
   isRefund: yup.boolean().required('Trường này là bắt buộc').typeError('Trường này là bắt buộc'),
-  noteAdvance: yup.string().max(255).required('Trường này là bắt buộc'),
-  statusAdvance: yup.string().max(255).required('Trường này là bắt buộc'),
+  noteAdvance: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  statusAdvance: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   isStaff: yup.string().required('Trường này là bắt buộc'),
   staffId: yup.lazy((_, context) => {
     if (context.parent.isStaff === 'STAFF') {
