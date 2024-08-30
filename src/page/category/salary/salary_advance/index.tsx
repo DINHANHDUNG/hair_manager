@@ -1,12 +1,25 @@
+import MoneyOutlined from '@mui/icons-material/AddBoxOutlined'
+import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
-import MoneyOutlined from '@mui/icons-material/AddBoxOutlined'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Button, Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
+import {
+  Button,
+  Card,
+  CardContent,
+  Collapse,
+  Grid,
+  IconButton,
+  OutlinedInput,
+  Theme,
+  Tooltip,
+  Typography
+} from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
 import { Box } from '@mui/system'
@@ -19,11 +32,13 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { currency } from '../../../../app/hooks'
+import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
+import { useGetStaticSalaryAdvanceQuery } from '../../../../app/services/statistic'
 import { OPTION_COMPLETION, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
 import SelectColumn from '../../../../components/filterTableCustom/SelectColumn'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
@@ -31,15 +46,13 @@ import Toast from '../../../../components/toast'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../../../constants'
+import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
+import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
+import { SalaryRefundType } from '../../../../types/salaryRefund'
+import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
 import FilterTableAdvanced from './FilterTableSalaryAdvance'
 import FormAddEditSalaryAdvance from './FormAddEdit'
-import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
-import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
-import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
 import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
-import { currency } from '../../../../app/hooks'
-import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
-import { SalaryRefundType } from '../../../../types/salaryRefund'
 
 const SalaryAdvancePage = React.memo(() => {
   const theme = useTheme()
@@ -77,6 +90,7 @@ const SalaryAdvancePage = React.memo(() => {
   const [openFilter, setOpenFilter] = React.useState(false)
   const anchorRef = React.useRef<HTMLDivElement>(null)
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
+  const [openStatistics, setOpenStatistics] = React.useState(false)
   const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
 
   const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -131,6 +145,11 @@ const SalaryAdvancePage = React.memo(() => {
   )
 
   const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()
+
+  const { data: dataStaticSalaryAdvance } = useGetStaticSalaryAdvanceQuery({})
+  const totalSalaryAdvance = dataStaticSalaryAdvance?.data?.totalSalaryAdvance || 0 //Đã ứng
+  const totalSalaryRefund = dataStaticSalaryAdvance?.data?.totalSalaryRefund || 0 //Đã hoàn
+  const totalSalaryRemaining = dataStaticSalaryAdvance?.data?.totalSalaryRemaining || 0 //Chưa ứng
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiSalaryAdvance?.data?.totalCount || 0
@@ -392,7 +411,7 @@ const SalaryAdvancePage = React.memo(() => {
 
   const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
     return (
-      <Grid item xs={12} sm={6} md={6} lg={3}>
+      <Grid item xs={12} sm={6} md={6} lg={4}>
         <Card
           sx={{
             bgcolor: theme.palette.background.paper,
@@ -456,64 +475,49 @@ const SalaryAdvancePage = React.memo(() => {
 
   return (
     <>
-      <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Tổng số nhân sự'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                {'7652'}
-              </Typography>
-              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Ứng lương'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                {'60.000.000 VNĐ'}
-              </Typography>
-              <Typography variant='caption'>{'Tăng 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Hoàn ứng'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                {'60.000.000 VNĐ'}
-              </Typography>
-              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Còn lại'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                {'120.000.000 VNĐ'}
-              </Typography>
-              {/* <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography> */}
-            </Grid>
-          }
-        />
-      </Grid>
+      <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
+        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+      </IconButton>
+      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
+        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+          <CardContentBoxSection
+            element={
+              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                <Typography className={classes.TextCard} variant='subtitle1'>
+                  {'Tổng tiền đã ứng'}
+                </Typography>
+                <Typography className={classes.TextCardValue} variant='h4'>
+                  {totalSalaryAdvance}
+                </Typography>
+              </Grid>
+            }
+          />
+          <CardContentBoxSection
+            element={
+              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                <Typography className={classes.TextCard} variant='subtitle1'>
+                  {'Tổng tiền đã hoàn'}
+                </Typography>
+                <Typography className={classes.TextCardValue} variant='h4'>
+                  {totalSalaryRefund}
+                </Typography>
+              </Grid>
+            }
+          />
+          <CardContentBoxSection
+            element={
+              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                <Typography className={classes.TextCard} variant='subtitle1'>
+                  {'Tổng tiền chưa ứng'}
+                </Typography>
+                <Typography className={classes.TextCardValue} variant='h4'>
+                  {totalSalaryRemaining}
+                </Typography>
+              </Grid>
+            }
+          />
+        </Grid>
+      </Collapse>
       <MainCard title={'Ứng lương nhân sự'} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>

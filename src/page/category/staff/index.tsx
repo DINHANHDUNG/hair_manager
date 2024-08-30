@@ -1,9 +1,11 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput, Tooltip } from '@mui/material'
+import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import {
   GridActionsCellItem,
@@ -14,11 +16,14 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
+import { useGetStaticStaffDetailQuery } from '../../../app/services/statistic'
 import { OPTIONGENDER, OPTIONTYPEWORK } from '../../../common/contants'
+import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
@@ -28,7 +33,6 @@ import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { StaffType } from '../../../types/staff'
 import DetailStaffDrawer from './DetailStaffDrawer'
 import FormAddStaff from './FormAddStaff'
-import { useDialogs } from '@toolpad/core'
 
 const StaffPage = React.memo(() => {
   const navigate = useNavigate()
@@ -53,6 +57,7 @@ const StaffPage = React.memo(() => {
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
+  const [openStatistics, setOpenStatistics] = React.useState(false)
 
   const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
   const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
@@ -67,6 +72,14 @@ const StaffPage = React.memo(() => {
     limit: paginationModel.pageSize,
     ...filters
   })
+
+  const { data: dataStaticStaffDetail } = useGetStaticStaffDetailQuery({})
+  const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ
+  const countStatusStop = dataStaticStaffDetail?.data?.countStatusStop || 0 //Tạm nghỉ
+  const countStatusWorking = dataStaticStaffDetail?.data?.countStatusWorking || 0 //Đang làm việc
+  const countTypeOfficial = dataStaticStaffDetail?.data?.countTypeOfficial || 0 //Chính thức
+  const countTypePartTime = dataStaticStaffDetail?.data?.countTypePartTime || 0 //Bán thời gian
+  const countTypeProbation = dataStaticStaffDetail?.data?.countTypeProbation || 0 //Thử việc
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiStaff?.data?.totalCount || 0
@@ -263,6 +276,19 @@ const StaffPage = React.memo(() => {
 
   return (
     <>
+      <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
+        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+      </IconButton>
+      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
+        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+          <CardContentBoxSection title={'Đang làm việc'} content={countStatusWorking} />
+          <CardContentBoxSection title={'Đã nghỉ'} content={countStatusOut} />
+          <CardContentBoxSection title={'Tạm nghỉ'} content={countStatusStop} />
+          <CardContentBoxSection title={'Chính thức'} content={countTypeOfficial} />
+          <CardContentBoxSection title={'Thử việc'} content={countTypeProbation} />
+          <CardContentBoxSection title={'Bán thời gian'} content={countTypePartTime} />
+        </Grid>
+      </Collapse>
       <MainCard title={'Danh sách nhân viên'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>

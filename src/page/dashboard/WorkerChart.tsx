@@ -1,25 +1,44 @@
 import { Bar } from 'react-chartjs-2'
+import { useGetStaticEmployeeByMonthQuery } from '../../app/services/statistic'
+import { StaticEmployeeByMonthType } from '../../types/statistic'
 
 export const WorkerChart = () => {
+  const { data: dataStaticEmployeeByMonth } = useGetStaticEmployeeByMonthQuery({})
+  const dataAPI = dataStaticEmployeeByMonth?.data || []
+  const labels = [
+    'Tháng 1',
+    'Tháng 2',
+    'Tháng 3',
+    'Tháng 4',
+    'Tháng 5',
+    'Tháng 6',
+    'Tháng 7',
+    'Tháng 8',
+    'Tháng 9',
+    'Tháng 10',
+    'Tháng 11',
+    'Tháng 12'
+  ]
+
+  // Hàm để map dataAPI vào data
+  const mapDataAPIToData = (dataAPI: StaticEmployeeByMonthType[]) => {
+    // Khởi tạo mảng số liệu với giá trị 0 cho 12 tháng
+    const mappedData = Array(12).fill(0)
+
+    dataAPI.forEach((item) => {
+      const monthIndex = parseInt(item.month.split('-')[0], 10) - 1
+      mappedData[monthIndex] = item.count
+    })
+
+    return mappedData
+  }
+
   const data = {
-    labels: [
-      'Tháng 1',
-      'Tháng 2',
-      'Tháng 3',
-      'Tháng 4',
-      'Tháng 5',
-      'Tháng 6',
-      'Tháng 7',
-      'Tháng 8',
-      'Tháng 9',
-      'Tháng 10',
-      'Tháng 11',
-      'Tháng 12'
-    ],
+    labels,
     datasets: [
       {
         label: 'Số nhân viên',
-        data: [65, 59, 80, 81, 56, 55, 40, 70, 60, 150, 30, 120],
+        data: mapDataAPIToData(dataAPI),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',

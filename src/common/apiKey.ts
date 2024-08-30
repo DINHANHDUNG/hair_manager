@@ -59,5 +59,10 @@ export const NetWork = {
   salaryPayStatus: (salaryPayId: number) => `salary/${salaryPayId}/status-advance`,
 
   //Static
-  statisticStaffTotal: 'statistic/staff-total'
+  staticStaffTotal: 'statistic/staff-total',
+  staticStaffDetail: 'statistic/staff-detail',
+  staticEmployeeTotal: 'statistic/employee-total',
+  staticEmployeeDetail: 'statistic/employee-detail',
+  staticSalaryAdvance: 'statistic/salary-advance',
+  staticEmployeeByMonth: 'statistic/employee-by-month'
 }
