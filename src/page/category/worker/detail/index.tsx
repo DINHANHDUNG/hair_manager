@@ -15,6 +15,7 @@ import { EmployeeType } from '../../../../types/employee'
 import TabInfoEmployee from './TabInfo'
 import TabInfoRelationship from './TabInfoRelationship'
 import TabWorkProgress from './TabWorkProgress'
+import TabInfoManager from './TabInfoManager'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -120,6 +121,7 @@ const WorkerDetailPage = () => {
                   <Tab label='Thông tin cá nhân' {...a11yProps(0)} />
                   <Tab label='Người đại diện' {...a11yProps(1)} />
                   <Tab label='Lịch sử làm việc' {...a11yProps(2)} />
+                  <Tab label='Người quản lý' {...a11yProps(3)} />
                 </Tabs>
               </Box>
               <CustomTabPanel value={tab} index={0}>
@@ -130,6 +132,9 @@ const WorkerDetailPage = () => {
               </CustomTabPanel>
               <CustomTabPanel value={tab} index={2}>
                 <TabWorkProgress dataEmployee={dataEmployee} reloadData={() => refetch()} />
+              </CustomTabPanel>
+              <CustomTabPanel value={tab} index={3}>
+                <TabInfoManager data={dataEmployee} reloadData={() => refetch()} />
               </CustomTabPanel>
             </SubCard>
           </Grid>

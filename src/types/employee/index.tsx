@@ -1,5 +1,6 @@
 import { CompanyType } from '../company'
 import { PartnerType } from '../partner'
+import { StaffType } from '../staff'
 
 export type EmployeeType = {
   id: number
@@ -21,6 +22,8 @@ export type EmployeeType = {
   representativePhone: string
   representativePosition: string
   avatar: string
+  staffId: number
+  staff: StaffType
 }
 
 export type HistoryEmployeeType = {
