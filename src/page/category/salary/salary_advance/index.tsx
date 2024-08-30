@@ -108,7 +108,6 @@ const SalaryAdvancePage = React.memo(() => {
     statusAdvance: initialStatusAdvance,
     isRefund: initialIsRefund
   })
-
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryAdvanceType>()
   const [rowsData, setRowsData] = React.useState<SalaryAdvanceType[]>()
 
@@ -167,12 +166,15 @@ const SalaryAdvancePage = React.memo(() => {
     setItemSelectedEidt({} as SalaryAdvanceType)
   }
 
-  const handleFilterChange = (field: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: value
-    }))
-  }
+  const handleFilterChange = React.useCallback(
+    (field: string, value: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [field]: value
+      }))
+    },
+    [setFilters]
+  )
 
   const listRenderFilter = [
     {
@@ -520,7 +522,7 @@ const SalaryAdvancePage = React.memo(() => {
               id='search-input'
               startAdornment={<IconSearch sx={{ mr: 1 }} />}
               placeholder='Tìm kiếm'
-              defaultValue={filters?.['searchKey']}
+              value={filters?.searchKey}
               onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />

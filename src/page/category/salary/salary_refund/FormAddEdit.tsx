@@ -59,8 +59,8 @@ const validationSchema = yup.object({
     .string()
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  noteRefund: yup.string().max(255).required('Trường này là bắt buộc'),
-  statusRefund: yup.string().max(255).required('Trường này là bắt buộc')
+  noteRefund: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  statusRefund: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc')
 })
 
 export default function FormAddEditSalaryRefund({

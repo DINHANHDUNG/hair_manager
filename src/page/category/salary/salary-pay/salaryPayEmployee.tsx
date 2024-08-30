@@ -53,7 +53,7 @@ import { SalaryPayType } from '../../../../types/SalaryPay'
 import FormAddEditSalaryPay from './FormAddEdit'
 import { styleSalaryPayPage } from './styleSalaryPayPage.style'
 
-const SalaryPayPage = React.memo(({ type }: { type: string }) => {
+const SalaryPayEmployee = React.memo(({ type }: { type: string }) => {
   const theme = useTheme()
   const classes = styleSalaryPayPage(theme)
   const dialogs = useDialogs()
@@ -564,4 +564,4 @@ const SalaryPayPage = React.memo(({ type }: { type: string }) => {
   )
 })
 
-export default SalaryPayPage
+export default SalaryPayEmployee

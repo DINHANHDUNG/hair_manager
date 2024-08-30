@@ -39,8 +39,6 @@ const ProfileSection = () => {
   const theme = useTheme()
   const customization = useAppSelector(customTheme)
   const auth = useAppSelector(authStore).user
-  console.log('auth', auth)
-
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 

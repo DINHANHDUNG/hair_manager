@@ -3,7 +3,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput } from '@mui/material'
+import { Button, Grid, OutlinedInput, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import {
   GridActionsCellItem,
@@ -165,7 +165,11 @@ const StaffPage = React.memo(() => {
         getActions: (params: GridRenderCellParams<StaffType, number>) => {
           return [
             <GridActionsCellItem
-              icon={!params.row.isActive ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
+              icon={
+                <Tooltip title={!params.row.isActive ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}>
+                  {!params.row.isActive ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
+                </Tooltip>
+              }
               label='Lock'
               className='textPrimary'
               color='inherit'

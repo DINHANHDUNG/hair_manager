@@ -40,19 +40,19 @@ type FormValues = {
 const validationSchema = yup.object({
   name: yup
     .string()
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
   gender: yup.string(),
   birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
   email: yup.string().email('Email không hợp lệ'),
-  address: yup.string().max(255),
-  addressOrigin: yup.string().max(255),
-  ethnic: yup.string().max(255),
+  address: yup.string().max(255, 'Độ dài không được quá 255'),
+  addressOrigin: yup.string().max(255, 'Độ dài không được quá 255'),
+  ethnic: yup.string().max(255, 'Độ dài không được quá 255'),
   identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(255)
+    .max(255, 'Độ dài không được quá 255')
     .matches(VALIDATE.cccdRegex, 'Vui lòng nhập đúng định dạng'),
   phoneNumber: yup
     .string()

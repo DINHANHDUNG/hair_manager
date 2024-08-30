@@ -46,14 +46,14 @@ type Field = 'date' | 'note' | 'status'
 type FormValues = {
   companyId?: object | undefined
   partnerId?: object | undefined
-  note: string
+  note?: string
   status: string
   date: string
 }
 
 const validationSchema = yup.object({
-  note: yup.string().max(255).required('Trường này là bắt buộc'),
-  status: yup.string().max(255).required('Trường này là bắt buộc'),
+  note: yup.string().max(255, 'Độ dài không được quá 255'),
+  status: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   companyId: yup.lazy((_, context) => {
     if (context.parent.status === 'IN_COMPANY') {
       return yup.object().required('Trường này là bắt buộc')
@@ -243,7 +243,7 @@ export default function TabWorkProgress(Props: Props) {
     if (idUpdate) {
       updateHistoryEmployee({
         ...data,
-        EmployeeId: dataEmployee.id,
+        employeeId: dataEmployee.id,
         date: isoDateStr,
         id: idUpdate,
         partnerId: partner?.id,
@@ -252,7 +252,7 @@ export default function TabWorkProgress(Props: Props) {
     } else {
       addHistoryEmployee({
         ...data,
-        EmployeeId: dataEmployee.id,
+        employeeId: dataEmployee.id,
         date: isoDateStr,
         partnerId: partner?.id,
         companyId: company?.id

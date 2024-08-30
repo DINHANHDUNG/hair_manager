@@ -5,7 +5,8 @@ import {
   IconCategory,
   IconCoinBitcoin,
   IconReceipt,
-  IconUsersGroup
+  IconUsersGroup,
+  IconUserPentagon
 } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 
@@ -16,7 +17,8 @@ const icons = {
   IconCoinBitcoin,
   IconCash,
   IconReceipt,
-  IconCashBanknote
+  IconCashBanknote,
+  IconUserPentagon
 }
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -43,12 +45,20 @@ const salarys = {
       icon: icons.IconCashBanknote
     },
     {
-      id: 'salary-pay',
-      title: 'Thanh toán lương',
+      id: 'salary-pay-staff',
+      title: 'Thanh toán lương (NV)',
       type: 'item',
       breadcrumbs: false,
-      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY}`,
-      icon: icons.IconReceipt
+      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF}`,
+      icon: icons.IconUserPentagon
+    },
+    {
+      id: 'salary-pay-employee',
+      title: 'Thanh toán lương (CN)',
+      type: 'item',
+      breadcrumbs: false,
+      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE}`,
+      icon: icons.IconUsersGroup
     }
   ]
 }

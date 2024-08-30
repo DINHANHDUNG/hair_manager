@@ -29,6 +29,7 @@ const WorkerDetailPage = Loadable(lazy(() => import('../page/category/worker/det
 const SalaryAdvancePage = Loadable(lazy(() => import('../page/category/salary/salary_advance')))
 const SalaryRefundPage = Loadable(lazy(() => import('../page/category/salary/salary_refund')))
 const SalaryPayPage = Loadable(lazy(() => import('../page/category/salary/salary-pay')))
+const SalaryPayEmployeePage = Loadable(lazy(() => import('../page/category/salary/salary-pay/salaryPayEmployee')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -115,8 +116,12 @@ const MainRoutes = {
           element: <SalaryRefundPage />
         },
         {
-          path: ROUTES.CATEGORY_CHILD.SALARY_PAY,
-          element: <SalaryPayPage />
+          path: ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF,
+          element: <SalaryPayPage type='STAFF' />
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE,
+          element: <SalaryPayEmployeePage type='EMPLOYEE' />
         }
       ]
     },

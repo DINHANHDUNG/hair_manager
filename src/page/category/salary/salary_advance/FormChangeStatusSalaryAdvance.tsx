@@ -30,7 +30,7 @@ type FormValues = {
 }
 
 const validationSchema = yup.object({
-  statusAdvance: yup.string().max(255).required('Trường này là bắt buộc')
+  statusAdvance: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc')
 })
 
 export default function FormChangeStatusSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
