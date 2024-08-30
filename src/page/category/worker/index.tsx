@@ -4,7 +4,9 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
@@ -36,6 +38,8 @@ import { EmployeeType } from '../../../types/employee'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
 import { useTheme } from '@mui/material/styles'
+import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
+import { useGetStaticEmployeeDetailQuery } from '../../../app/services/statistic'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -83,6 +87,16 @@ const WorkerPage = React.memo(() => {
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
+  const [openStatistics, setOpenStatistics] = React.useState(false)
+
+  const { data: dataStaticStaffDetail } = useGetStaticEmployeeDetailQuery({})
+  const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
+  const countStatusInPartner = dataStaticStaffDetail?.data?.countStatusInPartner || 0 //Cho đối tác mượn
+  const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
+  const countStatusInHome = dataStaticStaffDetail?.data?.countStatusInHome || 0 //Chờ giao việc
+  const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
+  const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
+
   const { data: dataApiCompany } = useGetListCompanyQuery({
     page: 1
   })
@@ -399,6 +413,19 @@ const WorkerPage = React.memo(() => {
 
   return (
     <>
+      <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
+        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+      </IconButton>
+      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
+        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+          <CardContentBoxSection title={'Trong công ty'} content={countStatusInCompany} />
+          <CardContentBoxSection title={'Cho đối tác mượn'} content={countStatusInPartner} />
+          <CardContentBoxSection title={'Đã nghỉ việc'} content={countStatusOut} />
+          <CardContentBoxSection title={'Chờ giao việc'} content={countStatusInHome} />
+          <CardContentBoxSection title={'Chờ phỏng vấn'} content={countStatusWaiting} />
+          <CardContentBoxSection title={'Phỏng vấn trượt'} content={countStatusFail} />
+        </Grid>
+      </Collapse>
       <MainCard title={'Danh sách công nhân'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>

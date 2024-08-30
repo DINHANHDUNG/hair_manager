@@ -1,22 +1,9 @@
 import AttachMoneyOutlined from '@mui/icons-material/AttachMoneyOutlined'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import {
-  Button,
-  Card,
-  CardContent,
-  Collapse,
-  Grid,
-  IconButton,
-  OutlinedInput,
-  Tooltip,
-  Typography
-} from '@mui/material'
-import { useTheme } from '@mui/material/styles'
+import { Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -29,7 +16,6 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
 import * as React from 'react'
@@ -51,11 +37,8 @@ import { gridSpacing } from '../../../../constants'
 import { removeNullOrEmpty } from '../../../../help'
 import { SalaryPayType } from '../../../../types/SalaryPay'
 import FormAddEditSalaryPay from './FormAddEdit'
-import { styleSalaryPayPage } from './styleSalaryPayPage.style'
 
 const SalaryPayEmployee = React.memo(({ type }: { type: string }) => {
-  const theme = useTheme()
-  const classes = styleSalaryPayPage(theme)
   const dialogs = useDialogs()
   const isStaff = type === 'STAFF'
   const [searchParams, setSearchParams] = useSearchParams()
@@ -96,7 +79,6 @@ const SalaryPayEmployee = React.memo(({ type }: { type: string }) => {
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
-  const [openStatistics, setOpenStatistics] = React.useState(false)
 
   const {
     data: dataApiSalaryPay,
@@ -314,21 +296,6 @@ const SalaryPayEmployee = React.memo(({ type }: { type: string }) => {
     [data.columns, filters]
   )
 
-  const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
-    return (
-      <Grid item xs={12} sm={6} md={6} lg={3}>
-        <Card
-          sx={{
-            bgcolor: theme.palette.background.paper,
-            height: '100%'
-          }}
-        >
-          <CardContent className={classes.CardContent}>{element}</CardContent>
-        </Card>
-      </Grid>
-    )
-  }
-
   const handleMutation = (
     loading: boolean,
     isError: boolean,
@@ -399,70 +366,6 @@ const SalaryPayEmployee = React.memo(({ type }: { type: string }) => {
 
   return (
     <>
-      <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
-        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-      </IconButton>
-      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
-        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
-          <CardContentBoxSection
-            element={
-              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                <Typography className={classes.TextCard} variant='subtitle1'>
-                  {'Tổng số nhân sự'}
-                </Typography>
-                <Typography className={classes.TextCardValue} variant='h4'>
-                  <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                  {'7652'}
-                </Typography>
-                <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-              </Grid>
-            }
-          />
-          <CardContentBoxSection
-            element={
-              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                <Typography className={classes.TextCard} variant='subtitle1'>
-                  {'Ứng lương'}
-                </Typography>
-                <Typography className={classes.TextCardValue} variant='h4'>
-                  <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                  {'60.000.000 VNĐ'}
-                </Typography>
-                <Typography variant='caption'>{'Tăng 8% sau 3 tháng'}</Typography>
-              </Grid>
-            }
-          />
-          <CardContentBoxSection
-            element={
-              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                <Typography className={classes.TextCard} variant='subtitle1'>
-                  {'Hoàn ứng'}
-                </Typography>
-                <Typography className={classes.TextCardValue} variant='h4'>
-                  <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                  {'60.000.000 VNĐ'}
-                </Typography>
-                <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-              </Grid>
-            }
-          />
-          <CardContentBoxSection
-            element={
-              <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-                <Typography className={classes.TextCard} variant='subtitle1'>
-                  {'Còn lại'}
-                </Typography>
-                <Typography className={classes.TextCardValue} variant='h4'>
-                  <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                  {'120.000.000 VNĐ'}
-                </Typography>
-                {/* <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography> */}
-              </Grid>
-            }
-          />
-        </Grid>
-      </Collapse>
-
       <MainCard title={`Thanh toán lương ${isStaff ? 'nhân viên' : 'công nhân'}`} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>

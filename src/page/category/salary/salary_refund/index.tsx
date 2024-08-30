@@ -5,9 +5,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Card, CardContent, Grid, IconButton, OutlinedInput, Theme, Tooltip, Typography } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
-import { makeStyles } from '@mui/styles'
+import { Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
@@ -18,7 +16,6 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
@@ -39,8 +36,6 @@ import FormAddEditSalaryRefund from './FormAddEdit'
 import FormChangeStatusSalaryRefund from './FormChangeStatusSalaryRefund'
 
 const SalaryRefundPage = React.memo(() => {
-  const theme = useTheme()
-  const classes = styleSalaryRefundPage(theme)
   const dialogs = useDialogs()
   //   const navigate = useNavigate()
   //   const theme = useTheme()
@@ -106,8 +101,6 @@ const SalaryRefundPage = React.memo(() => {
 
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryRefundType>()
   const [rowsData, setRowsData] = React.useState<SalaryRefundType[]>()
-
-  console.log('rowsData', rowsData)
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
@@ -364,21 +357,6 @@ const SalaryRefundPage = React.memo(() => {
     [data.columns, filters]
   )
 
-  const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
-    return (
-      <Grid item xs={12} sm={6} md={6} lg={3}>
-        <Card
-          sx={{
-            bgcolor: theme.palette.background.paper,
-            height: '100%'
-          }}
-        >
-          <CardContent className={classes.CardContent}>{element}</CardContent>
-        </Card>
-      </Grid>
-    )
-  }
-
   const handleMutation = (
     loading: boolean,
     isError: boolean,
@@ -430,64 +408,6 @@ const SalaryRefundPage = React.memo(() => {
 
   return (
     <>
-      <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Tổng số nhân sự'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                {'7652'}
-              </Typography>
-              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Ứng lương'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                {'60.000.000 VNĐ'}
-              </Typography>
-              <Typography variant='caption'>{'Tăng 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Hoàn ứng'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowDown className={classes.iconArrow} size='16' color='red' />
-                {'60.000.000 VNĐ'}
-              </Typography>
-              <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography>
-            </Grid>
-          }
-        />
-        <CardContentBoxSection
-          element={
-            <Grid item xs={12} sm={12} display={'flex'} flexDirection={'column'} alignItems={'center'}>
-              <Typography className={classes.TextCard} variant='subtitle1'>
-                {'Còn lại'}
-              </Typography>
-              <Typography className={classes.TextCardValue} variant='h4'>
-                <IconArrowUp className={classes.iconArrow} size='16' color='green' />
-                {'120.000.000 VNĐ'}
-              </Typography>
-              {/* <Typography variant='caption'>{'Giảm 8% sau 3 tháng'}</Typography> */}
-            </Grid>
-          }
-        />
-      </Grid>
       <MainCard title={'Hoàn ứng nhân sự'} sx={{ height: '84%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
@@ -594,16 +514,16 @@ const SalaryRefundPage = React.memo(() => {
 
 export default SalaryRefundPage
 
-const styleSalaryRefundPage = makeStyles({
-  CardContent: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' },
-  TextCard: { fontWeight: '500', fontSize: 13, marginBottom: 2 },
-  TextCardValue: { marginBottom: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' },
-  iconArrow: { marginRight: 2 },
-  CardContent1: (theme: Theme) => ({
-    backgroundColor: theme.palette.background.paper,
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap'
-  })
-})
+// const styleSalaryRefundPage = makeStyles({
+//   CardContent: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' },
+//   TextCard: { fontWeight: '500', fontSize: 13, marginBottom: 2 },
+//   TextCardValue: { marginBottom: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' },
+//   iconArrow: { marginRight: 2 },
+//   CardContent1: (theme: Theme) => ({
+//     backgroundColor: theme.palette.background.paper,
+//     flex: 1,
+//     display: 'flex',
+//     flexDirection: 'column',
+//     flexWrap: 'wrap'
+//   })
+// })

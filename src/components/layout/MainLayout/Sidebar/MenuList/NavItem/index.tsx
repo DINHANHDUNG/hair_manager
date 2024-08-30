@@ -49,10 +49,11 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
   if (item.target) {
     itemTarget = '_blank'
   }
-
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const listItemProps: ListItemProps = {
-    component: forwardRef((props, ref) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
+    component: forwardRef((props: any, ref: any) => <Link ref={ref} {...props} to={item.url} target={itemTarget} />)
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   // if (item?.external) {
   //   listItemProps = { component: 'a', href: item.url, target: itemTarget }
   // }

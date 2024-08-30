@@ -12,7 +12,7 @@ export const FooterBoxSection = ({
   colorRight?: string
 }) => {
   return (
-    <Grid item container direction='row' alignItems='center' justifyContent='space-between'>
+    <Grid item container direction='row' alignItems='center' justifyContent='space-between' sx={{ mt: 1 }}>
       <Typography sx={{ fontWeight: '700', fontSize: 30 }} variant='subtitle1'>
         {elementLeft}
       </Typography>

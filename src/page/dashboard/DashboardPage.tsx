@@ -1,9 +1,14 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { DateRange } from '@mui/x-date-pickers-pro'
-import { IconCoin, IconCoins, IconTimelineEvent, IconUser, IconUsersGroup } from '@tabler/icons-react'
+import { IconCoin, IconCoins, IconUser, IconUsersGroup } from '@tabler/icons-react'
 import dayjs, { Dayjs } from 'dayjs'
 import * as React from 'react'
+import {
+  useGetStaticSalaryAdvanceQuery,
+  useGetStaticStaffTotalQuery,
+  useGetStatisticEmployeeTotalQuery
+} from '../../app/services/statistic'
 import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
@@ -11,7 +16,6 @@ import { FooterBoxSection } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
-import { useGetStaticStaffTotalQuery } from '../../app/services/statistic'
 
 const Dashboard = React.memo(() => {
   const theme = useTheme()
@@ -25,6 +29,14 @@ const Dashboard = React.memo(() => {
   const { data: dataToTalStaff } = useGetStaticStaffTotalQuery({})
   const percentageIncreaseStaff = dataToTalStaff?.data?.percentageIncrease
   const currentMonthStaff = dataToTalStaff?.data?.currentMonth
+
+  const { data: dataToTalEmployee } = useGetStatisticEmployeeTotalQuery({})
+  const percentageIncreaseEmployee = dataToTalEmployee?.data?.percentageIncrease
+  const currentMonthEmployee = dataToTalEmployee?.data?.currentMonth
+
+  const { data: dataStaticSalaryAdvance } = useGetStaticSalaryAdvanceQuery({})
+  const totalSalaryAdvance = dataStaticSalaryAdvance?.data?.totalSalaryAdvance || 0 //Đã ứng
+  const totalSalaryRefund = dataStaticSalaryAdvance?.data?.totalSalaryRefund || 0 //Đã hoàn
 
   const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
     return (
@@ -53,7 +65,15 @@ const Dashboard = React.memo(() => {
                 icon={<IconUsersGroup stroke={1.5} size='1.3rem' />}
                 textTitle='Tổng số công nhân'
               />
-              <FooterBoxSection elementLeft={'100'} elementRight={'+0%'} />
+              <FooterBoxSection
+                elementLeft={currentMonthEmployee || 0}
+                elementRight={percentageIncreaseEmployee ? percentageIncreaseEmployee.toString() + '%' : 0}
+                colorRight={
+                  percentageIncreaseEmployee && percentageIncreaseEmployee > 0
+                    ? theme.palette.success.dark
+                    : theme.palette.error.dark
+                }
+              />
             </>
           }
         />
@@ -83,16 +103,37 @@ const Dashboard = React.memo(() => {
             <>
               <HeaderBoxSection
                 backgroundBoxIcon={theme.palette.secondary.light}
-                colorBoxIcon={theme.palette.success.dark}
-                icon={<IconTimelineEvent stroke={1.5} size='1.3rem' />}
-                textTitle='Chấm công'
+                colorBoxIcon={theme.palette.orange.dark}
+                icon={<IconCoin stroke={1.5} size='1.3rem' />}
+                textTitle='Tổng ứng lương'
               />
-              <FooterBoxSection elementLeft={'100+'} elementRight={'+20%'} colorRight={theme.palette.success.dark} />
+              <FooterBoxSection
+                elementLeft={totalSalaryAdvance}
+                elementRight={''}
+                colorRight={theme.palette.success.dark}
+              />
+            </>
+          }
+        />
+        <CardContentBoxSection
+          element={
+            <>
+              <HeaderBoxSection
+                backgroundBoxIcon={theme.palette.secondary.light}
+                colorBoxIcon={theme.palette.orange.main}
+                icon={<IconCoins stroke={1.5} size='1.3rem' />}
+                textTitle='Tổng hoàn ứng'
+              />
+              <FooterBoxSection
+                elementLeft={totalSalaryRefund}
+                elementRight={''}
+                colorRight={theme.palette.success.dark}
+              />
             </>
           }
         />
 
-        <Grid item xs={12} sm={6} md={6} lg={3} classes={classes.CardContent}>
+        {/* <Grid item xs={12} sm={6} md={6} lg={3} classes={classes.CardContent}>
           <Card classes={styleDashboard(theme).CardContent1} sx={{ mb: 1 }}>
             <CardContent sx={{ flex: 1 }}>
               <HeaderBoxSection
@@ -123,7 +164,7 @@ const Dashboard = React.memo(() => {
               />
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
       <MainCard
         title={
