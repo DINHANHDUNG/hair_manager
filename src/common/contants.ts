@@ -46,7 +46,7 @@ export const OPTIONSTTWORKER = [
 export const STATUS_WORKING_EMPLOYEE = [
   { value: 'WAITING', label: 'Chờ phỏng vấn' },
   { value: 'FAIL', label: 'Phỏng vấn trượt' },
-  { value: 'IN_HOME', label: 'Đang làm việc' },
+  { value: 'IN_HOME', label: 'Chờ giao việc' },
   { value: 'IN_COMPANY', label: 'Trong công ty' },
   { value: 'IN_PARTNER', label: 'Cho đối tác mượn' },
   { value: 'OUT', label: 'Đã nghỉ việc' }

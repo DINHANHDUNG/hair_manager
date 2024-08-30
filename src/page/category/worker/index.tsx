@@ -35,6 +35,7 @@ import { CompanyType } from '../../../types/company'
 import { EmployeeType } from '../../../types/employee'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
+import { useTheme } from '@mui/material/styles'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -48,7 +49,7 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 
 const WorkerPage = React.memo(() => {
   const navigate = useNavigate()
-  // const theme = useTheme()
+  const theme = useTheme()
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -222,23 +223,25 @@ const WorkerPage = React.memo(() => {
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
       { field: 'email', headerName: 'Email', flex: 1 },
-      // {
-      //   field: 'typework',
-      //   headerName: 'Tình trạng',
-      //   flex: 1,
-      //   renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-      //     return (
-      //       <Chip
-      //         size='small'
-      //         label={params.value}
-      //         sx={{
-      //           color: theme.palette.background.default,
-      //           bgcolor: theme.palette.success.dark
-      //         }}
-      //       />
-      //     )
-      //   }
-      // },
+      {
+        field: 'status',
+        headerName: 'Trạng thái',
+        renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
+          const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
+          return (
+            label && (
+              <Chip
+                size='small'
+                label={'Tình trạng'}
+                sx={{
+                  color: theme.palette.background.default,
+                  bgcolor: theme.palette.success.dark
+                }}
+              />
+            )
+          )
+        }
+      },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -269,6 +272,11 @@ const WorkerPage = React.memo(() => {
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
       case 'numberphone':
+        return {
+          ...colDef,
+          minWidth: 150
+        }
+      case 'email':
         return {
           ...colDef,
           minWidth: 150

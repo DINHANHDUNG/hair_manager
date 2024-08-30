@@ -22,6 +22,7 @@ export type EmployeeType = {
   representativePhone: string
   representativePosition: string
   avatar: string
+  statusWorking: string
   staffId: number
   staff: StaffType
 }
