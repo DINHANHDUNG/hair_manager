@@ -85,11 +85,24 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.CATEGORY_CHILD.STAFF,
-          element: <StaffPage />
+          element: createProtectedRoute(<StaffPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.HCNS
+          ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.STAFF_DETAIL,
-          element: <StaffDetailPage />
+          // element: <StaffDetailPage />,
+          element: createProtectedRoute(<StaffDetailPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.SALE,
+            PERMISSION.HCNS,
+            PERMISSION.TUYENDUNG
+          ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.PARTER,
@@ -109,25 +122,48 @@ const MainRoutes = {
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_ADVANCE,
-          element: <SalaryAdvancePage />
+          // element: <SalaryAdvancePage />
+          element: createProtectedRoute(<SalaryAdvancePage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.SALE,
+            PERMISSION.TUYENDUNG
+          ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_REFUND,
-          element: <SalaryRefundPage />
+          // element: <SalaryRefundPage />,
+          element: createProtectedRoute(<SalaryRefundPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.HCNS
+          ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF,
-          element: <SalaryPayPage type='STAFF' />
+          // element: <SalaryPayPage type='STAFF' />,
+          element: createProtectedRoute(<SalaryPayPage type='STAFF' />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN
+          ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE,
-          element: <SalaryPayEmployeePage type='EMPLOYEE' />
+          // element: <SalaryPayEmployeePage type='EMPLOYEE' />,
+          element: createProtectedRoute(<SalaryPayEmployeePage type='EMPLOYEE' />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN
+          ])
         }
       ]
     },
     {
       path: ROUTES.SAMPLE_PAGE,
-      element: createProtectedRoute(<SamplePage />, [PERMISSION.DATABASE])
+      element: createProtectedRoute(<SamplePage />, [PERMISSION.SALE])
     },
     {
       path: ROUTES.NOT_AUTHORIZED,

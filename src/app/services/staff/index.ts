@@ -49,7 +49,7 @@ export const staffApi = createApi({
     }),
     activeStaff: builder.mutation({
       query: (data: { staffId: number; active: boolean }) => ({
-        url: NetWork.staffActive(data.staffId),
+        url: NetWork.accountActive(data.staffId),
         method: PATCH,
         params: { active: data.active }
       })

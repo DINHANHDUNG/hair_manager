@@ -31,6 +31,7 @@ import { authStore, customTheme } from '../../../../../app/selectedStore'
 import ChangePassword from '../../../../dialog/ChangePassword'
 import MainCard from '../../../../ui-component/cards/MainCard'
 import Transitions from '../../../../ui-component/extended/Transitions'
+import ROUTES from '../../../../../routers/helpersRouter/constantRouter'
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -246,12 +247,18 @@ const ProfileSection = () => {
                         {/* <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           // selected={selectedIndex === 0}
-                          onClick={(event) => handleListItemClick(event, 0, '#')}
+                          onClick={(event) =>
+                            handleListItemClick(
+                              event,
+                              0,
+                              `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${auth.id}`
+                            )
+                          }
                         >
                           <ListItemIcon>
                             <IconSettings stroke={1.5} size='1.3rem' />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant='body2'>Cài đặt tài khoản</Typography>} />
+                          <ListItemText primary={<Typography variant='body2'>Thông tin tài khoản</Typography>} />
                         </ListItemButton> */}
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}

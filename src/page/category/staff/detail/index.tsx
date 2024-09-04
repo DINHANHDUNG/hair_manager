@@ -145,7 +145,6 @@ const StaffDetailPage = () => {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs variant='scrollable' value={tab} onChange={handleChangeTab} aria-label='basic tabs example'>
                 <Tab label='Thông tin cá nhân' {...a11yProps(0)} />
-                {/* <Tab label='Người đại diện' {...a11yProps(1)} /> */}
                 <Tab label='Lương thưởng' {...a11yProps(1)} />
                 <Tab label='Đổi mật khẩu' {...a11yProps(2)} />
                 <Tab label='Lịch sử làm việc' {...a11yProps(3)} />

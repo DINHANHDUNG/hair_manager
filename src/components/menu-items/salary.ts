@@ -9,6 +9,7 @@ import {
   IconUserPentagon
 } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
+import { PERMISSION } from '../../constants'
 
 // constant
 const icons = {
@@ -27,6 +28,14 @@ const salarys = {
   id: 'salary-manager',
   title: 'Lương thưởng',
   type: 'group',
+  premissions: [
+    PERMISSION.ADMIN,
+    PERMISSION.GIAMDOC,
+    PERMISSION.HCNS,
+    PERMISSION.KETOAN,
+    PERMISSION.TUYENDUNG,
+    PERMISSION.SALE
+  ],
   children: [
     {
       id: 'salary-advance',
@@ -34,7 +43,15 @@ const salarys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_ADVANCE}`,
-      icon: icons.IconCash
+      icon: icons.IconCash,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.TUYENDUNG,
+        PERMISSION.SALE
+      ]
     },
     {
       id: 'salary-refund',
@@ -42,7 +59,8 @@ const salarys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_REFUND}`,
-      icon: icons.IconCashBanknote
+      icon: icons.IconCashBanknote,
+      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]
     },
     {
       id: 'salary-pay-staff',
@@ -50,7 +68,8 @@ const salarys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF}`,
-      icon: icons.IconUserPentagon
+      icon: icons.IconUserPentagon,
+      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.KETOAN]
     },
     {
       id: 'salary-pay-employee',
@@ -58,7 +77,8 @@ const salarys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE}`,
-      icon: icons.IconUsersGroup
+      icon: icons.IconUsersGroup,
+      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.KETOAN]
     }
   ]
 }

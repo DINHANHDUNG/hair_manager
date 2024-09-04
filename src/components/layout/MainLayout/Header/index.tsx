@@ -13,7 +13,6 @@ import ProfileSection from './ProfileSection'
 // assets
 import { Typography } from '@mui/material'
 import { IconMenu2 } from '@tabler/icons-react'
-import { useAppSelector } from '../../../../app/hooks'
 import NotificationSection from './NotificationSection'
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
@@ -64,7 +63,9 @@ const Header = ({ handleLeftDrawerToggle }: { handleLeftDrawerToggle: () => void
         <Typography variant='h3' sx={{ textTransform: 'uppercase' }}>
           CÔNG TY TNHH TƯ VẤN VÀ ĐẦU TƯ DAILY JOB
         </Typography>
-        <Typography variant='caption'>Số nhà 70 Phố Cù Chính Lan, Tổ 27 - Phường Đông Phong - Thành Phố Lai Châu - Lai Châu.</Typography>
+        <Typography variant='caption'>
+          Số nhà 70 Phố Cù Chính Lan, Tổ 27 - Phường Đông Phong - Thành Phố Lai Châu - Lai Châu.
+        </Typography>
       </Box>
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />

@@ -9,6 +9,7 @@ export const NetWork = {
 
   //Account
   account: 'account',
+  accountActive: (accountId: number) => `account/${accountId}/active`,
   account_changePass: 'account/change-password',
   changePass_acc: 'staff/change-password',
   role: 'role',
