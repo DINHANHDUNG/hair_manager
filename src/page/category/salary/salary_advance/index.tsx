@@ -337,7 +337,7 @@ const SalaryAdvancePage = React.memo(() => {
         align: 'center',
         renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) => {
           const show = params.row.statusAdvance
-          return show && <CheckCircleIcon sx={{ color: 'green' }} />
+          return show && <CheckCircleIcon sx={{ color: theme.palette.success.dark }} />
         }
       },
       {
