@@ -22,16 +22,15 @@ import Typography from '@mui/material/Typography'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // project imports
-import User1 from '../../../../../assets/images/users/user-round.svg'
 
 // assets
 import { IconLockAccess, IconLogout, IconSettings } from '@tabler/icons-react'
 import { logout } from '../../../../../app/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '../../../../../app/hooks'
 import { authStore, customTheme } from '../../../../../app/selectedStore'
+import ChangePassword from '../../../../dialog/ChangePassword'
 import MainCard from '../../../../ui-component/cards/MainCard'
 import Transitions from '../../../../ui-component/extended/Transitions'
-import ChangePassword from '../../../../dialog/ChangePassword'
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -111,7 +110,7 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={User1}
+            src={auth?.staff?.avatar}
             sx={{
               ...theme.typography.mediumAvatar,
               margin: '8px 0 8px 8px !important',

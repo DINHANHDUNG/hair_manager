@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types'
 
 // material-ui
-import { useTheme } from '@mui/material/styles'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
+import { useTheme } from '@mui/material/styles'
 
 // project imports
 import LogoSection from '../LogoSection'
-import SearchSection from './SearchSection'
-import NotificationSection from './NotificationSection'
 import ProfileSection from './ProfileSection'
 
 // assets
+import { Typography } from '@mui/material'
 import { IconMenu2 } from '@tabler/icons-react'
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
@@ -58,12 +57,17 @@ const Header = ({ handleLeftDrawerToggle }: { handleLeftDrawerToggle: () => void
       </Box>
 
       {/* header search */}
-      <SearchSection />
+      {/* <SearchSection /> */}
+      <Box component='span' sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1, ml: 4 }}>
+        <Typography variant='h3' color='Highlight' sx={{ textTransform: 'uppercase' }}>
+          Chào mừng đến với quản lý công nhân
+        </Typography>
+      </Box>
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
       {/* notification & profile */}
-      <NotificationSection />
+      {/* <NotificationSection /> */}
       <ProfileSection />
     </>
   )

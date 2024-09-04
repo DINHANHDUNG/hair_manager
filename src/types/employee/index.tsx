@@ -25,6 +25,7 @@ export type EmployeeType = {
   statusWorking: string
   staffId: number
   staff: StaffType
+  employeeHistories: HistoryEmployeeType[]
 }
 
 export type HistoryEmployeeType = {

@@ -38,9 +38,9 @@ export const OPTIONSTTWORKER = [
   { value: 'INTERVIEW_FAILED', label: 'Phỏng vấn trượt' },
   { value: 'WORKING', label: 'Đang làm việc' },
   { value: 'WAITING_FOR_JOB', label: 'Đang chờ việc' },
-  { value: 'LENT_TO_PARTNER', label: 'Cho đối tác mượn' },
+  { value: 'LENT_TO_PARTNER', label: 'Cho vendor mượn' },
   { value: 'RESIGNED', label: 'Đã nghỉ việc' },
-  { value: 'BORROWED_FROM_PARTNER', label: 'Mượn của đối tác' }
+  { value: 'BORROWED_FROM_PARTNER', label: 'Mượn của vendor' }
 ]
 
 export const STATUS_WORKING_EMPLOYEE = [
@@ -48,14 +48,14 @@ export const STATUS_WORKING_EMPLOYEE = [
   { value: 'FAIL', label: 'Phỏng vấn trượt' },
   { value: 'IN_HOME', label: 'Chờ giao việc' },
   { value: 'IN_COMPANY', label: 'Trong công ty' },
-  { value: 'IN_PARTNER', label: 'Cho đối tác mượn' },
+  { value: 'IN_PARTNER', label: 'Cho vendor mượn' },
   { value: 'OUT', label: 'Đã nghỉ việc' }
 ]
 
 export const STATUS_ADVANCE_SALARY = [
-  { value: 'WAITING_ACCEPT', label: 'Chờ duyệt' },
-  { value: 'ACCEPTED', label: 'Đã duyệt' },
-  { value: 'REJECTED', label: 'Từ chối' }
+  { value: 'WAITING_ACCEPT', label: 'Chờ duyệt', bg: 'yellow', color: 'black' },
+  { value: 'ACCEPTED', label: 'Đã duyệt', bg: 'green', color: 'white' },
+  { value: 'REJECTED', label: 'Từ chối', bg: 'red', color: 'white' }
 ]
 
 export const OPTION_COMPLETION = [

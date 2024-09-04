@@ -5,7 +5,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Chip, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+// import { useTheme } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
@@ -38,7 +39,7 @@ import FormChangeStatusSalaryRefund from './FormChangeStatusSalaryRefund'
 const SalaryRefundPage = React.memo(() => {
   const dialogs = useDialogs()
   //   const navigate = useNavigate()
-  //   const theme = useTheme()
+  // const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -280,8 +281,17 @@ const SalaryRefundPage = React.memo(() => {
         headerName: 'TT hoàn ứng',
         flex: 1,
         renderCell: (params: GridRenderCellParams<SalaryRefundType, number>) => {
-          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusRefund)?.label
-          return show || ''
+          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusRefund)
+          return (
+            <Chip
+              size='medium'
+              label={show?.label || ''}
+              sx={{
+                color: show?.color,
+                bgcolor: show?.bg
+              }}
+            />
+          )
         }
       },
       {

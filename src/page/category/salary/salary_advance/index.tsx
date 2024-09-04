@@ -1,5 +1,6 @@
 import MoneyOutlined from '@mui/icons-material/AddBoxOutlined'
 import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
@@ -12,6 +13,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Collapse,
   Grid,
   IconButton,
@@ -58,8 +60,6 @@ const SalaryAdvancePage = React.memo(() => {
   const theme = useTheme()
   const classes = styleSalaryAdvancePage(theme)
   const dialogs = useDialogs()
-  //   const navigate = useNavigate()
-  //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -146,7 +146,7 @@ const SalaryAdvancePage = React.memo(() => {
 
   const [deleteSalaryAdvance, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteSalaryAdvanceMutation()
 
-  const { data: dataStaticSalaryAdvance } = useGetStaticSalaryAdvanceQuery({})
+  const { data: dataStaticSalaryAdvance, refetch: refetchStatic } = useGetStaticSalaryAdvanceQuery({})
   const totalSalaryAdvance = dataStaticSalaryAdvance?.data?.totalSalaryAdvance || 0 //Đã ứng
   const totalSalaryRefund = dataStaticSalaryAdvance?.data?.totalSalaryRefund || 0 //Đã hoàn
   const totalSalaryRemaining = dataStaticSalaryAdvance?.data?.totalSalaryRemaining || 0 //Chưa ứng
@@ -315,11 +315,29 @@ const SalaryAdvancePage = React.memo(() => {
       },
       {
         field: 'statusAdvance',
-        headerName: 'TT Hoàn ứng',
-        flex: 1,
+        headerName: 'Phê duyệt',
+        // flex: 1,
         renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) => {
-          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusAdvance)?.label
-          return show || ''
+          const show = STATUS_ADVANCE_SALARY.find((e) => e.value === params.row.statusAdvance)
+          return (
+            <Chip
+              size='medium'
+              label={show?.label || ''}
+              sx={{
+                color: show?.color,
+                bgcolor: show?.bg
+              }}
+            />
+          )
+        }
+      },
+      {
+        field: 'isRefund',
+        headerName: 'TT Hoàn ứng',
+        align: 'center',
+        renderCell: (params: GridRenderCellParams<SalaryAdvanceType, number>) => {
+          const show = params.row.statusAdvance
+          return show && <CheckCircleIcon sx={{ color: 'green' }} />
         }
       },
       {
@@ -433,7 +451,11 @@ const SalaryAdvancePage = React.memo(() => {
   ) => {
     if (!loading) {
       isError && Toast({ text: errorMessage, variant: 'error' })
-      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+      if (isSuccess) {
+        Toast({ text: successMessage, variant: 'success' })
+        refetch()
+        refetchStatic()
+      }
     }
   }
 
@@ -487,7 +509,7 @@ const SalaryAdvancePage = React.memo(() => {
                   {'Tổng tiền đã ứng'}
                 </Typography>
                 <Typography className={classes.TextCardValue} variant='h4'>
-                  {totalSalaryAdvance}
+                  {currency(totalSalaryAdvance)}
                 </Typography>
               </Grid>
             }
@@ -499,7 +521,7 @@ const SalaryAdvancePage = React.memo(() => {
                   {'Tổng tiền đã hoàn'}
                 </Typography>
                 <Typography className={classes.TextCardValue} variant='h4'>
-                  {totalSalaryRefund}
+                  {currency(totalSalaryRefund)}
                 </Typography>
               </Grid>
             }
@@ -511,7 +533,7 @@ const SalaryAdvancePage = React.memo(() => {
                   {'Tổng tiền chưa ứng'}
                 </Typography>
                 <Typography className={classes.TextCardValue} variant='h4'>
-                  {totalSalaryRemaining}
+                  {currency(totalSalaryRemaining)}
                 </Typography>
               </Grid>
             }

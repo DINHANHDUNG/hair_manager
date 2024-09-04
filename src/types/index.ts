@@ -4,6 +4,7 @@
 
 import { Icon, IconProps } from '@tabler/icons-react'
 import React from 'react'
+import { Field } from 'react-hook-form'
 
 // export type EditBase = Base & { id: number }
 
@@ -66,4 +67,12 @@ export interface MenuItem {
 export interface OptionType {
   value: string | number
   label: string
+}
+
+export interface ErrorType {
+  data: {
+    errors: string
+    message: string
+    status: string
+  }
 }

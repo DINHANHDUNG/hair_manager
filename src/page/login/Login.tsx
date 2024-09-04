@@ -26,16 +26,16 @@ const Login = () => {
             <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems='center' justifyContent='center'>
-                  <Grid item sx={{ mb: 1 }}>
+                  <Grid item>
                     <Link to='#' aria-label='logo'>
                       {/* <Logo /> */}
                       <Box
                         component='img'
                         sx={{
-                          height: 80,
-                          width: 80,
-                          maxHeight: { xs: 80, md: 80 },
-                          maxWidth: { xs: 80, md: 80 }
+                          height: 100,
+                          width: 100,
+                          maxHeight: { xs: 100, md: 100 },
+                          maxWidth: { xs: 100, md: 100 }
                         }}
                         alt='The house from the offer.'
                         src={images.logo}

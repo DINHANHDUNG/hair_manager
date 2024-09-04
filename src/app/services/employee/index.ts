@@ -83,6 +83,14 @@ export const employeeApi = createApi({
         data: data
         // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
       })
+    }),
+    uploadFileEmployee: builder.mutation({
+      query: (data) => ({
+        url: NetWork.employeeUpload,
+        method: POST,
+        data: data,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
     })
   })
 })
@@ -98,5 +106,6 @@ export const {
   useDeleteHistoryEmployeeMutation,
   useGetHistoryEmployeeByIdQuery,
   useGetListHistoryEmployeeQuery,
-  useUpdateHistoryEmployeeMutation
+  useUpdateHistoryEmployeeMutation,
+  useUploadFileEmployeeMutation
 } = employeeApi

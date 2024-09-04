@@ -25,7 +25,7 @@ const icons = {
 
 const salarys = {
   id: 'salary-manager',
-  title: 'Quản lý lương thưởng',
+  title: 'Lương thưởng',
   type: 'group',
   children: [
     {

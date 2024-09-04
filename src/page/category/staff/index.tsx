@@ -73,7 +73,7 @@ const StaffPage = React.memo(() => {
     ...filters
   })
 
-  const { data: dataStaticStaffDetail } = useGetStaticStaffDetailQuery({})
+  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticStaffDetailQuery({})
   const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ
   const countStatusStop = dataStaticStaffDetail?.data?.countStatusStop || 0 //Tạm nghỉ
   const countStatusWorking = dataStaticStaffDetail?.data?.countStatusWorking || 0 //Đang làm việc
@@ -242,7 +242,11 @@ const StaffPage = React.memo(() => {
   ) => {
     if (!loading) {
       isError && Toast({ text: errorMessage, variant: 'error' })
-      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+      if (isSuccess) {
+        Toast({ text: successMessage, variant: 'success' })
+        refetch()
+        refetchStatic()
+      }
     }
   }
 

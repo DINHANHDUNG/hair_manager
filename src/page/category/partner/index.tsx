@@ -109,7 +109,7 @@ const PartnerPage = React.memo(() => {
         headerName: 'No.',
         width: 50
       },
-      { field: 'code', headerName: 'Mã đối tác', flex: 1 },
+      { field: 'code', headerName: 'Mã vendor', flex: 1 },
       { field: 'name', headerName: 'Tên đơn vị', flex: 1 },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'taxCode', headerName: 'MST', flex: 1 },
@@ -209,7 +209,7 @@ const PartnerPage = React.memo(() => {
 
   return (
     <>
-      <MainCard title={'Danh sách đối tác'} sx={{ height: '100%' }}>
+      <MainCard title={'Danh sách vendor'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput

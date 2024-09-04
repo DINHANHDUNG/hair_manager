@@ -81,7 +81,9 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
             state.statusRefund
               ? {
                   value: state.statusRefund,
-                  label: STATUS_ADVANCE_SALARY.find((opt) => opt.value === state.statusRefund)?.label || ''
+                  label: STATUS_ADVANCE_SALARY.find((opt) => opt.value === state.statusRefund)?.label || '',
+                  color: '',
+                  bg: ''
                 }
               : null
           }

@@ -23,7 +23,7 @@ const icons = {
 
 const categorys = {
   id: 'category-manager',
-  title: 'Quản lý danh mục',
+  title: 'Quản lý',
   type: 'group',
   children: [
     {
@@ -44,7 +44,7 @@ const categorys = {
     },
     {
       id: 'category-partner',
-      title: 'Đối tác',
+      title: 'Vendor',
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`,
