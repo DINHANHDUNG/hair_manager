@@ -1,3 +1,4 @@
+import colors from '../assets/scss/_themes-vars.module.scss'
 export const POST = 'POST'
 export const PUT = 'PUT'
 export const GET = 'GET'
@@ -54,7 +55,7 @@ export const STATUS_WORKING_EMPLOYEE = [
 
 export const STATUS_ADVANCE_SALARY = [
   { value: 'WAITING_ACCEPT', label: 'Chờ duyệt', bg: 'yellow', color: 'black' },
-  { value: 'ACCEPTED', label: 'Đã duyệt', bg: 'green', color: 'white' },
+  { value: 'ACCEPTED', label: 'Đã duyệt', bg: colors.successDark, color: 'white' },
   { value: 'REJECTED', label: 'Từ chối', bg: 'red', color: 'white' }
 ]
 
