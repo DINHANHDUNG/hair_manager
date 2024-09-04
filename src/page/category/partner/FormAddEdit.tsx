@@ -150,7 +150,7 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
 
   return (
     <CustomDialog
-      title={itemSelectedEdit?.id ? 'Chỉnh sửa đối tác' : 'Thêm mới đối tác'}
+      title={itemSelectedEdit?.id ? 'Chỉnh sửa vendor' : 'Thêm mới vendor'}
       open={open}
       onClose={handleClose}
       maxWidth='md'
@@ -160,11 +160,11 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
         <Grid container spacing={gridSpacingForm}>
           {itemSelectedEdit?.id && (
             <Grid item xs={12} sm={12} md={12} lg={6}>
-              <MyTextField disabled={true} name='code' control={control} label='Mã đối tác' errors={errors} />
+              <MyTextField disabled={true} name='code' control={control} label='Mã vendor' errors={errors} />
             </Grid>
           )}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='name' control={control} label='Tên đơn vị đối tác*' errors={errors} />
+            <MyTextField name='name' control={control} label='Tên đơn vị vendor*' errors={errors} />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField name='address' control={control} label='Địa chỉ*' errors={errors} />

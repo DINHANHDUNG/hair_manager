@@ -37,7 +37,7 @@ export const WorkerChart = () => {
     labels,
     datasets: [
       {
-        label: 'Số nhân viên',
+        label: 'Số công nhân',
         data: mapDataAPIToData(dataAPI),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',

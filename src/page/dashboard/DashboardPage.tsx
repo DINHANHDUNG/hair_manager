@@ -1,15 +1,14 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
-import { DateRange } from '@mui/x-date-pickers-pro'
 import { IconCoin, IconCoins, IconUser, IconUsersGroup } from '@tabler/icons-react'
-import dayjs, { Dayjs } from 'dayjs'
+// import dayjs from 'dayjs'
 import * as React from 'react'
+import { currency } from '../../app/hooks'
 import {
   useGetStaticSalaryAdvanceQuery,
   useGetStaticStaffTotalQuery,
   useGetStatisticEmployeeTotalQuery
 } from '../../app/services/statistic'
-import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { FooterBoxSection } from './FooterBoxSection'
@@ -19,12 +18,12 @@ import { styleDashboard } from './dashboardPage.style'
 
 const Dashboard = React.memo(() => {
   const theme = useTheme()
-  const today = dayjs()
+  // const today = dayjs()
   const classes = styleDashboard(theme)
-  const [valueRangeDate, setValueRangeDate] = React.useState<DateRange<Dayjs> | undefined>([
-    today.startOf('month'),
-    today.endOf('month')
-  ])
+  // const [valueRangeDate, setValueRangeDate] = React.useState<DateRange<Dayjs> | undefined>([
+  //   today.startOf('month'),
+  //   today.endOf('month')
+  // ])
 
   const { data: dataToTalStaff } = useGetStaticStaffTotalQuery({})
   const percentageIncreaseStaff = dataToTalStaff?.data?.percentageIncrease
@@ -108,7 +107,7 @@ const Dashboard = React.memo(() => {
                 textTitle='Tổng ứng lương'
               />
               <FooterBoxSection
-                elementLeft={totalSalaryAdvance}
+                elementLeft={currency(totalSalaryAdvance)}
                 elementRight={''}
                 colorRight={theme.palette.success.dark}
               />
@@ -125,7 +124,7 @@ const Dashboard = React.memo(() => {
                 textTitle='Tổng hoàn ứng'
               />
               <FooterBoxSection
-                elementLeft={totalSalaryRefund}
+                elementLeft={currency(totalSalaryRefund)}
                 elementRight={''}
                 colorRight={theme.palette.success.dark}
               />
@@ -169,12 +168,12 @@ const Dashboard = React.memo(() => {
       <MainCard
         title={
           <Grid container direction='row' alignItems='center' justifyContent='space-between'>
-            <Typography variant='subtitle1'>Số công nhân</Typography>
-            <DateRangePickerShortCut
+            <Typography variant='subtitle1'>Số lượng tuyển dụng</Typography>
+            {/* <DateRangePickerShortCut
               value={valueRangeDate}
               setValue={(newValue) => setValueRangeDate(newValue)}
               variant='standard'
-            />
+            /> */}
           </Grid>
         }
       >

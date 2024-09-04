@@ -1,14 +1,14 @@
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
@@ -22,24 +22,30 @@ import {
 import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useGetListCompanyQuery } from '../../../app/services/company'
-import { useDeleteEmployeeMutation, useGetListEmployeeQuery } from '../../../app/services/employee'
-import { OPTIONGENDER, STATUS_WORKING_EMPLOYEE } from '../../../common/contants'
+import {
+  useDeleteEmployeeMutation,
+  useGetListEmployeeQuery,
+  useUploadFileEmployeeMutation
+} from '../../../app/services/employee'
+import { useGetStaticEmployeeDetailQuery } from '../../../app/services/statistic'
+import { URL_FILE_EXCEL_EMPLOYEE } from '../../../common/apiKey'
+import { STATUS_WORKING_EMPLOYEE } from '../../../common/contants'
+import MyButton from '../../../components/button/MyButton'
+import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
 import SelectColumn from '../../../components/filterTableCustom/SelectColumn'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
+import { VisuallyHiddenInput } from '../../../components/ui-component/visuallyHiddenInput'
 import { gridSpacing } from '../../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../../help'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { CompanyType } from '../../../types/company'
-import { EmployeeType } from '../../../types/employee'
+import { EmployeeType, HistoryEmployeeType } from '../../../types/employee'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
-import { useTheme } from '@mui/material/styles'
-import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
-import { useGetStaticEmployeeDetailQuery } from '../../../app/services/statistic'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -83,15 +89,16 @@ const WorkerPage = React.memo(() => {
     statusWorking: initialStatus,
     companyId: initialCompany
   })
+  const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openStatistics, setOpenStatistics] = React.useState(false)
 
-  const { data: dataStaticStaffDetail } = useGetStaticEmployeeDetailQuery({})
+  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
   const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
-  const countStatusInPartner = dataStaticStaffDetail?.data?.countStatusInPartner || 0 //Cho đối tác mượn
+  const countStatusInPartner = dataStaticStaffDetail?.data?.countStatusInPartner || 0 //Cho vendor mượn
   const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
   const countStatusInHome = dataStaticStaffDetail?.data?.countStatusInHome || 0 //Chờ giao việc
   const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
@@ -116,6 +123,10 @@ const WorkerPage = React.memo(() => {
       dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
     })
   )
+  const [
+    uploadFileEmployee,
+    { isLoading: loadingUpload, isSuccess: isSuccessUpload, isError: isErrorUpload, error: ErrorUpload }
+  ] = useUploadFileEmployeeMutation()
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiEmployee?.data?.totalCount || 0
@@ -182,6 +193,25 @@ const WorkerPage = React.memo(() => {
 
   //End filter
 
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const fileExtension = file.name.split('.').pop()?.toLowerCase()
+      const validExtensions = ['xlsx', 'xls']
+
+      if (fileExtension && validExtensions.includes(fileExtension)) {
+        const formData = new FormData()
+        formData.append('file', file)
+        uploadFileEmployee(formData)
+      } else {
+        Toast({ text: 'Vui lòng chọn file excel (xlsx, xls)', variant: 'error' })
+      }
+    }
+    if (fileRef.current) {
+      fileRef.current.value = ''
+    }
+  }
+
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
   }
@@ -217,6 +247,7 @@ const WorkerPage = React.memo(() => {
         headerName: 'No.',
         width: 50
       },
+      { field: 'code', headerName: 'Mã công nhân', flex: 1 },
       { field: 'name', headerName: 'Họ tên', flex: 1 },
       {
         field: 'birtday',
@@ -225,20 +256,10 @@ const WorkerPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
           params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
       },
-      {
-        field: 'gender',
-        headerName: 'Giới tính',
-        flex: 1,
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-          const show = OPTIONGENDER.find((e) => e.value === params.row.gender)?.label
-          return show || ''
-        }
-      },
-      { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
-      { field: 'email', headerName: 'Email', flex: 1 },
+      { field: 'identificationCard', headerName: 'Căn cước', flex: 1 },
       {
-        field: 'status',
+        field: 'statusWorking',
         headerName: 'Trạng thái',
         renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
           const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
@@ -246,7 +267,7 @@ const WorkerPage = React.memo(() => {
             label && (
               <Chip
                 size='small'
-                label={'Tình trạng'}
+                label={label}
                 sx={{
                   color: theme.palette.background.default,
                   bgcolor: theme.palette.success.dark
@@ -254,6 +275,17 @@ const WorkerPage = React.memo(() => {
               />
             )
           )
+        }
+      },
+      {
+        field: 'employeeHistories',
+        headerName: 'Làm việc tại',
+        renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
+          const histories = params.row.employeeHistories
+            ? params.row.employeeHistories[params.row.employeeHistories.length - 1]
+            : ({} as HistoryEmployeeType)
+          const label = histories && histories.status === 'IN_COMPANY' ? histories.company.name : ''
+          return label
         }
       },
       {
@@ -370,7 +402,11 @@ const WorkerPage = React.memo(() => {
   ) => {
     if (!loading) {
       isError && Toast({ text: errorMessage, variant: 'error' })
-      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
+      if (isSuccess) {
+        Toast({ text: successMessage, variant: 'success' })
+        refetch()
+        refetchStatic()
+      }
     }
   }
 
@@ -411,6 +447,25 @@ const WorkerPage = React.memo(() => {
     setRowsData(updatedRows)
   }, [dataApiEmployee])
 
+  React.useEffect(() => {
+    if (!loadingUpload) {
+      const newError = ErrorUpload as {
+        data: {
+          errors: string
+          message: string
+          status: string
+        }
+      }
+      handleMutation(
+        loadingUpload,
+        isErrorUpload,
+        isSuccessUpload,
+        'Tải lên thành công',
+        ErrorUpload ? newError?.data?.message : 'Tải lên không thành công'
+      )
+    }
+  }, [loadingUpload])
+
   return (
     <>
       <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
@@ -419,7 +474,7 @@ const WorkerPage = React.memo(() => {
       <Collapse in={openStatistics} timeout='auto' unmountOnExit>
         <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
           <CardContentBoxSection title={'Trong công ty'} content={countStatusInCompany} />
-          <CardContentBoxSection title={'Cho đối tác mượn'} content={countStatusInPartner} />
+          <CardContentBoxSection title={'Cho vendor mượn'} content={countStatusInPartner} />
           <CardContentBoxSection title={'Đã nghỉ việc'} content={countStatusOut} />
           <CardContentBoxSection title={'Chờ giao việc'} content={countStatusInHome} />
           <CardContentBoxSection title={'Chờ phỏng vấn'} content={countStatusWaiting} />
@@ -451,6 +506,15 @@ const WorkerPage = React.memo(() => {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
+              <MyButton component='label' role={undefined} variant='outlined' tabIndex={-1} sx={{ mr: 1 }}>
+                Import file
+                <VisuallyHiddenInput type='file' onChange={handleImport} ref={fileRef} />
+              </MyButton>
+              <Link to={URL_FILE_EXCEL_EMPLOYEE} target='_blank'>
+                <MyButton component='label' variant='outlined' sx={{ mr: 1 }}>
+                  Tải file mẫu
+                </MyButton>
+              </Link>
               <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
                 Thêm mới
               </Button>

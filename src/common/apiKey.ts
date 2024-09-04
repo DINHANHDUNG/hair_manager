@@ -1,5 +1,6 @@
 export const API_URL = process.env.REACT_APP_BASE_URL ?? ''
-export const URL_FILE_EXCEL = process.env.REACT_APP_URL_FILE_EXCEL ?? ''
+export const URL_FILE_EXCEL = process.env.REACT_APP_URL_FILE_EXCEL_STAFF ?? ''
+export const URL_FILE_EXCEL_EMPLOYEE = process.env.REACT_APP_URL_FILE_EXCEL_EMPLOYEE ?? ''
 
 export const NetWork = {
   //Admin
@@ -33,6 +34,7 @@ export const NetWork = {
   employeeHistory: `employee-history`,
   employeeHistoryList: (employeeId: number) => `employee-history/employee/${employeeId}`,
   employeeHistoryId: (employeeHistoryId: number) => `employee-history/${employeeHistoryId}`,
+  employeeUpload: 'employee/upload',
 
   //Company
   company: 'company',

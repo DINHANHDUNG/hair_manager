@@ -45,7 +45,7 @@ type Field = 'money' | 'dateRefund' | 'noteRefund' | 'statusRefund'
 type FormValues = {
   money: number
   dateRefund: string
-  noteRefund: string
+  noteRefund?: string
   statusRefund: string
 }
 
@@ -54,12 +54,13 @@ const validationSchema = yup.object({
     .number()
     .transform((value, originalValue) => (originalValue === '' ? null : value))
     .typeError('Trường này phải là số')
+    .moreThan(0, 'Giá trị phải lớn hơn 0')
     .required('Trường này là bắt buộc'),
   dateRefund: yup
     .string()
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  noteRefund: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  noteRefund: yup.string().max(255, 'Độ dài không được quá 255'),
   statusRefund: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc')
 })
 
@@ -105,8 +106,10 @@ export default function FormAddEditSalaryRefund({
     { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }
   ] = useUpdateSalaryRefundMutation()
 
-  const [rowsData, setRowsData] = useState<SalaryAdvanceType[]>()
+  const [rowsData, setRowsData] = useState<SalaryRefundType[]>()
   const rows: GridRowsProp = rowsData || []
+  const amountPaid = rowsData?.reduce((e, c) => e + (c.statusRefund === 'ACCEPTED' ? c.money : 0), 0)
+  const needPaid = (itemSelectedSalaryAdvance?.money || 0) - (amountPaid || 0)
 
   const data = {
     columns: [
@@ -177,6 +180,11 @@ export default function FormAddEditSalaryRefund({
     clearErrors,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
+    defaultValues: {
+      statusRefund: 'WAITING_ACCEPT',
+      dateRefund: dayjs(new Date()).toString(),
+      money: needPaid
+    },
     resolver: yupResolver(validationSchema)
   })
 
@@ -303,8 +311,11 @@ export default function FormAddEditSalaryRefund({
   }, [fetchDataAdvance])
 
   useEffect(() => {
-    if (!itemSelectedEdit?.id) reset()
-  }, [open])
+    if (!itemSelectedEdit?.id) {
+      reset()
+      setValue('money', needPaid >= 0 ? needPaid : 0)
+    }
+  }, [open, needPaid])
 
   useEffect(() => {
     if (itemSelectedEdit?.id && open) {

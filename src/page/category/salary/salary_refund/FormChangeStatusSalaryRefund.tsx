@@ -90,8 +90,7 @@ export default function FormChangeStatusSalaryAdvance({ open, handleClose, handl
           status: string
         }
       }
-      newError &&
-        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+      newError && setError('statusRefund', { type: 'manual', message: newError?.data?.message } as ErrorOption)
     }
     handleMutation(loading, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
   }, [loading])

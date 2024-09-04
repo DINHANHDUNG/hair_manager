@@ -107,11 +107,11 @@ const StaffDetailPage = () => {
               <Typography variant='caption' sx={{ mb: 2 }}>
                 Nhân viên xuất sắc
               </Typography>
-              <p></p>
-              <Typography variant='h6' textAlign={'start'}>
+              {/* <p></p> */}
+              {/* <Typography variant='h6' textAlign={'start'}>
                 Hello,I’m Anshan Handgun Creative Graphic Designer & User Experience Designer based in Website, I create
                 digital Products a more Beautiful and usable place. Morbid accusant ipsum. Nam nec tellus at.
-              </Typography>
+              </Typography> */}
             </SubCard>
           </Grid>
           <Grid item xs={12} sm={6} md={6} lg={4}>

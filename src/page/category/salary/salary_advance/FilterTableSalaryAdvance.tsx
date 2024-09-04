@@ -102,7 +102,9 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
             state.statusAdvance
               ? {
                   value: state.statusAdvance,
-                  label: STATUS_ADVANCE_SALARY.find((opt) => opt.value === state.statusAdvance)?.label || ''
+                  label: STATUS_ADVANCE_SALARY.find((opt) => opt.value === state.statusAdvance)?.label || '',
+                  color: '',
+                  bg: ''
                 }
               : null
           }

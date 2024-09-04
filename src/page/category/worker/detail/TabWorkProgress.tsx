@@ -465,7 +465,7 @@ export default function TabWorkProgress(Props: Props) {
                   <MyAutocomplete
                     name='partnerId'
                     control={control}
-                    label='Chọn đối tác'
+                    label='Chọn vendor'
                     errors={errors}
                     options={dataOptionPartner}
                     getOptionSelected={(option, value) => {
