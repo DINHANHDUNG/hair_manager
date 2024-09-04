@@ -8,6 +8,7 @@ import {
   IconBriefcase
 } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
+import { PERMISSION } from '../../constants'
 
 // constant
 const icons = {
@@ -25,6 +26,14 @@ const categorys = {
   id: 'category-manager',
   title: 'Quản lý',
   type: 'group',
+  premissions: [
+    PERMISSION.ADMIN,
+    PERMISSION.GIAMDOC,
+    PERMISSION.HCNS,
+    PERMISSION.KETOAN,
+    PERMISSION.SALE,
+    PERMISSION.TUYENDUNG
+  ],
   children: [
     {
       id: 'category-persion',
@@ -32,7 +41,8 @@ const categorys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`,
-      icon: icons.IconUser
+      icon: icons.IconUser,
+      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]
     },
     {
       id: 'category-worker',
@@ -40,7 +50,15 @@ const categorys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}`,
-      icon: icons.IconBriefcase
+      icon: icons.IconBriefcase,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
     },
     {
       id: 'category-partner',
@@ -48,7 +66,15 @@ const categorys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`,
-      icon: icons.IconUsersGroup
+      icon: icons.IconUsersGroup,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
     },
     {
       id: 'category-company',
@@ -56,7 +82,15 @@ const categorys = {
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.COMPANY}`,
-      icon: icons.IconBuilding
+      icon: icons.IconBuilding,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
     }
   ]
 }

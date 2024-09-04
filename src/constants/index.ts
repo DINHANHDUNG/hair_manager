@@ -13,10 +13,10 @@ export const config = {
 }
 
 export const PERMISSION = {
-  ADMIN: 'admin',
-  NVKT: 'nvkt',
-  NVKH: 'nvkh',
-  NVCSKH: 'nvcskh',
-  OP: 'op',
-  DATABASE: 'database'
+  ADMIN: 'ADMIN',
+  HCNS: 'HCNS',
+  GIAMDOC: 'GIAMDOC',
+  KETOAN: 'KETOAN',
+  TUYENDUNG: 'TUYENDUNG',
+  SALE: 'SALE'
 }

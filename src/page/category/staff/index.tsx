@@ -22,7 +22,7 @@ import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
 import { useGetStaticStaffDetailQuery } from '../../../app/services/statistic'
-import { OPTIONGENDER, OPTIONTYPEWORK } from '../../../common/contants'
+import { OPTIONTYPEWORK } from '../../../common/contants'
 import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../components/toast'
@@ -139,13 +139,9 @@ const StaffPage = React.memo(() => {
           params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
       },
       {
-        field: 'gender',
-        headerName: 'Giới tính',
-        flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => {
-          const show = OPTIONGENDER.find((e) => e.value === params.row.gender)?.label
-          return show || ''
-        }
+        field: 'identificationCard',
+        headerName: 'Căn cước',
+        flex: 1
       },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },

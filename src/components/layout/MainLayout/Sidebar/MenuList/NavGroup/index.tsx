@@ -10,25 +10,29 @@ import Typography from '@mui/material/Typography'
 import NavItem from '../NavItem'
 import NavCollapse from '../NavCollapse'
 import { MenuItem } from '../../../../../../types'
+import { useAppSelector } from '../../../../../../app/hooks'
+import { authStore } from '../../../../../../app/selectedStore'
 
 // ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
 
 const NavGroup = ({ item }: { item: MenuItem }) => {
   const theme = useTheme()
-
+  const role = useAppSelector(authStore)?.user?.role?.name
   // menu list collapse & items
   const items = item.children?.map((menu: MenuItem) => {
-    switch (menu.type) {
-      case 'collapse':
-        return <NavCollapse key={menu.id} menu={menu} level={1} />
-      case 'item':
-        return <NavItem key={menu.id} item={menu} level={1} />
-      default:
-        return (
-          <Typography key={menu.id} variant='h6' color='error' align='center'>
-            Menu Items Error
-          </Typography>
-        )
+    if (menu?.premissions?.some((e) => role === e)) {
+      switch (menu.type) {
+        case 'collapse':
+          return <NavCollapse key={menu.id} menu={menu} level={1} />
+        case 'item':
+          return <NavItem key={menu.id} item={menu} level={1} />
+        default:
+          return (
+            <Typography key={menu.id} variant='h6' color='error' align='center'>
+              Menu Items Error
+            </Typography>
+          )
+      }
     }
   })
 

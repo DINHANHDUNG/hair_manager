@@ -1,6 +1,7 @@
 // assets
 import { IconDashboard } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
+import { PERMISSION } from '../../constants'
 
 // constant
 const icons = { IconDashboard }
@@ -11,6 +12,14 @@ const dashboard = {
   id: 'dashboard',
   title: 'Báo cáo',
   type: 'group',
+  premissions: [
+    PERMISSION.ADMIN,
+    PERMISSION.GIAMDOC,
+    PERMISSION.HCNS,
+    PERMISSION.KETOAN,
+    PERMISSION.SALE,
+    PERMISSION.TUYENDUNG
+  ],
   children: [
     {
       id: ROUTES.DASHBOARD,
@@ -18,7 +27,15 @@ const dashboard = {
       type: 'item',
       url: `/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`,
       icon: icons.IconDashboard,
-      breadcrumbs: false
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
     }
   ]
 }
