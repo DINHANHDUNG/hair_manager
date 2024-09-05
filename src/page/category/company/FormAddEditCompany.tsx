@@ -168,7 +168,7 @@ export default function FormAddEditCompany({ open, handleClose, handleSave, item
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='code' disabled={true} control={control} label='Mã công ty' errors={errors} />
+            <MyTextField name='code' control={control} label='Mã công ty' errors={errors} />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField name='name' control={control} label='Tên công ty*' errors={errors} />
