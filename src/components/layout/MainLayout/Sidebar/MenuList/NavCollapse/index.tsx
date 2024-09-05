@@ -47,10 +47,9 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ menu, level }) => {
           // Check if the URL is matched exactly or with dynamic parameter
           const exactMatch = matchPath({ path: item.url, end: true }, pathname)
           const dynamicMatch = matchPath(
-            { path: item.url.replace(/\/:[^/]+/, ''), end: true },
-            pathname.replace(/\/:[^/]+/, '')
+            { path: item.url.replace(/\/\d+$/, ''), end: true },
+            pathname.replace(/\/\d+$/, '')
           )
-          console.log(pathname.replace(/\/:[^/]+/, ''), item.url)
 
           if (item.children) {
             checkOpenForParent(item.children, menu.id)

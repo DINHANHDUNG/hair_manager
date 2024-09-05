@@ -336,6 +336,7 @@ export default function FormAddEditSalaryRefund({
                 <MyTextField
                   name='money'
                   control={control}
+                  disabled
                   label='Số tiền'
                   errors={errors}
                   textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
