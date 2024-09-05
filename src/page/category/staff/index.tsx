@@ -175,8 +175,8 @@ const StaffPage = React.memo(() => {
           return [
             <GridActionsCellItem
               icon={
-                <Tooltip title={!params.row.account.active ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}>
-                  {!params.row.account.active ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
+                <Tooltip title={params.row.account.active ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}>
+                  {params.row.account.active ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
                 </Tooltip>
               }
               label='Lock'
