@@ -53,15 +53,12 @@ type FormValues = {
 }
 
 const validationSchema = yup.object({
-  note: yup
-    .string()
-
-    .max(255, 'Độ dài không được quá 255'),
+  note: yup.string().max(255, 'Độ dài không được quá 255'),
   employeeCode: yup
     .string()
     .max(255, 'Độ dài không được quá 255')
     .transform((value, originalValue) => (originalValue === '' ? undefined : value))
-    .matches(VALIDATE.noSpace, 'Vui lòng nhập đúng định dạng'),
+    .matches(VALIDATE.noSpace, 'Vui lòng nhập đúng định dạng, viết liền không dấu'),
   status: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   companyId: yup.lazy((_, context) => {
     if (context.parent.status === 'IN_COMPANY') {

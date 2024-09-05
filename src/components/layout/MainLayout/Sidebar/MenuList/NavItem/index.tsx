@@ -65,8 +65,12 @@ const NavItem = ({ item, level }: { item: MenuItem; level: number }) => {
 
   // active menu item on page load
   useEffect(() => {
-    if (item.url && matchPath(item.url, pathname)) {
-      dispatch(menuOpen({ id: item.id }))
+    if (item.url) {
+      const exactMatch = matchPath(item.url, pathname)
+      const dynamicMatch = matchPath(item.url, pathname.replace(/\/\d+$/, ''))
+      if (exactMatch || dynamicMatch) {
+        dispatch(menuOpen({ id: item.id }))
+      }
     }
   }, [pathname, item.url, dispatch, item.id])
 

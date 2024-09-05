@@ -17,7 +17,6 @@ const MenuList = () => {
     if (item?.premissions?.some((e) => role === e)) {
       switch (item?.type) {
         case 'group':
-          //Check quyền trước
           return <NavGroup key={item?.id} item={item} />
         default:
           return (
