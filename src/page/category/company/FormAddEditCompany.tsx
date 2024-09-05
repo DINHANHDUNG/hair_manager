@@ -22,7 +22,7 @@ interface Props {
 }
 
 type FormValues = {
-  code?: string
+  code: string
   name: string
   address: string
   taxCode: string
@@ -36,7 +36,7 @@ type FormValues = {
 }
 
 const validationSchema = yup.object({
-  code: yup.string().max(255, 'Độ dài không được quá 255').optional(),
+  code: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   name: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   address: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   taxCode: yup.string().required('Trường này là bắt buộc'),
@@ -148,7 +148,7 @@ export default function FormAddEditCompany({ open, handleClose, handleSave, item
     setValue('email', itemSelectedEdit?.email)
     setValue('address', itemSelectedEdit?.address || '')
     setValue('phoneNumber', itemSelectedEdit?.phoneNumber || '')
-    setValue('code', itemSelectedEdit?.code)
+    setValue('code', itemSelectedEdit?.code || '')
     setValue('taxCode', itemSelectedEdit?.taxCode || '')
     setValue('note', itemSelectedEdit?.note)
     setValue('representativeName', itemSelectedEdit?.representativeName)
@@ -167,11 +167,9 @@ export default function FormAddEditCompany({ open, handleClose, handleSave, item
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
-          {itemSelectedEdit?.id && (
-            <Grid item xs={12} sm={12} md={12} lg={6}>
-              <MyTextField name='code' disabled={true} control={control} label='Mã công ty' errors={errors} />
-            </Grid>
-          )}
+          <Grid item xs={12} sm={12} md={12} lg={6}>
+            <MyTextField name='code' disabled={true} control={control} label='Mã công ty' errors={errors} />
+          </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField name='name' control={control} label='Tên công ty*' errors={errors} />
           </Grid>

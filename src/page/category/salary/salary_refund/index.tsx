@@ -117,7 +117,7 @@ const SalaryRefundPage = React.memo(() => {
       limit: paginationModel.pageSize,
       ...filters,
       dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
-      dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
+      dateTo: filters.dateTo ? convertDateToApi(filters.dateTo) : ''
     })
   )
 

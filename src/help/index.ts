@@ -1,9 +1,8 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export const convertDateToApi = (value: Date | string) => {
-  const date = moment(value)
-  const isoDateStr = date?.toISOString()
-  return isoDateStr || ''
+  const date = dayjs(value).format()
+  return date || ''
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

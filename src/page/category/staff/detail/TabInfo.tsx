@@ -13,10 +13,12 @@ import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
 import MyTextField from '../../../../components/input/MyTextField'
 import MySelect from '../../../../components/select/MySelect'
 import Toast from '../../../../components/toast'
-import { gridSpacingForm } from '../../../../constants'
+import { gridSpacingForm, PERMISSION } from '../../../../constants'
 import { StaffType } from '../../../../types/staff'
 import { useGetRolesQuery } from '../../../../app/services/auth'
 import { RoleType } from '../../../../types/account'
+import { useAppSelector } from '../../../../app/hooks'
+import { authStore } from '../../../../app/selectedStore'
 
 type FormValues = {
   name: string
@@ -78,6 +80,10 @@ interface Props {
 }
 export default function TabInfoStaff(Props: Props) {
   const { data, reloadData } = Props
+  const user = useAppSelector(authStore)?.user
+  const checkPremisionEditRole = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => user?.role?.name === e
+  )
   const { data: dataRole } = useGetRolesQuery({})
   const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
   const [updateStaff, { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error }] =
@@ -100,7 +106,6 @@ export default function TabInfoStaff(Props: Props) {
   const onSubmit: SubmitHandler<FormValues> = (value) => {
     const date = moment(value.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
-    console.log(isoDateStr, moment(isoDateStr).format('DD/MM/YYYY'))
     updateStaff({ ...data, ...value, id: data.id, birthDay: isoDateStr })
     // handleSave(data)
   }
@@ -229,6 +234,7 @@ export default function TabInfoStaff(Props: Props) {
             errors={errors}
             options={listRole}
             variant='outlined'
+            disabled={!checkPremisionEditRole}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={6} lg={4}>
