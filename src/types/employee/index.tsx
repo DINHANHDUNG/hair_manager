@@ -36,6 +36,7 @@ export type HistoryEmployeeType = {
   status: string
   date: string
   note: string
+  employeeCode: string
   employeeId: number
   companyId: number | null
   partnerId: number | null
