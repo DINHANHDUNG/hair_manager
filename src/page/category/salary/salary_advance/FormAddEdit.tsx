@@ -5,7 +5,7 @@ import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { convertDataLabel } from '../../../../app/hooks'
+import { convertDataLabel, useAppSelector } from '../../../../app/hooks'
 import { useGetListEmployeeQuery } from '../../../../app/services/employee'
 import {
   useAddSalaryAdvanceMutation,
@@ -24,9 +24,10 @@ import MyTextField from '../../../../components/input/MyTextField'
 import MyAutocomplete from '../../../../components/select/MyAutocomplete'
 import MySelect from '../../../../components/select/MySelect'
 import Toast from '../../../../components/toast'
-import { gridSpacingForm } from '../../../../constants'
+import { gridSpacingForm, PERMISSION } from '../../../../constants'
 import { OptionType } from '../../../../types'
 import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
+import { authStore } from '../../../../app/selectedStore'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -84,6 +85,10 @@ const validationSchema = yup.object({
 })
 
 export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
+  const user = useAppSelector(authStore)?.user
+  const checkPremision = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => user?.role?.name === e
+  )
   const [addSalaryAdvance, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddSalaryAdvanceMutation()
   const {
@@ -122,8 +127,12 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     defaultValues: {
       statusAdvance: 'WAITING_ACCEPT',
       isRefund: false,
-      dateAdvance: dayjs(new Date()).toString()
-      // lastName: ''
+      dateAdvance: dayjs(new Date()).toString(),
+      isStaff: 'STAFF',
+      staffId: {
+        value: user.staff.id,
+        label: user.staff.name
+      }
     },
     resolver: yupResolver(validationSchema)
   })
@@ -211,7 +220,7 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
   useEffect(() => {
     if (!isLoading && fetchData?.data) {
       const newData = fetchData?.data
-      setValue('isStaff', newData?.employeeId ? 'EMPLOYEE' : newData?.staffId ? 'STAFF' : '')
+      setValue('isStaff', checkPremision && newData?.employeeId ? 'EMPLOYEE' : 'STAFF')
       setValue('money', newData?.money || '')
       setValue('dateAdvance', dayjs(newData?.dateAdvance).toString())
       setValue('isRefund', newData?.isRefund || false)
@@ -240,16 +249,18 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect
-              name='isStaff'
-              control={control}
-              label='Loại nhân sự'
-              errors={errors}
-              options={OPTION_HUMAN_RESOURCES}
-            />
-          </Grid>
-          {isStaff === 'STAFF' && (
+          {checkPremision && (
+            <Grid item xs={12} sm={12} md={12} lg={6}>
+              <MySelect
+                name='isStaff'
+                control={control}
+                label='Loại nhân sự'
+                errors={errors}
+                options={OPTION_HUMAN_RESOURCES}
+              />
+            </Grid>
+          )}
+          {isStaff === 'STAFF' && checkPremision && (
             <Grid item xs={12} sm={12} md={12} lg={6}>
               <MyAutocomplete
                 name='staffId'
@@ -303,18 +314,28 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
               //   defaultValue={dayjs()}
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='isRefund' control={control} label='Hoàn ứng' errors={errors} options={OPTION_COMPLETION} />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect
-              name='statusAdvance'
-              control={control}
-              label='Tình trạng hoàn ứng'
-              errors={errors}
-              options={STATUS_ADVANCE_SALARY}
-            />
-          </Grid>
+          {checkPremision && (
+            <Grid item xs={12} sm={12} md={12} lg={6}>
+              <MySelect
+                name='isRefund'
+                control={control}
+                label='Hoàn ứng'
+                errors={errors}
+                options={OPTION_COMPLETION}
+              />
+            </Grid>
+          )}
+          {checkPremision && (
+            <Grid item xs={12} sm={12} md={12} lg={6}>
+              <MySelect
+                name='statusAdvance'
+                control={control}
+                label='Tình trạng hoàn ứng'
+                errors={errors}
+                options={STATUS_ADVANCE_SALARY}
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField name='noteAdvance' control={control} label='Ghi chú' errors={errors} />
           </Grid>

@@ -1,14 +1,16 @@
-import MoneyOutlined from '@mui/icons-material/AddBoxOutlined'
-import AutorenewIcon from '@mui/icons-material/AutorenewOutlined'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CloseIcon from '@mui/icons-material/Close'
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import IconSearch from '@mui/icons-material/Search'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
+import {
+  AddBoxOutlined as MoneyOutlined,
+  AutorenewOutlined as AutorenewIcon,
+  CheckCircle as CheckCircleIcon,
+  Close as CloseIcon,
+  DeleteOutlined as DeleteOutlinedIcon,
+  EditOutlined as EditOutlinedIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  Search as IconSearch,
+  SettingsOutlined as SettingsOutlinedIcon,
+  TuneOutlined as TuneOutlinedIcon
+} from '@mui/icons-material'
 import {
   Button,
   Card,
@@ -38,7 +40,7 @@ import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { currency } from '../../../../app/hooks'
+import { currency, useAppSelector } from '../../../../app/hooks'
 import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
 import { useGetStaticSalaryAdvanceQuery } from '../../../../app/services/statistic'
 import { OPTION_COMPLETION, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
@@ -47,7 +49,7 @@ import TableDataGrid from '../../../../components/table-data-grid/TableComponent
 import Toast from '../../../../components/toast'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../../../components/ui-component/chipCustom'
-import { gridSpacing } from '../../../../constants'
+import { gridSpacing, PERMISSION } from '../../../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../../../help'
 import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
 import { SalaryRefundType } from '../../../../types/salaryRefund'
@@ -55,11 +57,16 @@ import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
 import FilterTableAdvanced from './FilterTableSalaryAdvance'
 import FormAddEditSalaryAdvance from './FormAddEdit'
 import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
+import { authStore } from '../../../../app/selectedStore'
 
 const SalaryAdvancePage = React.memo(() => {
   const theme = useTheme()
   const classes = styleSalaryAdvancePage(theme)
   const dialogs = useDialogs()
+  const user = useAppSelector(authStore)?.user
+  const checkPremisionRefund = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => user?.role?.name === e
+  )
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -140,7 +147,7 @@ const SalaryAdvancePage = React.memo(() => {
       limit: paginationModel.pageSize,
       ...filters,
       dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
-      dateTo: filters.dateTo ? convertDateToApi(filters.dateFrom) : ''
+      dateTo: filters.dateTo ? convertDateToApi(filters.dateTo) : ''
     })
   )
 
@@ -352,20 +359,24 @@ const SalaryAdvancePage = React.memo(() => {
         flex: 1,
         getActions: (param: GridRenderCellParams<SalaryAdvanceType, number>) => {
           return [
-            <GridActionsCellItem
-              icon={
-                <Tooltip title='Thêm hoàn ứng'>
-                  <MoneyOutlined />
-                </Tooltip>
-              }
-              label='Thêm hoàn ứng'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => {
-                setItemSelectedEidt(param.row)
-                handleClickOpenFormRefund()
-              }}
-            />,
+            checkPremisionRefund ? (
+              <GridActionsCellItem
+                icon={
+                  <Tooltip title='Thêm hoàn ứng'>
+                    <MoneyOutlined />
+                  </Tooltip>
+                }
+                label='Thêm hoàn ứng'
+                className='textPrimary'
+                color='inherit'
+                onClick={() => {
+                  setItemSelectedEidt(param.row)
+                  handleClickOpenFormRefund()
+                }}
+              />
+            ) : (
+              <> </>
+            ),
             <GridActionsCellItem
               icon={
                 <Tooltip title='Đổi trạng thái ứng lương'>

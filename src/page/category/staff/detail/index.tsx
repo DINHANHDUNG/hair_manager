@@ -36,19 +36,21 @@ const VisuallyHiddenInput = styled('input')({
 const StaffDetailPage = () => {
   const params = useParams()
   const staffId = params?.id ? Number(params?.id) : null
-  const role = useAppSelector(authStore)?.user?.role?.name
+  const user = useAppSelector(authStore)?.user
   const checkPremision = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => role === e
+    (e) => user?.role?.name === e
   )
   const { data: fetchStaff, refetch } = useGetStaffByIdQuery(
     {
       staffId: staffId || 0
     },
     {
-      skip: !staffId
+      skip: !staffId || !checkPremision
     }
   )
-  const dataStaff = fetchStaff?.data || ({} as StaffType)
+  const dataStaff = checkPremision
+    ? fetchStaff?.data || ({} as StaffType)
+    : ({ ...user?.staff, account: user } as StaffType)
 
   const { enqueueSnackbar } = useSnackbar()
   const [tab, setTab] = useState(0)
