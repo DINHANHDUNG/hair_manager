@@ -13,7 +13,7 @@ import MyTextField from '../../../../components/input/MyTextField'
 import MySelect from '../../../../components/select/MySelect'
 import { CustomTimelineItem } from '../../../../components/timeLine/CustomTimelineItem'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
-import { gridSpacingForm } from '../../../../constants'
+import { gridSpacingForm, PERMISSION } from '../../../../constants'
 //Icon
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import AppsIcon from '@mui/icons-material/Apps'
@@ -26,7 +26,7 @@ import { GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowsProp } f
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
 import moment from 'moment'
-import { handleMutation } from '../../../../app/hooks'
+import { handleMutation, useAppSelector } from '../../../../app/hooks'
 import {
   useAddHistoryStaffMutation,
   useDeleteHistoryStaffMutation,
@@ -35,6 +35,7 @@ import {
 } from '../../../../app/services/staff'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
 import { HistoryStaffType, StaffType } from '../../../../types/staff'
+import { authStore } from '../../../../app/selectedStore'
 
 type FormValues = {
   note?: string
@@ -102,7 +103,10 @@ export default function TabWorkProgress(Props: Props) {
   const dialogs = useDialogs()
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('lg'))
-
+  const role = useAppSelector(authStore)?.user?.role?.name
+  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => role === e
+  )
   const myFormRef = useRef<Element | null>(null)
   const [typeList, setTypeList] = useState(false)
   const [idUpdate, setIdUpdate] = useState<number>()
@@ -195,22 +199,24 @@ export default function TabWorkProgress(Props: Props) {
       flex: 1,
       minWidth: 150,
       getActions: (param: GridRenderCellParams<HistoryStaffType, number>) => {
-        return [
-          <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
-            label='edit'
-            className='textPrimary'
-            color='inherit'
-            onClick={() => editItem(param.row)}
-          />,
-          <GridActionsCellItem
-            onClick={() => handleDelete(param.row.id)}
-            icon={<DeleteOutlinedIcon />}
-            label='Delete'
-            className='textPrimary'
-            color='inherit'
-          />
-        ]
+        return checkPremisionAdd
+          ? [
+              <GridActionsCellItem
+                icon={<EditOutlinedIcon />}
+                label='edit'
+                className='textPrimary'
+                color='inherit'
+                onClick={() => editItem(param.row)}
+              />,
+              <GridActionsCellItem
+                onClick={() => handleDelete(param.row.id)}
+                icon={<DeleteOutlinedIcon />}
+                label='Delete'
+                className='textPrimary'
+                color='inherit'
+              />
+            ]
+          : []
       }
     }
   ]
@@ -348,15 +354,17 @@ export default function TabWorkProgress(Props: Props) {
 
   return (
     <Grid container spacing={gridSpacingForm}>
-      <Grid item xs={12} sm={12} md={12} lg={8} xl={8} sx={{ mb: 3 }}>
+      <Grid item xs={12} sm={12} md={12} lg={checkPremisionAdd ? 8 : 12} xl={checkPremisionAdd ? 8 : 12} sx={{ mb: 3 }}>
         <SubCard
           title={
             <Grid item xs={12} container alignItems={'center'} justifyContent={'space-between'} flexDirection={'row'}>
               <Typography variant='h5'>Quá trình làm việc</Typography>
               <div>
-                <IconButton color='inherit' size='small' onClick={() => addItem()}>
-                  <AddCircleOutlineIcon fontSize='inherit' />
-                </IconButton>
+                {checkPremisionAdd && (
+                  <IconButton color='inherit' size='small' onClick={() => addItem()}>
+                    <AddCircleOutlineIcon fontSize='inherit' />
+                  </IconButton>
+                )}
                 <IconButton color='inherit' size='small' onClick={() => setTypeList(!typeList)}>
                   {typeList ? <FormatListNumberedRtlIcon fontSize='inherit' /> : <AppsIcon fontSize='inherit' />}
                 </IconButton>
@@ -404,64 +412,66 @@ export default function TabWorkProgress(Props: Props) {
           )}
         </SubCard>
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={4} xl={4} sx={{ mb: 3 }}>
-        <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} quá trình làm việc`}>
-          <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={gridSpacingForm}>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MySelect
-                  name='status'
-                  control={control}
-                  label='Trạng thái'
-                  errors={errors}
-                  options={OPTIONSTATUSWORK}
-                  variant='outlined'
-                />
+      {checkPremisionAdd && (
+        <Grid item xs={12} sm={12} md={12} lg={4} xl={4} sx={{ mb: 3 }}>
+          <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} quá trình làm việc`}>
+            <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
+              <Grid container spacing={gridSpacingForm}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MySelect
+                    name='status'
+                    control={control}
+                    label='Trạng thái'
+                    errors={errors}
+                    options={OPTIONSTATUSWORK}
+                    variant='outlined'
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MySelect
+                    name='type'
+                    control={control}
+                    label='Hình thức'
+                    errors={errors}
+                    options={OPTIONTYPEWORK}
+                    variant='outlined'
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyDatePicker
+                    name='date'
+                    control={control}
+                    label='Ngày'
+                    errors={errors}
+                    variant='outlined'
+                    //   defaultValue={dayjs()}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyTextField
+                    multiline
+                    rows={4}
+                    name='note'
+                    control={control}
+                    label='Mô tả'
+                    errors={errors}
+                    variant='outlined'
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
+                  <SubmitButton
+                    variant='contained'
+                    sx={{ float: 'right' }}
+                    loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
+                  >
+                    {idUpdate ? 'Cập nhật' : 'Thêm'}
+                  </SubmitButton>
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MySelect
-                  name='type'
-                  control={control}
-                  label='Hình thức'
-                  errors={errors}
-                  options={OPTIONTYPEWORK}
-                  variant='outlined'
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyDatePicker
-                  name='date'
-                  control={control}
-                  label='Ngày'
-                  errors={errors}
-                  variant='outlined'
-                  //   defaultValue={dayjs()}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyTextField
-                  multiline
-                  rows={4}
-                  name='note'
-                  control={control}
-                  label='Mô tả'
-                  errors={errors}
-                  variant='outlined'
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
-                <SubmitButton
-                  variant='contained'
-                  sx={{ float: 'right' }}
-                  loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
-                >
-                  {idUpdate ? 'Cập nhật' : 'Thêm'}
-                </SubmitButton>
-              </Grid>
-            </Grid>
-          </form>
-        </SubCard>
-      </Grid>
+            </form>
+          </SubCard>
+        </Grid>
+      )}
     </Grid>
   )
 }

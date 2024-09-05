@@ -8,7 +8,7 @@ import SubmitButton from '../../../../components/button/SubmitButton'
 import MyDatePicker from '../../../../components/dateTime/MyDatePicker'
 import MyTextField from '../../../../components/input/MyTextField'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
-import { gridSpacingForm } from '../../../../constants'
+import { gridSpacingForm, PERMISSION } from '../../../../constants'
 //Icon
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
@@ -18,7 +18,7 @@ import { GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowsProp } f
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
 import moment from 'moment'
-import { currency, handleMutation } from '../../../../app/hooks'
+import { currency, handleMutation, useAppSelector } from '../../../../app/hooks'
 import {
   useAddSalaryStaffMutation,
   useDeleteSalaryStaffMutation,
@@ -28,6 +28,7 @@ import {
 import { NumericFormatCustom } from '../../../../components/input'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
 import { SalaryStaffType, StaffType } from '../../../../types/staff'
+import { authStore } from '../../../../app/selectedStore'
 
 type Field = 'basicMoney' | 'officialMoney' | 'probationMoney' | 'date'
 
@@ -101,7 +102,10 @@ interface Props {
 export default function TabSalary(Props: Props) {
   const { dataStaff } = Props
   const dialogs = useDialogs()
-
+  const role = useAppSelector(authStore)?.user?.role?.name
+  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => role === e
+  )
   const myFormRef = useRef<Element | null>(null)
   const [idUpdate, setIdUpdate] = useState<number>()
   const [paginationModel, setPaginationModel] = useState({
@@ -171,22 +175,24 @@ export default function TabSalary(Props: Props) {
       flex: 1,
       minWidth: 150,
       getActions: (param: GridRenderCellParams<SalaryStaffType, number>) => {
-        return [
-          <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
-            label='edit'
-            className='textPrimary'
-            color='inherit'
-            onClick={() => editItem(param.row)}
-          />,
-          <GridActionsCellItem
-            onClick={() => handleDelete(param.row.id)}
-            icon={<DeleteOutlinedIcon />}
-            label='Delete'
-            className='textPrimary'
-            color='inherit'
-          />
-        ]
+        return checkPremisionAdd
+          ? [
+              <GridActionsCellItem
+                icon={<EditOutlinedIcon />}
+                label='edit'
+                className='textPrimary'
+                color='inherit'
+                onClick={() => editItem(param.row)}
+              />,
+              <GridActionsCellItem
+                onClick={() => handleDelete(param.row.id)}
+                icon={<DeleteOutlinedIcon />}
+                label='Delete'
+                className='textPrimary'
+                color='inherit'
+              />
+            ]
+          : []
       }
     }
   ]
@@ -205,12 +211,8 @@ export default function TabSalary(Props: Props) {
     resolver: yupResolver(validationSchema)
   })
 
-  console.log('errors', errors)
-
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log('data', data)
-
     const date = moment(data.date).startOf('day')
     const isoDateStr = date?.toISOString()
     const newData = {
@@ -349,11 +351,13 @@ export default function TabSalary(Props: Props) {
             <Grid item xs={12} container alignItems={'center'} justifyContent={'space-between'} flexDirection={'row'}>
               <Typography variant='h5'>Danh sách lương</Typography>
               <div>
-                <IconButton color='inherit' size='small' onClick={() => addItem()}>
-                  <Tooltip title='Thêm mới'>
-                    <AddCircleOutlineIcon fontSize='inherit' />
-                  </Tooltip>
-                </IconButton>
+                {checkPremisionAdd && (
+                  <IconButton color='inherit' size='small' onClick={() => addItem()}>
+                    <Tooltip title='Thêm mới'>
+                      <AddCircleOutlineIcon fontSize='inherit' />
+                    </Tooltip>
+                  </IconButton>
+                )}
               </div>
             </Grid>
           }
@@ -378,79 +382,81 @@ export default function TabSalary(Props: Props) {
           />
         </SubCard>
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 3 }}>
-        <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} lương thưởng`}>
-          <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={gridSpacingForm}>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyTextField
-                  name='probationMoney'
-                  control={control}
-                  label='Lương thử việc'
-                  errors={errors}
-                  variant='outlined'
-                  textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
-                  InputProps={{
-                    /* eslint-disable @typescript-eslint/no-explicit-any */
-                    inputComponent: NumericFormatCustom as any
-                    /* eslint-enable @typescript-eslint/no-explicit-any */
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyTextField
-                  name='officialMoney'
-                  control={control}
-                  label='Lương chính thức'
-                  errors={errors}
-                  variant='outlined'
-                  textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
-                  InputProps={{
-                    /* eslint-disable @typescript-eslint/no-explicit-any */
-                    inputComponent: NumericFormatCustom as any
-                    /* eslint-enable @typescript-eslint/no-explicit-any */
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyTextField
-                  name='basicMoney'
-                  control={control}
-                  label='Lương cơ bản'
-                  errors={errors}
-                  variant='outlined'
-                  textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
-                  InputProps={{
-                    /* eslint-disable @typescript-eslint/no-explicit-any */
-                    inputComponent: NumericFormatCustom as any
-                    /* eslint-enable @typescript-eslint/no-explicit-any */
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={12}>
-                <MyDatePicker
-                  name='date'
-                  control={control}
-                  label='Ngày'
-                  errors={errors}
-                  variant='outlined'
-                  //   defaultValue={dayjs()}
-                />
-              </Grid>
+      {checkPremisionAdd && (
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{ mb: 3 }}>
+          <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} lương thưởng`}>
+            <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
+              <Grid container spacing={gridSpacingForm}>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyTextField
+                    name='probationMoney'
+                    control={control}
+                    label='Lương thử việc'
+                    errors={errors}
+                    variant='outlined'
+                    textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
+                    InputProps={{
+                      /* eslint-disable @typescript-eslint/no-explicit-any */
+                      inputComponent: NumericFormatCustom as any
+                      /* eslint-enable @typescript-eslint/no-explicit-any */
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyTextField
+                    name='officialMoney'
+                    control={control}
+                    label='Lương chính thức'
+                    errors={errors}
+                    variant='outlined'
+                    textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
+                    InputProps={{
+                      /* eslint-disable @typescript-eslint/no-explicit-any */
+                      inputComponent: NumericFormatCustom as any
+                      /* eslint-enable @typescript-eslint/no-explicit-any */
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyTextField
+                    name='basicMoney'
+                    control={control}
+                    label='Lương cơ bản'
+                    errors={errors}
+                    variant='outlined'
+                    textFieldProps={{ placeholder: 'Nhập dữ liệu ở đây' }} // Truyền các props tùy chọn cho TextField
+                    InputProps={{
+                      /* eslint-disable @typescript-eslint/no-explicit-any */
+                      inputComponent: NumericFormatCustom as any
+                      /* eslint-enable @typescript-eslint/no-explicit-any */
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={12} lg={12}>
+                  <MyDatePicker
+                    name='date'
+                    control={control}
+                    label='Ngày'
+                    errors={errors}
+                    variant='outlined'
+                    //   defaultValue={dayjs()}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
-                <SubmitButton
-                  variant='contained'
-                  sx={{ float: 'right' }}
-                  loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
-                >
-                  {idUpdate ? 'Cập nhật' : 'Thêm'}
-                </SubmitButton>
+                <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
+                  <SubmitButton
+                    variant='contained'
+                    sx={{ float: 'right' }}
+                    loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
+                  >
+                    {idUpdate ? 'Cập nhật' : 'Thêm'}
+                  </SubmitButton>
+                </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </SubCard>
-      </Grid>
+            </form>
+          </SubCard>
+        </Grid>
+      )}
     </Grid>
   )
 }

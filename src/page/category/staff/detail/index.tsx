@@ -10,7 +10,7 @@ import MyButton from '../../../../components/button/MyButton'
 import MainCard from '../../../../components/ui-component/cards/MainCard'
 import SubCard from '../../../../components/ui-component/cards/SubCard'
 import Avatar from '../../../../components/ui-component/extended/Avatar'
-import { gridSpacing } from '../../../../constants'
+import { gridSpacing, PERMISSION } from '../../../../constants'
 import { StaffType } from '../../../../types/staff'
 import TabAlertLevels from './TabAlertLevels'
 import TabChangePassword from './TabChangePassword'
@@ -18,6 +18,8 @@ import TabInfoStaff from './TabInfo'
 import TabKPI from './TabKPI'
 import TabSalary from './TabSalary'
 import TabWorkProgress from './TabWorkProgress'
+import { useAppSelector } from '../../../../app/hooks'
+import { authStore } from '../../../../app/selectedStore'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -34,7 +36,10 @@ const VisuallyHiddenInput = styled('input')({
 const StaffDetailPage = () => {
   const params = useParams()
   const staffId = params?.id ? Number(params?.id) : null
-
+  const role = useAppSelector(authStore)?.user?.role?.name
+  const checkPremision = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
+    (e) => role === e
+  )
   const { data: fetchStaff, refetch } = useGetStaffByIdQuery(
     {
       staffId: staffId || 0
@@ -146,7 +151,7 @@ const StaffDetailPage = () => {
               <Tabs variant='scrollable' value={tab} onChange={handleChangeTab} aria-label='basic tabs example'>
                 <Tab label='Thông tin cá nhân' {...a11yProps(0)} />
                 <Tab label='Lương thưởng' {...a11yProps(1)} />
-                <Tab label='Đổi mật khẩu' {...a11yProps(2)} />
+                {checkPremision && <Tab label='Đổi mật khẩu' {...a11yProps(2)} />}
                 <Tab label='Lịch sử làm việc' {...a11yProps(3)} />
                 <Tab label='Mức độ cảnh báo' {...a11yProps(4)} />
                 <Tab label='KPI' {...a11yProps(5)} />
@@ -161,9 +166,11 @@ const StaffDetailPage = () => {
             <CustomTabPanel value={tab} index={1}>
               <TabSalary dataStaff={dataStaff} />
             </CustomTabPanel>
-            <CustomTabPanel value={tab} index={2}>
-              <TabChangePassword data={dataStaff} />
-            </CustomTabPanel>
+            {checkPremision && (
+              <CustomTabPanel value={tab} index={2}>
+                <TabChangePassword data={dataStaff} />
+              </CustomTabPanel>
+            )}
             <CustomTabPanel value={tab} index={3}>
               <TabWorkProgress dataStaff={dataStaff} />
             </CustomTabPanel>

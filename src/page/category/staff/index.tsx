@@ -175,14 +175,14 @@ const StaffPage = React.memo(() => {
           return [
             <GridActionsCellItem
               icon={
-                <Tooltip title={!params.row.isActive ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}>
-                  {!params.row.isActive ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
+                <Tooltip title={!params.row.account.active ? 'Mở khóa tài khoản' : 'Khóa tài khoản'}>
+                  {!params.row.account.active ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
                 </Tooltip>
               }
               label='Lock'
               className='textPrimary'
               color='inherit'
-              onClick={() => activeStaff({ staffId: Number(params.id), active: !params.row.isActive })}
+              onClick={() => activeStaff({ staffId: Number(params.id), active: !params.row.account.active })}
             />,
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}

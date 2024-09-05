@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 export const convertDateToApi = (value: Date | string) => {
-  const date = moment(value).startOf('day')
+  const date = moment(value)
   const isoDateStr = date?.toISOString()
   return isoDateStr || ''
 }
