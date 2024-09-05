@@ -47,12 +47,21 @@ type FormValues = {
   companyId?: object | undefined
   partnerId?: object | undefined
   note?: string
+  employeeCode?: string
   status: string
   date: string
 }
 
 const validationSchema = yup.object({
-  note: yup.string().max(255, 'Độ dài không được quá 255'),
+  note: yup
+    .string()
+
+    .max(255, 'Độ dài không được quá 255'),
+  employeeCode: yup
+    .string()
+    .max(255, 'Độ dài không được quá 255')
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+    .matches(VALIDATE.noSpace, 'Vui lòng nhập đúng định dạng'),
   status: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   companyId: yup.lazy((_, context) => {
     if (context.parent.status === 'IN_COMPANY') {
@@ -96,7 +105,7 @@ const renderContentRight = (item: HistoryEmployeeType) => {
       </Typography>
       <Typography variant='caption' color='GrayText'>
         {labelStatus}{' '}
-        {`${item?.companyId ? ` | ${item?.company?.name}` : ''}${item?.partnerId ? ` | ${item?.partner?.name}` : ''}`}
+        {`${item?.companyId ? ` | ${item?.company?.name}` : ''}${item?.partnerId ? ` | ${item?.partner?.name}` : ''}${item?.employeeCode ? ` | ${item?.employeeCode}` : ''}`}
       </Typography>
     </>
   )
@@ -436,6 +445,15 @@ export default function TabWorkProgress(Props: Props) {
         <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} quá trình làm việc`}>
           <form ref={(ref) => (myFormRef.current = ref)} onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={gridSpacingForm}>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <MyTextField
+                  name='employeeCode'
+                  control={control}
+                  label='Mã công nhân'
+                  errors={errors}
+                  variant='outlined'
+                />
+              </Grid>
               <Grid item xs={12} sm={12} md={12} lg={12}>
                 <MySelect
                   name='status'
