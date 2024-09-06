@@ -1,13 +1,13 @@
 import {
-  AddBoxOutlined as MoneyOutlined,
   AutorenewOutlined as AutorenewIcon,
   CheckCircle as CheckCircleIcon,
   Close as CloseIcon,
   DeleteOutlined as DeleteOutlinedIcon,
   EditOutlined as EditOutlinedIcon,
+  Search as IconSearch,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
-  Search as IconSearch,
+  AddBoxOutlined as MoneyOutlined,
   SettingsOutlined as SettingsOutlinedIcon,
   TuneOutlined as TuneOutlinedIcon
 } from '@mui/icons-material'
@@ -29,9 +29,9 @@ import { makeStyles } from '@mui/styles'
 import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
-  GridCallbackDetails,
   GridColDef,
   GridRenderCellParams,
+  GridRowId,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp
@@ -41,6 +41,7 @@ import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { currency, useAppSelector } from '../../../../app/hooks'
+import { authStore } from '../../../../app/selectedStore'
 import { useDeleteSalaryAdvanceMutation, useGetListSalaryAdvanceQuery } from '../../../../app/services/salaryAdvance'
 import { useGetStaticSalaryAdvanceQuery } from '../../../../app/services/statistic'
 import { OPTION_COMPLETION, STATUS_ADVANCE_SALARY } from '../../../../common/contants'
@@ -57,7 +58,7 @@ import FormAddEditSalaryRefund from '../salary_refund/FormAddEdit'
 import FilterTableAdvanced from './FilterTableSalaryAdvance'
 import FormAddEditSalaryAdvance from './FormAddEdit'
 import FormChangeStatusSalaryAdvance from './FormChangeStatusSalaryAdvance'
-import { authStore } from '../../../../app/selectedStore'
+import FormChangeStatusRefundMultiple from './FormChangeStatusSalaryRefundMultiple'
 
 const SalaryAdvancePage = React.memo(() => {
   const theme = useTheme()
@@ -131,11 +132,13 @@ const SalaryAdvancePage = React.memo(() => {
   })
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<SalaryAdvanceType>()
   const [rowsData, setRowsData] = React.useState<SalaryAdvanceType[]>()
+  const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>([])
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openFormAddRefund, setOpenFormAddRefund] = React.useState(false)
   const [openFormChangeStatusSalaryAdvance, setOpenFormChangeStatusSalaryAdvance] = React.useState(false)
+  const [openFormChangeRefundMultiple, setOpenFormChangeRefundMultiple] = React.useState(false)
 
   const {
     data: dataApiSalaryAdvance,
@@ -261,8 +264,20 @@ const SalaryAdvancePage = React.memo(() => {
     prevOpenAdvanced.current = openFilterAdvanced
   }, [openFilter, openFilterAdvanced])
 
-  const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
-    console.log(rowSelectionModel, details)
+  const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel) => {
+    setSelectionModel([...rowSelectionModel])
+  }
+
+  const resetCheckBox = () => {
+    setSelectionModel([])
+  }
+
+  const handleClickRefundMultiple = () => {
+    setOpenFormChangeRefundMultiple(true)
+  }
+
+  const handleCloseRefundMultiple = () => {
+    setOpenFormChangeRefundMultiple(false)
   }
 
   const onRowClick = (params: GridRowParams) => {
@@ -576,7 +591,12 @@ const SalaryAdvancePage = React.memo(() => {
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
-              <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
+              {selectionModel.length > 0 && (
+                <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickRefundMultiple}>
+                  Hoàn ứng
+                </Button>
+              )}
+              <Button variant='outlined' onClick={handleClickOpenForm}>
                 Thêm mới
               </Button>
             </div>
@@ -601,6 +621,8 @@ const SalaryAdvancePage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
+            rowSelectionModel={selectionModel}
+            checkboxSelection
             // otherProps={{
             //   getRowClassName: (params: GridRenderCellParams<SalaryAdvanceType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'
@@ -636,6 +658,17 @@ const SalaryAdvancePage = React.memo(() => {
           handleSave={() => {
             refetch()
             handleCloseFormChangeStatusSalaryAdvance()
+          }}
+        />
+
+        <FormChangeStatusRefundMultiple
+          ids={selectionModel ?? []}
+          open={openFormChangeRefundMultiple}
+          handleClose={handleCloseRefundMultiple}
+          handleSave={() => {
+            refetch()
+            resetCheckBox()
+            handleCloseRefundMultiple()
           }}
         />
 

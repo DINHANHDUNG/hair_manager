@@ -53,6 +53,13 @@ export const salaryRefundApi = createApi({
         method: PATCH,
         params: data.params
       })
+    }),
+    changeStatusSalaryRefundMultiple: builder.mutation({
+      query: (data) => ({
+        url: NetWork.salaryRefundMultipleStatus,
+        method: POST,
+        data: data
+      })
     })
   })
 })
@@ -64,5 +71,6 @@ export const {
   useAddSalaryRefundMutation,
   useGetSalaryRefundByIdQuery,
   useUpdateSalaryRefundMutation,
-  useChangeStatusSalaryRefundMutation
+  useChangeStatusSalaryRefundMutation,
+  useChangeStatusSalaryRefundMultipleMutation
 } = salaryRefundApi

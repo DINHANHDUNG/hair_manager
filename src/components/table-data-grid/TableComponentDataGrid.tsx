@@ -11,6 +11,7 @@ import {
   gridPageSelector,
   GridPagination,
   GridPaginationModel,
+  GridRowId,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp,
@@ -43,6 +44,7 @@ interface TableDataGridProps {
   handleSearchChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   toolbarEnable?: boolean
   toolbar?: ReactElement
+  rowSelectionModel?: GridRowId[]
   onRowClick?: (
     params: GridRowParams, // GridRowParams
     event: MuiEvent<React.MouseEvent<HTMLElement>>, // MuiEvent<React.MouseEvent<HTMLElement>>
@@ -74,6 +76,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   toolbarEnable,
   toolbar,
   totalCount,
+  rowSelectionModel,
   otherProps // Các props bổ sung
 }) => {
   const theme = useTheme()
@@ -84,6 +87,8 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       checkboxSelection={checkboxSelection}
       headerFilters={headerFilters}
       onRowSelectionModelChange={onRowSelectionChange}
+      rowSelectionModel={rowSelectionModel || []}
+      keepNonExistentRowsSelected
       onRowClick={onRowClick}
       columns={columns}
       disableColumnFilter
