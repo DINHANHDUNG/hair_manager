@@ -54,6 +54,7 @@ export const NetWork = {
   salaryRefund: 'salary-refund',
   salaryRefundId: (salaryRefundId: number) => `salary-refund/${salaryRefundId}`,
   salaryRefundStatus: (salaryRefundId: number) => `salary-refund/${salaryRefundId}/status-refund`,
+  salaryRefundMultipleStatus: `salary-refund/complete-refund-multiple`,
 
   //SalaryPay
   salaryPay: 'salary',
