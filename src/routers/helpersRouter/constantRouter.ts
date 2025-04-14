@@ -5,6 +5,7 @@ const ROUTES = {
   DASHBOARD: 'dashboard',
   ORDER: 'order',
   ORDER_DETAIL: 'order-detail',
+  ORDER_ADD: 'order-add',
   LOGIN: 'login',
   NOT_AUTHORIZED: 'not-authorized',
   SAMPLE_PAGE: 'sample-page',

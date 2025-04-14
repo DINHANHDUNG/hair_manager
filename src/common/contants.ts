@@ -68,3 +68,23 @@ export const OPTION_HUMAN_RESOURCES = [
   { value: 'STAFF', label: 'Nhân viên' },
   { value: 'EMPLOYEE', label: 'Công nhân' }
 ]
+
+//ReactDropzone upload file
+export const FILE_ACCEPT_TYPES = {
+  images: {
+    'image/jpeg': ['.jpg', '.jpeg', '.jfif'],
+    'image/png': ['.png'],
+    'image/gif': ['.gif'],
+    'image/webp': ['.webp'],
+    'image/heic': ['.heic', '.heif']
+  },
+  excel: {
+    'application/vnd.ms-excel': ['.xls'],
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+  },
+  pdf: {
+    'application/pdf': ['.pdf']
+  }
+}
+
+export const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.jfif', '.heic', '.heif']

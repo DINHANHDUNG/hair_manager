@@ -31,6 +31,10 @@ const SalaryRefundPage = Loadable(lazy(() => import('../page/category/salary/sal
 const SalaryPayPage = Loadable(lazy(() => import('../page/category/salary/salary-pay')))
 const SalaryPayEmployeePage = Loadable(lazy(() => import('../page/category/salary/salary-pay/salaryPayEmployee')))
 
+//Order
+const OrderPage = Loadable(lazy(() => import('../page/order')))
+const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -51,11 +55,11 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.DEFAULT,
-          element: <AdminPage />
+          element: <OrderPage />
         },
         {
-          path: ROUTES.ORDER_DETAIL,
-          element: <StaffPage />
+          path: ROUTES.ORDER_ADD,
+          element: <FormAddEditOrder />
         }
       ]
     },

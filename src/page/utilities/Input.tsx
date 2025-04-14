@@ -171,7 +171,7 @@ const InputUtilities = () => {
                     }}
                     mb={2}
                   />
-                  <MyAutocomplete
+                  {/* <MyAutocomplete
                     name='myFieldAutoComplate'
                     control={control}
                     label='Select an option'
@@ -181,13 +181,13 @@ const InputUtilities = () => {
                     textFieldProps={{
                       variant: 'standard'
                     }}
-                    getOptionSelected={(option, value) => {
+                    isOptionEqualToValue={(option, value) => {
                       return option.value === value.value
                     }}
                     // onChange={(_, value) => {
                     //   setValue('myFieldAutoComplate', value?.value || ''); // Lưu giá trị hoặc một chuỗi trống nếu không có giá trị
                     // }}
-                  />
+                  /> */}
 
                   {/* <MyAutocomplete
                     freeSolo={true}

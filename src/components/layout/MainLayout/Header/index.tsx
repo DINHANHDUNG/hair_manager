@@ -61,10 +61,10 @@ const Header = ({ handleLeftDrawerToggle }: { handleLeftDrawerToggle: () => void
       {/* <SearchSection /> */}
       <Box component='span' sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1, ml: 4 }}>
         <Typography variant='h3' sx={{ textTransform: 'uppercase' }}>
-          CÔNG TY TNHH TƯ VẤN VÀ ĐẦU TƯ DAILY JOB
+          Quản lý tóc
         </Typography>
         <Typography variant='caption'>
-          Số nhà 70 Phố Cù Chính Lan, Tổ 27 - Phường Đông Phong - Thành Phố Lai Châu - Lai Châu.
+          Số nhà 70 Thị Trấn Chờ, Yên Phong - Bắc Ninh.
         </Typography>
       </Box>
       <Box sx={{ flexGrow: 1 }} />

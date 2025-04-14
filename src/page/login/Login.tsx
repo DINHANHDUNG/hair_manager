@@ -38,7 +38,7 @@ const Login = () => {
                           maxWidth: { xs: 100, md: 100 }
                         }}
                         alt='The house from the offer.'
-                        src={images.logo}
+                        src={images.logoToc}
                       />
                     </Link>
                   </Grid>
@@ -52,10 +52,10 @@ const Login = () => {
                       <Grid item>
                         <Stack alignItems='center' justifyContent='center' spacing={1}>
                           <Typography color='secondary.main' gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            Quản lý công nhân
+                            Hair Management
                           </Typography>
                           {/* <Typography variant='caption' fontSize='16px' textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Quản lý công nhân
+                            Hair management
                           </Typography> */}
                         </Stack>
                       </Grid>

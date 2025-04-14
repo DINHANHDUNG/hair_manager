@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 const AuthFooter = () => (
   <Stack direction='row' justifyContent='space-between'>
     <Typography variant='subtitle2' component={Link} target='_blank' underline='hover'>
-      Quản lý công nhân
+      Hair management
     </Typography>
     <Typography variant='subtitle2' component={Link} href='dungitvn' target='_blank' underline='hover'>
       &copy; DUNGITVN

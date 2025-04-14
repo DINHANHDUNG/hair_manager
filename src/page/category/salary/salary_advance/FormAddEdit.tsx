@@ -268,7 +268,7 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
                 label='Chọn nhân viên'
                 errors={errors}
                 options={dataOptionStaff}
-                getOptionSelected={(option, value) => {
+                isOptionEqualToValue={(option, value) => {
                   return option.value === value.value
                 }}
                 textFieldProps={{ variant: 'standard' }}
@@ -283,7 +283,7 @@ export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave
                 label='Chọn công nhân'
                 errors={errors}
                 options={dataOptionEmployee}
-                getOptionSelected={(option, value) => {
+                isOptionEqualToValue={(option, value) => {
                   return option.value === value.value
                 }}
                 textFieldProps={{ variant: 'standard' }}

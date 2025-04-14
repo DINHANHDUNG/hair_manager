@@ -24,7 +24,7 @@ const icons = {
 
 const categorys = {
   id: 'category-manager',
-  title: 'Quản lý',
+  title: 'Danh mục',
   type: 'group',
   premissions: [
     PERMISSION.ADMIN,
@@ -46,7 +46,7 @@ const categorys = {
     },
     {
       id: 'category-worker',
-      title: 'Công nhân',
+      title: 'Tài khoản',
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}`,
@@ -62,7 +62,7 @@ const categorys = {
     },
     {
       id: 'category-partner',
-      title: 'Vendor',
+      title: 'Khách hàng',
       type: 'item',
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`,
@@ -76,22 +76,22 @@ const categorys = {
         PERMISSION.TUYENDUNG
       ]
     },
-    {
-      id: 'category-company',
-      title: 'Công ty',
-      type: 'item',
-      breadcrumbs: false,
-      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.COMPANY}`,
-      icon: icons.IconBuilding,
-      premissions: [
-        PERMISSION.ADMIN,
-        PERMISSION.GIAMDOC,
-        PERMISSION.HCNS,
-        PERMISSION.KETOAN,
-        PERMISSION.SALE,
-        PERMISSION.TUYENDUNG
-      ]
-    }
+    // {
+    //   id: 'category-company',
+    //   title: 'Công ty',
+    //   type: 'item',
+    //   breadcrumbs: false,
+    //   url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.COMPANY}`,
+    //   icon: icons.IconBuilding,
+    //   premissions: [
+    //     PERMISSION.ADMIN,
+    //     PERMISSION.GIAMDOC,
+    //     PERMISSION.HCNS,
+    //     PERMISSION.KETOAN,
+    //     PERMISSION.SALE,
+    //     PERMISSION.TUYENDUNG
+    //   ]
+    // }
   ]
 }
 

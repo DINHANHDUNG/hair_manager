@@ -1,6 +1,7 @@
 // assets
 import { IconShoppingCartBolt } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
+import { PERMISSION } from '../../constants'
 
 // constant
 const icons = { IconShoppingCartBolt }
@@ -9,16 +10,32 @@ const icons = { IconShoppingCartBolt }
 
 const order = {
   id: 'order',
-  title: 'Đơn hàng',
+  title: 'Quản lý đơn hàng',
   type: 'group',
+  premissions: [
+    PERMISSION.ADMIN,
+    PERMISSION.GIAMDOC,
+    PERMISSION.HCNS,
+    PERMISSION.KETOAN,
+    PERMISSION.TUYENDUNG,
+    PERMISSION.SALE
+  ],
   children: [
     {
       id: ROUTES.ORDER,
-      title: 'Danh sách đơn hàng',
+      title: 'Danh sách đơn',
       type: 'item',
       url: `/${ROUTES.ORDER}/${ROUTES.DEFAULT}`,
       icon: icons.IconShoppingCartBolt,
-      breadcrumbs: true
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.TUYENDUNG,
+        PERMISSION.SALE
+      ],
     }
   ]
 }

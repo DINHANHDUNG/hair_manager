@@ -79,10 +79,10 @@ const CardSecondaryAction: React.FC<CardSecondaryActionProps> = ({ title, link, 
 }
 
 // Add prop types validation for JavaScript users
-CardSecondaryAction.propTypes = {
-  icon: PropTypes.node,
-  link: PropTypes.string,
-  title: PropTypes.string
-}
+// CardSecondaryAction.propTypes = {
+//   icon: PropTypes.node,
+//   link: PropTypes.string,
+//   title: PropTypes.string
+// }
 
 export default CardSecondaryAction

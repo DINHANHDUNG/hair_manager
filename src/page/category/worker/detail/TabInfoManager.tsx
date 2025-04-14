@@ -107,7 +107,7 @@ export default function TabInfoManager(Props: Props) {
             label='Người quản lý'
             errors={errors}
             options={dataOptionStaff}
-            getOptionSelected={(option, value) => {
+            isOptionEqualToValue={(option, value) => {
               return option.value === value.value
             }}
             textFieldProps={{ variant: 'outlined' }}

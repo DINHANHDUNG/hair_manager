@@ -469,7 +469,7 @@ export default function TabWorkProgress(Props: Props) {
                     label='Chọn công ty'
                     errors={errors}
                     options={dataOptionCompany}
-                    getOptionSelected={(option, value) => {
+                    isOptionEqualToValue={(option, value) => {
                       return option.value === value.value
                     }}
                   />
@@ -483,7 +483,7 @@ export default function TabWorkProgress(Props: Props) {
                     label='Chọn vendor'
                     errors={errors}
                     options={dataOptionPartner}
-                    getOptionSelected={(option, value) => {
+                    isOptionEqualToValue={(option, value) => {
                       return option.value === value.value
                     }}
                   />

@@ -126,3 +126,7 @@
     transform: translateX(10px);
   }
 }
+
+.MuiOutlinedInput-root.MuiInputBase-sizeSmall .MuiAutocomplete-input {
+  padding: 4px 4px 4px 8px !important;
+}
