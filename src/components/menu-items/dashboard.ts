@@ -36,6 +36,38 @@ const dashboard = {
         PERMISSION.SALE,
         PERMISSION.TUYENDUNG
       ]
+    },
+    {
+      id: ROUTES.DASHBOARD_ORDER,
+      title: 'Đơn hàng',
+      type: 'item',
+      url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER}`,
+      icon: icons.IconDashboard,
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
+    },
+    {
+      id: ROUTES.DASHBOARD_ORDER_SALE,
+      title: 'Doanh thu (Sale)',
+      type: 'item',
+      url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER_SALE}`,
+      icon: icons.IconDashboard,
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.SALE,
+        PERMISSION.TUYENDUNG
+      ]
     }
   ]
 }

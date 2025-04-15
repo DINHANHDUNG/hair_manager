@@ -8,6 +8,8 @@ import NotAuthorizedPage from '../page/notAuthor/NotAuthorizedPage'
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../page/dashboard/DashboardPage')))
+const DashboarOrderdDefault = Loadable(lazy(() => import('../page/report')))
+const DashboarOrderdSale = Loadable(lazy(() => import('../page/report/reportSale')))
 
 // admin routing
 const AdminPage = Loadable(lazy(() => import('../page/admin/AdminPage')))
@@ -50,6 +52,14 @@ const MainRoutes = {
         {
           path: ROUTES.INDEX,
           element: <DashboardDefault />
+        },
+        {
+          path: ROUTES.DASHBOARD_ORDER,
+          element: <DashboarOrderdDefault />
+        },
+        {
+          path: ROUTES.DASHBOARD_ORDER_SALE,
+          element: <DashboarOrderdSale />
         }
       ]
     },

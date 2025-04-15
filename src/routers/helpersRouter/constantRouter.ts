@@ -3,6 +3,8 @@ const ROUTES = {
   DEFAULT: 'default',
   INDEX: 'index',
   DASHBOARD: 'dashboard',
+  DASHBOARD_ORDER: 'dashboard-order',
+  DASHBOARD_ORDER_SALE: 'dashboard-order-sale',
   ORDER: 'order',
   ORDER_DETAIL: 'order-detail',
   ORDER_ADD: 'order-add',
