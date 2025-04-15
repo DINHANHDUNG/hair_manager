@@ -1,11 +1,10 @@
-import { Autocomplete, InputLabel, TextField, Typography } from '@mui/material'
+import { InputLabel, TextField } from '@mui/material'
 import Slider, { SliderThumb } from '@mui/material/Slider'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { STATUS_WORKING_EMPLOYEE } from '../../common/contants'
 import MyButton from '../../components/button/MyButton'
 import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
 import PopperComponent from '../../components/popper'
@@ -65,16 +64,15 @@ interface Props {
   open: boolean
   value?: { [field: string]: string }
   anchorRef: React.RefObject<HTMLElement>
-  listCompany: { value: string; label: string }[]
   handleComfirm?: (value: StateFilterTableAdvanced) => void
   handleClose: (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
 
 // Define the types for the state
 export interface StateFilterTableAdvanced {
-  company: string
-  status: string
-  age: number[]
+  phoneNumber: string
+  code: string
+  name: string
   date: DateRange<Dayjs> | undefined
 }
 
@@ -83,24 +81,26 @@ export default function FilterTableAdvanced({
   anchorRef,
   handleClose,
   handleComfirm,
-  value,
-  listCompany
+  value
 }: Props) {
   const today = dayjs()
 
   const [state, setState] = useState<StateFilterTableAdvanced>({
-    company: '',
-    status: '',
-    age: [0, 100],
-    date: [today.startOf('month'), today.endOf('month')]
+    // company: '',
+    // status: '',
+    // age: [0, 100],
+    date: [today.startOf('month'), today.endOf('month')],
+    code: '',
+    name: '',
+    phoneNumber: ''
   })
 
   useEffect(() => {
     if (open && value) {
       setState({
-        company: value?.companyId || '',
-        status: value?.statusWorking || '',
-        age: value.ageFrom && value.ageTo ? [Number(value.ageFrom), Number(value.ageTo)] : [18, 30],
+        code: value?.code || '',
+        name: value?.name || '',
+        phoneNumber: value?.phoneNumber,
         date:
           value.dateFrom && value.dateTo
             ? [dayjs(value.dateFrom), dayjs(value.dateTo)]
@@ -109,17 +109,10 @@ export default function FilterTableAdvanced({
     }
   }, [open, value])
 
-  const handleCompanyChange = (_: React.SyntheticEvent, newValue: { value: string; label: string } | null) => {
+  const handleChangeState = (newValue: string, key: string) => {
     setState((prevState) => ({
       ...prevState,
-      company: newValue?.value || ''
-    }))
-  }
-
-  const handleStatusChange = (_: React.SyntheticEvent, newValue: { value: string; label: string } | null) => {
-    setState((prevState) => ({
-      ...prevState,
-      status: newValue?.value || ''
+      [key]: newValue || ''
     }))
   }
 
@@ -127,13 +120,6 @@ export default function FilterTableAdvanced({
     setState((prevState) => ({
       ...prevState,
       date: newValue
-    }))
-  }
-
-  const handleAgeChange = (_: Event, newValue: number | number[]) => {
-    setState((prevState) => ({
-      ...prevState,
-      age: newValue as number[]
     }))
   }
 
@@ -145,54 +131,23 @@ export default function FilterTableAdvanced({
       </Box>
 
       <Box sx={{ p: 2, pb: 0 }}>
-        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Công ty`}</InputLabel>
-        <Autocomplete
-          options={listCompany}
-          getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
-          onChange={handleCompanyChange}
-          value={
-            state.company
-              ? {
-                  value: state.company,
-                  label: listCompany?.find((opt) => opt.value === state.company)?.label || ''
-                }
-              : null
-          }
-          renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
-        />
+        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Mã đơn`}</InputLabel>
+        <TextField fullWidth value={state.code} placeholder={'Nhập mã đơn hàng'} onChange={(e) => handleChangeState(e.target.value, 'code')} />
+
       </Box>
 
       <Box sx={{ p: 2, pb: 2 }}>
-        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Trạng thái làm việc`}</InputLabel>
-        <Autocomplete
-          options={STATUS_WORKING_EMPLOYEE}
-          getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
-          onChange={handleStatusChange}
-          value={
-            state.status
-              ? {
-                  value: state.status,
-                  label: STATUS_WORKING_EMPLOYEE.find((opt) => opt.value === state.status)?.label || ''
-                }
-              : null
-          }
-          renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
-        />
+        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Tên khách hàng`}</InputLabel>
+        <TextField fullWidth value={state.name} placeholder={'Nhập tên khách hàng'} onChange={(e) => handleChangeState(e.target.value, 'name')} />
       </Box>
 
       <Box sx={{ p: 2, pb: 2 }}>
-        <Typography gutterBottom>Độ tuổi</Typography>
-        <Box sx={{ p: 2, pb: 2 }}>
-          <AirbnbSlider
-            slots={{ thumb: AirbnbThumbComponent }}
-            getAriaLabel={(index) => (index === 0 ? 'Minimum age' : 'Maximum age')}
-            value={state.age}
-            valueLabelDisplay='on'
-            sx={{ mt: 3 }}
-            onChange={handleAgeChange}
-          />
-        </Box>
+        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Số điện thoại`}</InputLabel>
+        <TextField fullWidth value={state.phoneNumber}  placeholder={'Nhập số điện thoại'} onChange={(e) => handleChangeState(e.target.value, 'phoneNumber')} />
+        
+      </Box>
 
+      <Box sx={{ p: 2, pb: 2 }}>
         <MyButton
           size='small'
           variant='contained'
@@ -209,9 +164,9 @@ export default function FilterTableAdvanced({
           onClick={() =>
             handleComfirm &&
             handleComfirm({
-              company: '',
-              status: '',
-              age: [],
+              name: '',
+              phoneNumber: '',
+              code: '',
               date: [null, null]
             })
           }

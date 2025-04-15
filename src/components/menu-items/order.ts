@@ -1,10 +1,10 @@
 // assets
-import { IconShoppingCartBolt } from '@tabler/icons-react'
+import { IconShoppingCartBolt, IconAB2 } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { PERMISSION } from '../../constants'
 
 // constant
-const icons = { IconShoppingCartBolt }
+const icons = { IconShoppingCartBolt, IconAB2 }
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -27,6 +27,22 @@ const order = {
       type: 'item',
       url: `/${ROUTES.ORDER}/${ROUTES.DEFAULT}`,
       icon: icons.IconShoppingCartBolt,
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.TUYENDUNG,
+        PERMISSION.SALE
+      ],
+    },
+    {
+      id: ROUTES.ORDER_REQUEST,
+      title: 'Yêu cầu sửa',
+      type: 'item',
+      url: `/${ROUTES.ORDER}/${ROUTES.ORDER_REQUEST}`,
+      icon: icons.IconAB2,
       breadcrumbs: false,
       premissions: [
         PERMISSION.ADMIN,

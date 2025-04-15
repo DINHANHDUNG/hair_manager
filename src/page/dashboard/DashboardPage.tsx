@@ -62,7 +62,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.secondary.dark}
                 icon={<IconUsersGroup stroke={1.5} size='1.3rem' />}
-                textTitle='Tổng số công nhân'
+                textTitle='Tổng số đơn'
               />
               <FooterBoxSection
                 elementLeft={currentMonthEmployee || 0}
@@ -83,7 +83,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.error.dark}
                 icon={<IconUser stroke={1.5} size='1.3rem' />}
-                textTitle='Tổng số nhân viên'
+                textTitle='Đang giao'
               />
               <FooterBoxSection
                 elementLeft={currentMonthStaff || 0}
@@ -104,7 +104,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.orange.dark}
                 icon={<IconCoin stroke={1.5} size='1.3rem' />}
-                textTitle='Tổng ứng lương'
+                textTitle='Đã giao'
               />
               <FooterBoxSection
                 elementLeft={currency(totalSalaryAdvance)}
@@ -121,7 +121,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.orange.main}
                 icon={<IconCoins stroke={1.5} size='1.3rem' />}
-                textTitle='Tổng hoàn ứng'
+                textTitle='Đã huỷ'
               />
               <FooterBoxSection
                 elementLeft={currency(totalSalaryRefund)}
@@ -168,7 +168,7 @@ const Dashboard = React.memo(() => {
       <MainCard
         title={
           <Grid container direction='row' alignItems='center' justifyContent='space-between'>
-            <Typography variant='subtitle1'>Số lượng tuyển dụng</Typography>
+            <Typography variant='subtitle1'>Số lượng đơn</Typography>
             {/* <DateRangePickerShortCut
               value={valueRangeDate}
               setValue={(newValue) => setValueRangeDate(newValue)}

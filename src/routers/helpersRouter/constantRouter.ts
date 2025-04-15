@@ -6,6 +6,7 @@ const ROUTES = {
   ORDER: 'order',
   ORDER_DETAIL: 'order-detail',
   ORDER_ADD: 'order-add',
+  ORDER_REQUEST: 'order-request',
   LOGIN: 'login',
   NOT_AUTHORIZED: 'not-authorized',
   SAMPLE_PAGE: 'sample-page',
@@ -29,7 +30,9 @@ const ROUTES = {
     SALARY_ADVANCE: 'salary-advance',
     SALARY_REFUND: 'salary-refund',
     SALARY_PAY_STAFF: 'salary-pay/staff',
-    SALARY_PAY_EMPLOYEE: 'salary-pay/employee'
+    SALARY_PAY_EMPLOYEE: 'salary-pay/employee',
+    ACCOUNT_MANAGER: 'account_manager',
+    CUSTOMER_MANAGER: 'customer_manager',
   }
 }
 

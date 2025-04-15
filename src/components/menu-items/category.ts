@@ -49,7 +49,7 @@ const categorys = {
       title: 'Tài khoản',
       type: 'item',
       breadcrumbs: false,
-      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}`,
+      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER}`,
       icon: icons.IconBriefcase,
       premissions: [
         PERMISSION.ADMIN,
@@ -61,11 +61,11 @@ const categorys = {
       ]
     },
     {
-      id: 'category-partner',
+      id: 'category-customer',
       title: 'Khách hàng',
       type: 'item',
       breadcrumbs: false,
-      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`,
+      url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER}`,
       icon: icons.IconUsersGroup,
       premissions: [
         PERMISSION.ADMIN,
@@ -76,6 +76,22 @@ const categorys = {
         PERMISSION.TUYENDUNG
       ]
     },
+    // {
+    //   id: 'category-partner',
+    //   title: 'Vender',
+    //   type: 'item',
+    //   breadcrumbs: false,
+    //   url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.PARTER}`,
+    //   icon: icons.IconUsersGroup,
+    //   premissions: [
+    //     PERMISSION.ADMIN,
+    //     PERMISSION.GIAMDOC,
+    //     PERMISSION.HCNS,
+    //     PERMISSION.KETOAN,
+    //     PERMISSION.SALE,
+    //     PERMISSION.TUYENDUNG
+    //   ]
+    // },
     // {
     //   id: 'category-company',
     //   title: 'Công ty',

@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Grid } from '@mui/material'
+import { Grid, IconButton, InputAdornment } from '@mui/material'
 import moment from 'moment'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { useGetRolesQuery } from '../../../app/services/auth'
-import { useAddStaffMutation } from '../../../app/services/staff'
+import { useAddStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
 import { OPTIONGENDER } from '../../../common/contants'
 import { VALIDATE } from '../../../common/validate'
 import MyButton from '../../../components/button/MyButton'
@@ -17,6 +17,9 @@ import MySelect from '../../../components/select/MySelect'
 import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
 import { RoleType } from '../../../types/account'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import MyAutocomplete from '../../../components/select/MyAutocomplete'
+import { convertDataLabel } from '../../../app/hooks'
 
 interface Props {
   open: boolean
@@ -62,13 +65,16 @@ const validationSchema = yup.object({
   roleId: yup.number().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền')
 })
 
-export default function FormAddStaff(Props: Props) {
+export default function FormAddAccount(Props: Props) {
   const { open, handleClose, handleSave } = Props
+  const [showPassword, setShowPassword] = useState(false)
   const { data: dataRole } = useGetRolesQuery({})
   const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()
+  const { data: dataApiStaff } = useGetListStaffQuery({})
+  const dataOptionStaff = convertDataLabel({ data: dataApiStaff?.data?.rows || [], key: 'name', value: 'id' })
   // Khởi tạo react-hook-form với schema xác thực
   const {
     control,
@@ -86,6 +92,14 @@ export default function FormAddStaff(Props: Props) {
     const date = moment(data.birthDay).startOf('day')
     const isoDateStr = date?.toISOString()
     addStaff({ ...data, birthDay: isoDateStr })
+  }
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLElement>) => {
+    event?.preventDefault()
   }
 
   useEffect(() => {
@@ -146,53 +160,65 @@ export default function FormAddStaff(Props: Props) {
         <Grid container spacing={gridSpacingForm}>
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField
-              name='name'
+              name='username'
               control={control}
-              label='Họ và tên'
+              label='Tài khoản'
               errors={errors}
               //   variant='standard'
             />
           </Grid>
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='identificationCard' control={control} label='Căn cước công dân' errors={errors} />
-          </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='gender' control={control} label='Giới tính' errors={errors} options={OPTIONGENDER} />
-          </Grid>
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyDatePicker
-              name='birthDay'
+            <MyTextField
+              name='password'
               control={control}
-              label='Ngày sinh'
+              label='Mật khẩu'
               errors={errors}
-              //   defaultValue={dayjs()}
+              type={showPassword ? 'text' : 'password'}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge='end'
+                      size='large'
+                    >
+                      {!showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              //   variant='standard'
             />
-          </Grid> */}
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='phoneNumber' control={control} label='Số điện thoại' errors={errors} />
           </Grid>
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='email' control={control} label='Email' errors={errors} />
-          </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='address' control={control} label='Địa chỉ' errors={errors} />
+            {/* <MyAutocomplete
+              name='staffId'
+              control={control}
+              label='Nhân viên'
+              errors={errors}
+              options={dataOptionStaff}
+              isOptionEqualToValue={(option, value) => {
+                return option.value === value.value
+              }}
+              textFieldProps={{ variant: 'outlined' }}
+            /> */}
+            <MySelect name='staffId' control={control} label='Nhân viên' errors={errors} options={dataOptionStaff} />
           </Grid>
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='addressOrigin' control={control} label='Nguyên quán' errors={errors} />
-          </Grid> */}
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='ethnic' control={control} label='Dân tộc' errors={errors} />
-          </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='roleId' control={control} label='Chức vụ' errors={errors} options={[
+            <MySelect
+              name='roleId'
+              control={control}
+              label='Loại tài khoản'
+              errors={errors}
+              options={[
                 { value: 'admin', label: 'Admin' },
                 { value: 'sale', label: 'Sale' },
                 { value: 'quanly', label: 'Quản lý' },
                 { value: 'ketoan', label: 'Kế toán' },
-              ]} />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='account' control={control} label='Tài khoản' errors={errors} options={listRole} />
+              ]}
+            />
           </Grid>
         </Grid>
         <Grid container spacing={gridSpacingForm}>

@@ -24,6 +24,8 @@ const PartnerPage = Loadable(lazy(() => import('../page/category/partner')))
 const CompanyPage = Loadable(lazy(() => import('../page/category/company')))
 const WorkerPage = Loadable(lazy(() => import('../page/category/worker')))
 const WorkerDetailPage = Loadable(lazy(() => import('../page/category/worker/detail')))
+const AccountPage = Loadable(lazy(() => import('../page/category/account')))
+const CustomerPage = Loadable(lazy(() => import('../page/category/customer')))
 
 //Salary
 const SalaryAdvancePage = Loadable(lazy(() => import('../page/category/salary/salary_advance')))
@@ -34,6 +36,7 @@ const SalaryPayEmployeePage = Loadable(lazy(() => import('../page/category/salar
 //Order
 const OrderPage = Loadable(lazy(() => import('../page/order')))
 const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
+const RequestEditOrderPage = Loadable(lazy(() => import('../page/requestEditOrder')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -60,6 +63,10 @@ const MainRoutes = {
         {
           path: ROUTES.ORDER_ADD,
           element: <FormAddEditOrder />
+        },
+        {
+          path: ROUTES.ORDER_REQUEST,
+          element: <RequestEditOrderPage />
         }
       ]
     },
@@ -162,7 +169,25 @@ const MainRoutes = {
             PERMISSION.GIAMDOC,
             PERMISSION.KETOAN
           ])
-        }
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER,
+          element: createProtectedRoute(<AccountPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.HCNS
+          ])
+        },
+        {
+          path: ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER,
+          element: createProtectedRoute(<CustomerPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.GIAMDOC,
+            PERMISSION.KETOAN,
+            PERMISSION.HCNS
+          ])
+        },
       ]
     },
     {

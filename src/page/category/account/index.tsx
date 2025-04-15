@@ -1,11 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Button, Grid, OutlinedInput, Tooltip } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import {
   GridActionsCellItem,
@@ -17,24 +13,22 @@ import {
   GridRowsProp
 } from '@mui/x-data-grid'
 import { useDialogs } from '@toolpad/core'
-import moment from 'moment'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
 import { useGetStaticStaffDetailQuery } from '../../../app/services/statistic'
-import { OPTIONTYPEWORK } from '../../../common/contants'
-import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
-import Chip from '../../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../../constants'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { StaffType } from '../../../types/staff'
-import DetailStaffDrawer from './DetailStaffDrawer'
-import FormAddStaff from './FormAddStaff'
+// import DetailStaffDrawer from './DetailStaffDrawer'
+import { IconLockAccess } from '@tabler/icons-react'
+import ChangePassword from '../../../components/dialog/ChangePassword'
+import FormAddAccount from './FormAddAccount'
 
-const StaffPage = React.memo(() => {
+const AccountManagerPage = React.memo(() => {
   const navigate = useNavigate()
   const dialogs = useDialogs()
   const theme = useTheme()
@@ -58,6 +52,7 @@ const StaffPage = React.memo(() => {
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openStatistics, setOpenStatistics] = React.useState(false)
+  const [openModalChangePass, setOpenModalChangePass] = React.useState(false)
 
   const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
   const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
@@ -130,7 +125,12 @@ const StaffPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'name', headerName: 'Họ tên', flex: 1 },
+      {
+        field: 'username',
+        headerName: 'Tài khoản',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'sale1'
+      },
       // {
       //   field: 'birthDay',
       //   headerName: 'Ngày sinh',
@@ -143,19 +143,24 @@ const StaffPage = React.memo(() => {
       //   headerName: 'Căn cước',
       //   flex: 1
       // },
-      { field: 'address', headerName: 'Địa chỉ', flex: 1 },
+      {
+        field: 'address',
+        headerName: 'Địa chỉ',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Yên Phong'
+      },
       { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
       {
         field: 'chucvu',
-        headerName: 'Chức vụ',
+        headerName: 'Nhân viên',
         flex: 1,
         renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Sale'
       },
       {
         field: 'account',
-        headerName: 'Tài khoản',
+        headerName: 'Loại tài khoản',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Tài khoản 1'
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Kế toán'
       },
       // { field: 'email', headerName: 'Email', flex: 1 },
       // {
@@ -185,17 +190,17 @@ const StaffPage = React.memo(() => {
         flex: 1,
         getActions: (params: GridRenderCellParams<StaffType, number>) => {
           return [
-            // <GridActionsCellItem
-            //   icon={
-            //     <Tooltip title={params.row.account.active ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}>
-            //       {params.row.account.active ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
-            //     </Tooltip>
-            //   }
-            //   label='Lock'
-            //   className='textPrimary'
-            //   color='inherit'
-            //   onClick={() => activeStaff({ staffId: Number(params.id), active: !params.row.account.active })}
-            // />,
+            <GridActionsCellItem
+              icon={
+                <Tooltip title={'Đổi mật khẩu'}>
+                  <IconLockAccess />
+                </Tooltip>
+              }
+              label='Lock'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => setOpenModalChangePass(true)}
+            />,
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
               label='Delete'
@@ -301,7 +306,7 @@ const StaffPage = React.memo(() => {
           <CardContentBoxSection title={'Bán thời gian'} content={countTypePartTime} />
         </Grid>
       </Collapse> */}
-      <MainCard title={'Danh sách nhân viên'} sx={{ height: '100%' }}>
+      <MainCard title={'Danh sách tài khoản'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
             <OutlinedInput
@@ -341,12 +346,12 @@ const StaffPage = React.memo(() => {
             totalCount={rowTotal}
           />
         </div>
-        <DetailStaffDrawer
+        {/* <DetailStaffDrawer
           isVisible={openDetail}
           changeVisible={handleClickDetail}
           staff={itemSelected || ({} as StaffType)}
-        />
-        <FormAddStaff
+        /> */}
+        <FormAddAccount
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
@@ -355,9 +360,10 @@ const StaffPage = React.memo(() => {
           }}
         />
         {/* <LoadingModal open={isLoading || isFetching} /> */}
+        <ChangePassword handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
       </MainCard>
     </>
   )
 })
 
-export default StaffPage
+export default AccountManagerPage

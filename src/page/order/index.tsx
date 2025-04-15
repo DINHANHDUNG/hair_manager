@@ -68,12 +68,12 @@ const OrderPage = React.memo(() => {
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
   const initialKey = searchParams.get('key') || 'code'
-  const initialStartAge = searchParams.get('ageFrom') || ''
-  const initialEndAge = searchParams.get('ageTo') || ''
+  const initialCode = searchParams.get('code') || ''
+
   const initialStartDate = searchParams.get('dateFrom') || ''
   const initialEndDate = searchParams.get('dateTo') || ''
-  const initialStatus = searchParams.get('statusWorking') || ''
-  const initialCompany = searchParams.get('companyId') || ''
+  const initialPhone = searchParams.get('phoneNumber') || ''
+  const initialName = searchParams.get('name') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -83,12 +83,11 @@ const OrderPage = React.memo(() => {
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey,
     key: initialKey,
-    ageFrom: initialStartAge,
-    ageTo: initialEndAge,
+    code: initialCode,
     dateFrom: initialStartDate,
     dateTo: initialEndDate,
-    statusWorking: initialStatus,
-    companyId: initialCompany
+    phoneNumber: initialPhone,
+    name: initialName
   })
   const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
@@ -242,6 +241,57 @@ const OrderPage = React.memo(() => {
     handleClickDetail()
   }
 
+  const fakeData = [
+    {
+      id: 1,
+      order: 1,
+      code: 'DH001',
+      customer: 'Nguyễn Văn A',
+      customer_Progress: 'Đang chia hàng',
+      status_Progress: 'Đang sản xuất',
+      birthDay: '2025-04-10', // dùng chung cho các cột có renderCell là birthDay
+      rate: 'Tốt',
+      statusWorking: 'COMPLETED',
+      order_edit: 'Sửa cổ áo',
+      order_edit_pull: '2025-04-11',
+      statusWorking2: 'Đang sản xuất',
+      order_edit_date_push: '2025-04-13',
+      order_edit_note: 'Giao lại đúng hạn'
+    },
+    {
+      id: 2,
+      order: 2,
+      code: 'DH002',
+      customer: 'Trần Thị B',
+      customer_Progress: 'Đang gửi lace',
+      status_Progress: 'Đã đóng gói',
+      birthDay: '2025-04-09',
+      rate: 'Khá',
+      statusWorking: 'IN_PROGRESS',
+      order_edit: 'Chỉnh chiều dài',
+      order_edit_pull: '2025-04-10',
+      statusWorking2: 'Đang sản xuất',
+      order_edit_date_push: '2025-04-12',
+      order_edit_note: 'Cần kiểm tra lại'
+    },
+    {
+      id: 3,
+      order: 3,
+      code: 'DH003',
+      customer: 'Lê Văn C',
+      customer_Progress: 'Đang làm màu',
+      status_Progress: 'Chờ giao',
+      birthDay: '2025-04-08',
+      rate: 'Trung bình',
+      statusWorking: 'PENDING',
+      order_edit: '',
+      order_edit_pull: '',
+      statusWorking2: 'Đang sản xuất',
+      order_edit_date_push: '',
+      order_edit_note: ''
+    }
+  ]
+
   const data = {
     columns: [
       {
@@ -256,11 +306,11 @@ const OrderPage = React.memo(() => {
       },
       {
         field: 'customer_Progress',
-        headerName: 'Tiến độ sx'
+        headerName: 'Tình trạng sản xuất'
       },
       {
         field: 'status_Progress',
-        headerName: 'Tình trạng sx'
+        headerName: 'Tình trạng đơn hàng'
       },
       {
         field: 'name',
@@ -285,45 +335,50 @@ const OrderPage = React.memo(() => {
       },
       { field: 'rate', headerName: 'Đánh giá sx' },
       // { field: 'identificationCard', headerName: 'Tình trạng đơn hàng',  },
-      {
-        field: 'statusWorking',
-        headerName: 'Tình trạng đơn hàng',
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-          const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
-          return (
-            label && (
-              <Chip
-                size='small'
-                label={label}
-                sx={{
-                  color: theme.palette.background.default,
-                  bgcolor: theme.palette.success.dark
-                }}
-              />
-            )
-          )
-        }
-      },
+      // {
+      //   field: 'statusWorking',
+      //   headerName: 'Tình trạng đơn hàng',
+      //   renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
+      //     const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
+      //     return (
+      //       label && (
+      //         <Chip
+      //           size='small'
+      //           label={label}
+      //           sx={{
+      //             color: theme.palette.background.default,
+      //             bgcolor: theme.palette.success.dark
+      //           }}
+      //         />
+      //       )
+      //     )
+      //   }
+      // },
       { field: 'order_edit', headerName: 'Đơn sửa' },
-      { field: 'order_edit_pull', headerName: 'Ngày xưởng nhận' },
+      {
+        field: 'order_edit_pull',
+        headerName: 'Ngày xưởng nhận',
+        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
+          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+      },
       {
         field: 'statusWorking2',
         headerName: 'Trạng thái',
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-          const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
-          return (
-            label && (
-              <Chip
-                size='small'
-                label={label}
-                sx={{
-                  color: theme.palette.background.default,
-                  bgcolor: theme.palette.success.dark
-                }}
-              />
-            )
-          )
-        }
+        // renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
+        //   const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
+        //   return (
+        //     label && (
+        //       <Chip
+        //         size='small'
+        //         label={label}
+        //         sx={{
+        //           color: theme.palette.background.default,
+        //           bgcolor: theme.palette.success.dark
+        //         }}
+        //       />
+        //     )
+        //   )
+        // }
       },
       {
         field: 'order_edit_date_push',
@@ -332,7 +387,7 @@ const OrderPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
           params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
       },
-      { field: 'order_edit_note', headerName: 'Ngày xưởng nhận' },
+      { field: 'order_edit_note', headerName: 'Ghi chú' },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -345,7 +400,8 @@ const OrderPage = React.memo(() => {
               label='Delete'
               className='textPrimary'
               color='inherit'
-              onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}/${params.id}`)}
+              // onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}/${params.id}`)}
+              onClick={() => navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)}
             />,
             <GridActionsCellItem
               onClick={() => handleDelete(params.row.id)}
@@ -405,7 +461,7 @@ const OrderPage = React.memo(() => {
   )
 
   const listRenderFilter = [
-    { key: 'age', label: initialStartAge && initialEndAge ? `${initialStartAge} tuổi ~ ${initialEndAge} tuổi` : '' },
+    { key: 'name', label: initialName || '' },
     {
       key: 'date',
       label:
@@ -413,23 +469,15 @@ const OrderPage = React.memo(() => {
           ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
           : ''
     },
-    { key: 'statusWorking', label: `${STATUS_WORKING_EMPLOYEE.find((e) => e.value === initialStatus)?.label || ''}` },
+    { key: 'phoneNumber', label: initialPhone || '' },
     {
-      key: 'companyId',
-      label: `${listCompany.find((e: CompanyType) => e.value === initialCompany)?.label || ''}`
+      key: 'code',
+      label: initialCode || ''
     }
   ]
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
     const handleClose = () => {
-      if (key === 'age') {
-        setFilters((prevFilters) => ({
-          ...prevFilters,
-          ['ageTo']: '',
-          ['ageFrom']: ''
-        }))
-        return
-      }
       if (key === 'date') {
         setFilters((prevFilters) => ({
           ...prevFilters,
@@ -503,13 +551,13 @@ const OrderPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiEmployee?.data?.rows?.map((row: EmployeeType, index: number) => ({
+      fakeData?.map((row: any, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [dataApiEmployee])
+  }, [fakeData])
 
   React.useEffect(() => {
     if (!loadingUpload) {
@@ -621,7 +669,7 @@ const OrderPage = React.memo(() => {
           }}
         />
       </MainCard>
-  
+
       {/* <SelectColumn
         handleComfirm={(value) => {
           handleFilterChange('key', value)
@@ -639,19 +687,17 @@ const OrderPage = React.memo(() => {
         handleComfirm={(value: any) => {
           setFilters((prevFilters) => ({
             ...prevFilters,
-            ['companyId']: value.company,
-            ['statusWorking']: value.status,
+            ['name']: value.name,
+            ['phoneNumber']: value.phoneNumber,
             ['dateFrom']: value.date?.[0],
             ['dateTo']: value.date?.[1],
-            ['ageFrom']: value.age?.[0],
-            ['ageTo']: value.age?.[1]
+            ['code']: value.code
           }))
           setOpenFilterAdvanced(false)
         }}
         value={filters}
         open={openFilterAdvanced}
         anchorRef={anchorAdvancedRef}
-        listCompany={listCompany}
         handleClose={handleCloseFilterAdvanced}
       />
     </>
