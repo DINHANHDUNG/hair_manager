@@ -34,7 +34,7 @@ const ROUTES = {
     SALARY_PAY_STAFF: 'salary-pay/staff',
     SALARY_PAY_EMPLOYEE: 'salary-pay/employee',
     ACCOUNT_MANAGER: 'account_manager',
-    CUSTOMER_MANAGER: 'customer_manager',
+    CUSTOMER_MANAGER: 'customer_manager'
   }
 }
 

@@ -17,37 +17,22 @@ interface Props {
 
 // Define the types for the state
 export interface StateFilterTableAdvanced {
-  phoneNumber: string
-  code: string
-  name: string
   date: DateRange<Dayjs> | undefined
 }
 
-export default function FilterTableAdvanced({
-  open,
-  anchorRef,
-  handleClose,
-  handleComfirm,
-  value
-}: Props) {
+export default function FilterTableAdvanced({ open, anchorRef, handleClose, handleComfirm, value }: Props) {
   const today = dayjs()
 
   const [state, setState] = useState<StateFilterTableAdvanced>({
     // company: '',
     // status: '',
     // age: [0, 100],
-    date: [today.startOf('month'), today.endOf('month')],
-    code: '',
-    name: '',
-    phoneNumber: ''
+    date: [today.startOf('month'), today.endOf('month')]
   })
 
   useEffect(() => {
     if (open && value) {
       setState({
-        code: value?.code || '',
-        name: value?.name || '',
-        phoneNumber: value?.phoneNumber,
         date:
           value.dateFrom && value.dateTo
             ? [dayjs(value.dateFrom), dayjs(value.dateTo)]
@@ -77,23 +62,6 @@ export default function FilterTableAdvanced({
         <DateRangePickerShortCut value={state.date} setValue={handleDateRangeChange} variant='outlined' />
       </Box>
 
-      <Box sx={{ p: 2, pb: 0 }}>
-        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Mã đơn`}</InputLabel>
-        <TextField fullWidth value={state.code} placeholder={'Nhập mã đơn hàng'} onChange={(e) => handleChangeState(e.target.value, 'code')} />
-
-      </Box>
-
-      <Box sx={{ p: 2, pb: 0 }}>
-        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Tên khách hàng`}</InputLabel>
-        <TextField fullWidth value={state.name} placeholder={'Nhập tên khách hàng'} onChange={(e) => handleChangeState(e.target.value, 'name')} />
-      </Box>
-
-      <Box sx={{ p: 2, pb: 2 }}>
-        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Số điện thoại`}</InputLabel>
-        <TextField fullWidth value={state.phoneNumber}  placeholder={'Nhập số điện thoại'} onChange={(e) => handleChangeState(e.target.value, 'phoneNumber')} />
-        
-      </Box>
-
       <Box sx={{ p: 2, pb: 2 }}>
         <MyButton
           size='small'
@@ -111,9 +79,6 @@ export default function FilterTableAdvanced({
           onClick={() =>
             handleComfirm &&
             handleComfirm({
-              name: '',
-              phoneNumber: '',
-              code: '',
               date: [null, null]
             })
           }

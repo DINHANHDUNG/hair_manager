@@ -1,28 +1,28 @@
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import CloseIcon from '@mui/icons-material/Close'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput, Typography } from '@mui/material'
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
+import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
 import {
-  GridActionsCellItem,
   GridCallbackDetails,
   GridColDef,
+  GridColumnGroupingModel,
   GridRenderCellParams,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import { useDialogs } from '@toolpad/core'
+import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useGetListPartnerQuery } from '../../app/services/partner'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
+import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
+import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
 import { PartnerType } from '../../types/partner'
-import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../app/services/partner'
-import Toast from '../../components/toast'
-import { IconAB2 } from '@tabler/icons-react'
-import moment from 'moment'
-import { GridColumnGroupingModel } from '@mui/x-data-grid'
+import FilterTableAdvanced from './FilterTableAdvanced'
 
 const ReportTotalPage = React.memo(() => {
   const dialogs = useDialogs()
@@ -33,6 +33,8 @@ const ReportTotalPage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
+  const initialStartDate = searchParams.get('dateFrom') || ''
+  const initialEndDate = searchParams.get('dateTo') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -40,15 +42,15 @@ const ReportTotalPage = React.memo(() => {
   })
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    searchKey: initialSearchKey
+    searchKey: initialSearchKey,
+    dateFrom: initialStartDate,
+    dateTo: initialEndDate
   })
 
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<PartnerType>()
   const [rowsData, setRowsData] = React.useState<PartnerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
-  const [openFormAdd, setOpenFormAdd] = React.useState(false)
-  const [openFormChangeStaff, setOpenFormChangeStaff] = React.useState(false)
 
   const {
     data: dataApiPartner,
@@ -60,31 +62,11 @@ const ReportTotalPage = React.memo(() => {
     ...filters
   })
 
-  const [deletePartner, { isLoading: loadingDelete, isSuccess, isError }] = useDeletePartnerMutation()
-
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiPartner?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
-  }
-
-  const handleClickOpenForm = () => {
-    setOpenFormAdd(true)
-  }
-
-  const handleCloseForm = () => {
-    setOpenFormAdd(false)
-    setItemSelectedEidt({} as PartnerType)
-  }
-
-  const handleClickOpenFormChangeStaff = () => {
-    setOpenFormChangeStaff(true)
-  }
-
-  const handleCloseFormChangeStaff = () => {
-    setOpenFormChangeStaff(false)
-    setItemSelectedEidt({} as PartnerType)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -103,15 +85,58 @@ const ReportTotalPage = React.memo(() => {
     handleClickDetail()
   }
 
-  const handleDelete = async (id: number) => {
-    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
-      title: 'Xác nhận lại',
-      okText: 'Có',
-      cancelText: 'Hủy'
-    })
-    if (confirmed) {
-      deletePartner({ ids: [Number(id)] })
+  const anchorRef = React.useRef<HTMLDivElement>(null)
+  const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
+  const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
+
+  const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
+      return
     }
+    setOpenFilterAdvanced(false)
+  }
+
+  const handleToggleFilterAdvanced = () => {
+    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+  }
+
+  const listRenderFilter = [
+    {
+      key: 'date',
+      label:
+        initialStartDate && initialEndDate
+          ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
+          : ''
+    }
+  ]
+
+  const RenderFilter = ({ label, key }: { label: string; key: string }) => {
+    const handleClose = () => {
+      if (key === 'date') {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          ['dateTo']: '',
+          ['dateFrom']: ''
+        }))
+        return
+      }
+      handleFilterChange(key, '')
+    }
+    return (
+      label?.length > 0 && (
+        <ChipCustom
+          size='medium'
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
+              {label}
+              <IconButton color='inherit' size='small' onClick={handleClose}>
+                <CloseIcon fontSize='inherit' />
+              </IconButton>
+            </Box>
+          }
+        />
+      )
+    )
   }
 
   const fakeData = [
@@ -248,7 +273,11 @@ const ReportTotalPage = React.memo(() => {
     {
       groupId: 'Thông tin các đơn hàng',
       description: 'Thông tin các đơn hàng',
-      renderHeaderGroup: (params) => <Typography variant='h6' textAlign={'center'} fontSize={18}>{params.description}</Typography>,
+      renderHeaderGroup: (params) => (
+        <Typography variant='h6' textAlign={'center'} fontSize={18}>
+          {params.description}
+        </Typography>
+      ),
 
       children: [
         { field: 'order' },
@@ -267,7 +296,11 @@ const ReportTotalPage = React.memo(() => {
     {
       groupId: 'Thông tin thanh toán',
       description: 'Thông tin thanh toán',
-      renderHeaderGroup: (params) => <Typography variant='h6' textAlign={'center'} fontSize={18}>{params.description}</Typography>,
+      renderHeaderGroup: (params) => (
+        <Typography variant='h6' textAlign={'center'} fontSize={18}>
+          {params.description}
+        </Typography>
+      ),
 
       children: [
         {
@@ -303,14 +336,27 @@ const ReportTotalPage = React.memo(() => {
   }
 
   React.useEffect(() => {
-    // Update URL parameters when pagination model changes
-    setSearchParams({
+    // Tạo một object params rỗng
+    const params: { [key: string]: string } = {}
+
+    // Tạo một mảng các trường cần kiểm tra
+    const fields = {
       page: paginationModel.page.toString(),
       pageSize: paginationModel.pageSize.toString(),
-      searchKey: filters.searchKey
-    })
-  }, [paginationModel, filters, setSearchParams])
+      ...filters
+    } as { [key: string]: string } // Sử dụng type assertion
 
+    // Lặp qua các trường và chỉ thêm vào params nếu trường đó hợp lệ
+    Object.keys(fields).forEach((field) => {
+      const value = fields[field]
+      if (value) {
+        params[field] = value
+      }
+    })
+
+    setSearchParams(params)
+  }, [paginationModel, filters, setSearchParams])
+  
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
@@ -322,15 +368,11 @@ const ReportTotalPage = React.memo(() => {
     setRowsData(updatedRows)
   }, [fakeData])
 
-  React.useEffect(() => {
-    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
-  }, [loadingDelete])
-
   return (
     <>
       <MainCard title={'Báo cáo chi tiết đơn hàng'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <OutlinedInput
               size='small'
               id='search-input'
@@ -340,6 +382,11 @@ const ReportTotalPage = React.memo(() => {
               onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
+            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
+              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
+                <TuneOutlinedIcon fontSize='medium' />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
@@ -349,7 +396,11 @@ const ReportTotalPage = React.memo(() => {
             </div>
           </Grid>
         </Grid>
-
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={12} display={'flex'} flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'}>
+            {listRenderFilter.map((val) => RenderFilter({ label: val.label, key: val.key }))}
+          </Grid>
+        </Grid>
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
             rows={rows}
@@ -373,6 +424,22 @@ const ReportTotalPage = React.memo(() => {
             // }}
           />
         </div>
+
+        <FilterTableAdvanced
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          handleComfirm={(value: any) => {
+            setFilters((prevFilters) => ({
+              ...prevFilters,
+              ['dateFrom']: value.date?.[0],
+              ['dateTo']: value.date?.[1]
+            }))
+            setOpenFilterAdvanced(false)
+          }}
+          value={filters}
+          open={openFilterAdvanced}
+          anchorRef={anchorAdvancedRef}
+          handleClose={handleCloseFilterAdvanced}
+        />
       </MainCard>
     </>
   )
