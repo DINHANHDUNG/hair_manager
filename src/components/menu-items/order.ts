@@ -1,10 +1,10 @@
 // assets
-import { IconShoppingCartBolt, IconAB2 } from '@tabler/icons-react'
+import { IconShoppingCartBolt, IconAB2, IconShoppingCartX } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { PERMISSION } from '../../constants'
 
 // constant
-const icons = { IconShoppingCartBolt, IconAB2 }
+const icons = { IconShoppingCartBolt, IconAB2, IconShoppingCartX }
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -35,7 +35,7 @@ const order = {
         PERMISSION.KETOAN,
         PERMISSION.TUYENDUNG,
         PERMISSION.SALE
-      ],
+      ]
     },
     {
       id: ROUTES.ORDER_REQUEST,
@@ -51,7 +51,23 @@ const order = {
         PERMISSION.KETOAN,
         PERMISSION.TUYENDUNG,
         PERMISSION.SALE
-      ],
+      ]
+    },
+    {
+      id: ROUTES.ORDER_CANCEL,
+      title: 'Danh sách hủy',
+      type: 'item',
+      url: `/${ROUTES.ORDER}/${ROUTES.ORDER_CANCEL}`,
+      icon: icons.IconShoppingCartX,
+      breadcrumbs: false,
+      premissions: [
+        PERMISSION.ADMIN,
+        PERMISSION.GIAMDOC,
+        PERMISSION.HCNS,
+        PERMISSION.KETOAN,
+        PERMISSION.TUYENDUNG,
+        PERMISSION.SALE
+      ]
     }
   ]
 }

@@ -137,26 +137,6 @@ const FormAddEditOrder = memo(() => {
     removeItemOrders(index)
   }
 
-  const {
-    fields: fieldsInvoices,
-    append: appendInvoices,
-    remove: removeInvoices
-  } = useFieldArray({
-    control,
-    name: 'invoices' // Array field name
-  })
-
-  const handleAddInvoice = () => {
-    appendInvoices({
-      content: '',
-      image: ''
-    })
-  }
-
-  const handleDeleteInvoice = (index: number) => {
-    removeInvoices(index)
-  }
-
   const onSubmit: SubmitHandler<any> = (value) => {
     console.log('Submitted Data: ', value)
     // Call API or handle save action
@@ -403,7 +383,7 @@ const FormAddEditOrder = memo(() => {
 
         <LoadingModal open={false} />
 
-        <FormAddEditInvoice
+        {/* <FormAddEditInvoice
           handleClose={handleModalInvoice}
           open={modalInvoice}
           control={control}
@@ -411,7 +391,7 @@ const FormAddEditOrder = memo(() => {
           handleDeleteInvoice={handleDeleteInvoice}
           handleAddInvoice={handleAddInvoice}
           fieldsInvoices={fieldsInvoices}
-        />
+        /> */}
       </form>
     </MainCard>
   )

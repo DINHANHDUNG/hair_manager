@@ -70,6 +70,8 @@ interface TableDataGridProps {
   hideFooter?: boolean
   pagination?: boolean
   apiRef?: React.MutableRefObject<GridApiPro> | undefined
+  processRowUpdate?: (newRow: any, oldRow: any) => any | Promise<any>
+  onProcessRowUpdateError?: (error: any) => void
 }
 
 const autosizeOptions: GridAutosizeOptions = {
@@ -103,6 +105,8 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   pagination,
   otherProps, // Các props bổ sung
   tableKey, // Thêm prop key động
+  processRowUpdate,
+  onProcessRowUpdateError,
   apiRef
 }) => {
   const theme = useTheme()
@@ -295,6 +299,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       // disableColumnMenu
       disableColumnReorder={false} //Tắt di chuyển cột
       disableRowSelectionOnClick
+      processRowUpdate={processRowUpdate}
+      onProcessRowUpdateError={onProcessRowUpdateError}
+      // experimentalFeatures={{ newEditingApi: true }}
       sx={{
         // '.MuiDataGrid-columnSeparator': {
         //   display: 'none'

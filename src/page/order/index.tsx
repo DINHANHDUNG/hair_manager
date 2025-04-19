@@ -6,7 +6,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Autocomplete, Button, Collapse, Grid, IconButton, OutlinedInput, TextField, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled, useTheme } from '@mui/material/styles'
 import { Box, maxWidth } from '@mui/system'
@@ -15,6 +15,7 @@ import {
   GridCallbackDetails,
   GridColDef,
   GridRenderCellParams,
+  GridRenderEditCellParams,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp
@@ -47,6 +48,15 @@ import { EmployeeType, HistoryEmployeeType } from '../../types/employee'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
 import { GridColumnGroupingModel } from '@mui/x-data-grid'
+import { DateTimePicker } from '@mui/x-date-pickers'
+import dayjs from 'dayjs'
+import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
+import { TextEditCell } from '../../components/table-data-grid/textEditCell'
+import { DateEditCell } from '../../components/table-data-grid/cellDate'
+import { AddCircle, AddTask, BorderAll, HighlightOff, Verified } from '@mui/icons-material'
+import FormAddEditInvoice from './modalInvoice'
+import FormAddNewOrder from './modalAddNew'
+import FormEditInfoOrder from './modalEditInfoOrder'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -57,6 +67,26 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
     paddingRight: 5
   }
 }))
+
+const customerOptions = [
+  { label: 'Khách A', value: 'a' },
+  { label: 'Khách B', value: 'b' },
+  { label: 'Khách C', value: 'c' }
+]
+
+const statusSX = [
+  { value: 'Đang chia hàng', label: 'Đang chia hàng' },
+  { value: 'Đã gửi lace', label: 'Đã gửi lace' },
+  { value: 'Đang làm màu', label: 'Đang làm màu' },
+  { value: 'Đang tẩy màu', label: 'Đang tẩy màu' },
+  { value: 'Đang xử lý mềm mượt', label: 'Đang xử lý mềm mượt' }
+]
+
+const statusOrder = [
+  { value: 'Đang sản xuất', label: 'Đang sản xuất' },
+  { value: 'Đã đóng gói', label: 'Đã đóng gói' },
+  { value: 'Chờ giao', label: 'Chờ giao' }
+]
 
 const OrderPage = React.memo(() => {
   const navigate = useNavigate()
@@ -95,6 +125,9 @@ const OrderPage = React.memo(() => {
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openStatistics, setOpenStatistics] = React.useState(false)
+  const [modalInvoice, setModalInvoice] = React.useState(false)
+  const [modalAddOrder, setModalAddOrder] = React.useState(false)
+  const [modalEditInfoOrder, setModalEditInfoOrder] = React.useState(false)
 
   const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
   const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
@@ -152,6 +185,18 @@ const OrderPage = React.memo(() => {
 
   const handleToggle = () => {
     setOpenFilter((prevOpen) => !prevOpen)
+  }
+
+  const handleModalInvoice = () => {
+    setModalInvoice(!modalInvoice)
+  }
+
+  const handleModalAddOrder = () => {
+    setModalAddOrder(!modalAddOrder)
+  }
+
+  const handleModalEditInfoOrder = () => {
+    setModalEditInfoOrder(!modalEditInfoOrder)
   }
 
   const handleDelete = async (id: number) => {
@@ -218,7 +263,7 @@ const OrderPage = React.memo(() => {
 
   const handleClickOpenForm = () => {
     // setOpenFormAdd(true)
-    navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)
+    handleModalAddOrder()
   }
 
   const handleCloseForm = () => {
@@ -241,12 +286,24 @@ const OrderPage = React.memo(() => {
     handleClickDetail()
   }
 
+  const processRowUpdate = React.useCallback((newRow: any, oldRow: any) => {
+    // So sánh hoặc xử lý dữ liệu tại đây
+    if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+      // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
+      console.log('Updated row:', newRow)
+    }
+
+    return newRow // Quan trọng: phải return lại row đã cập nhật
+  }, [])
+
   const fakeData = [
     {
       id: 1,
       order: 1,
       code: 'DH001',
-      customer: 'Nguyễn Văn A',
+      customer: 'c',
+      numberPhone: '0999888746',
+      address: 'Yên Phong',
       customer_Progress: 'Đang chia hàng',
       status_Progress: 'Đang sản xuất',
       birthDay: '2025-04-10', // dùng chung cho các cột có renderCell là birthDay
@@ -256,13 +313,16 @@ const OrderPage = React.memo(() => {
       order_edit_pull: '2025-04-11',
       statusWorking2: 'Đang sản xuất',
       order_edit_date_push: '2025-04-13',
-      order_edit_note: 'Giao lại đúng hạn'
+      order_edit_note: 'Giao lại đúng hạn',
+      discount: '30'
     },
     {
       id: 2,
       order: 2,
       code: 'DH002',
-      customer: 'Trần Thị B',
+      customer: 'b',
+      numberPhone: '0999888746',
+      address: 'Yên Phong',
       customer_Progress: 'Đang gửi lace',
       status_Progress: 'Đã đóng gói',
       birthDay: '2025-04-09',
@@ -272,13 +332,16 @@ const OrderPage = React.memo(() => {
       order_edit_pull: '2025-04-10',
       statusWorking2: 'Đang sản xuất',
       order_edit_date_push: '2025-04-12',
-      order_edit_note: 'Cần kiểm tra lại'
+      order_edit_note: 'Cần kiểm tra lại',
+      discount: '30'
     },
     {
       id: 3,
       order: 3,
       code: 'DH003',
-      customer: 'Lê Văn C',
+      customer: 'c',
+      numberPhone: '0999888746',
+      address: 'Yên Phong',
       customer_Progress: 'Đang làm màu',
       status_Progress: 'Chờ giao',
       birthDay: '2025-04-08',
@@ -288,7 +351,8 @@ const OrderPage = React.memo(() => {
       order_edit_pull: '',
       statusWorking2: 'Đang sản xuất',
       order_edit_date_push: '',
-      order_edit_note: ''
+      order_edit_note: '',
+      discount: '30'
     }
   ]
 
@@ -299,119 +363,163 @@ const OrderPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'code', headerName: 'Mã đơn hàng' },
+      { field: 'code', headerName: 'Mã đơn hàng', editable: true },
+
       {
         field: 'customer',
-        headerName: 'Khách hàng'
+        headerName: 'Khách hàng',
+        editable: true,
+        renderEditCell: (params: GridRenderEditCellParams) => (
+          <AutocompleteEditCell {...params} options={customerOptions} />
+        )
       },
+
+      {
+        field: 'numberPhone',
+        headerName: 'Số điện thoại',
+        editable: true,
+        preProcessEditCellProps: (params: GridRenderEditCellParams) => {
+          const isValidPhone = /^0\d{9}$/.test(params.props.value) // ví dụ: bắt đầu bằng 0 và 10 số
+          return {
+            ...params.props,
+            error: !isValidPhone
+          }
+        },
+        renderEditCell: TextEditCell
+      },
+
+      {
+        field: 'address',
+        headerName: 'Địa chỉ',
+        editable: true,
+        renderEditCell: TextEditCell
+      },
+
       {
         field: 'customer_Progress',
-        headerName: 'Tình trạng sản xuất'
+        headerName: 'Tình trạng sản xuất',
+        editable: true,
+        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusSX} />
       },
+
       {
         field: 'status_Progress',
-        headerName: 'Tình trạng đơn hàng'
+        headerName: 'Tình trạng đơn hàng',
+        editable: true,
+        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusOrder} />
       },
+
       {
         field: 'name',
         headerName: 'Ngày xưởng nhận đơn',
-
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        editable: true,
+        renderCell: (params: any) => (params.row.name ? dayjs(params.row.name).format('DD/MM/YYYY') : ''),
+        renderEditCell: DateEditCell
       },
+
       {
-        field: 'birtday',
+        field: 'birthDay',
         headerName: 'Ngày dự kiến xuất',
-
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        editable: true,
+        renderCell: (params: any) => (params.row.birthDay ? dayjs(params.row.birthDay).format('DD/MM/YYYY') : ''),
+        renderEditCell: DateEditCell
       },
+
       {
-        field: 'birtday2',
+        field: 'birthDay2',
         headerName: 'Ngày thực tế giao',
-
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        editable: true,
+        renderCell: (params: any) => (params.row.birthDay2 ? dayjs(params.row.birthDay2).format('DD/MM/YYYY') : ''),
+        renderEditCell: DateEditCell
       },
-      { field: 'rate', headerName: 'Đánh giá sx' },
-      // { field: 'identificationCard', headerName: 'Tình trạng đơn hàng',  },
-      // {
-      //   field: 'statusWorking',
-      //   headerName: 'Tình trạng đơn hàng',
-      //   renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-      //     const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
-      //     return (
-      //       label && (
-      //         <Chip
-      //           size='small'
-      //           label={label}
-      //           sx={{
-      //             color: theme.palette.background.default,
-      //             bgcolor: theme.palette.success.dark
-      //           }}
-      //         />
-      //       )
-      //     )
-      //   }
-      // },
-      { field: 'order_edit', headerName: 'Đơn sửa' },
+
+      { field: 'rate', headerName: 'Đánh giá sx', editable: true, renderEditCell: TextEditCell },
+      { field: 'discount', headerName: 'Tiền discount', editable: true, renderEditCell: TextEditCell },
+
+      { field: 'order_edit', headerName: 'Đơn sửa', editable: true, renderEditCell: TextEditCell },
+
       {
         field: 'order_edit_pull',
         headerName: 'Ngày xưởng nhận',
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        editable: true,
+        renderCell: (params: any) =>
+          params.row.order_edit_pull ? dayjs(params.row.order_edit_pull).format('DD/MM/YYYY') : '',
+        renderEditCell: DateEditCell
       },
+
       {
         field: 'statusWorking2',
         headerName: 'Trạng thái',
-        // renderCell: (params: GridRenderCellParams<EmployeeType, number>) => {
-        //   const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.statusWorking)?.label || ''
-        //   return (
-        //     label && (
-        //       <Chip
-        //         size='small'
-        //         label={label}
-        //         sx={{
-        //           color: theme.palette.background.default,
-        //           bgcolor: theme.palette.success.dark
-        //         }}
-        //       />
-        //     )
-        //   )
-        // }
+        editable: true,
+        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusOrder} />
       },
+
       {
         field: 'order_edit_date_push',
         headerName: 'Ngày xưởng giao lại',
-
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        editable: true,
+        renderCell: (params: any) =>
+          params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
+        renderEditCell: DateEditCell
       },
-      { field: 'order_edit_note', headerName: 'Ghi chú' },
+
+      {
+        field: 'order_edit_note',
+        headerName: 'Ghi chú',
+        editable: true,
+        renderEditCell: TextEditCell
+      },
+
       {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
-
-        getActions: (params: GridRenderCellParams<EmployeeType, number>) => {
-          return [
-            <GridActionsCellItem
-              icon={<EditOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              // onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}/${params.id}`)}
-              onClick={() => navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)}
-            />,
-            <GridActionsCellItem
-              onClick={() => handleDelete(params.row.id)}
-              icon={<DeleteOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-            />
-          ]
-        }
+        getActions: (params: GridRenderCellParams<EmployeeType, number>) => [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label='Edit'
+            className='textPrimary'
+            color='inherit'
+            onClick={handleModalEditInfoOrder}
+          />,
+          <GridActionsCellItem
+            onClick={() => handleDelete(params.row.id)}
+            icon={<DeleteOutlinedIcon />}
+            label='Delete'
+            className='textPrimary'
+            color='inherit'
+          />,
+          <GridActionsCellItem
+            icon={<HighlightOff />}
+            label='Hủy đơn'
+            // onClick={() => handleView(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<AddCircle />}
+            label='Tạo invoice'
+            onClick={() => handleModalInvoice()}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<BorderAll />}
+            label='Đã nhận hàng cần sửa'
+            // onClick={() => handleCopy(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<AddTask />}
+            label='Nhận hàng'
+            // onClick={() => handleCopy(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<Verified />}
+            label='Hoàn thành'
+            // onClick={() => handleCopy(params.row)}
+            showInMenu
+          />
+        ]
       }
     ]
   }
@@ -436,7 +544,7 @@ const OrderPage = React.memo(() => {
       default:
         return {
           ...colDef,
-          minWidth: 150
+          minWidth: 200
         }
     }
   }
@@ -654,6 +762,10 @@ const OrderPage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
+            processRowUpdate={processRowUpdate}
+            onProcessRowUpdateError={(error) => {
+              console.error('Row update error:', error)
+            }}
             otherProps={{
               columnGroupingModel: columnGroupingModel
             }}
@@ -681,6 +793,10 @@ const OrderPage = React.memo(() => {
         anchorRef={anchorRef}
         handleClose={handleClose}
       /> */}
+
+      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
+      <FormAddNewOrder handleClose={handleModalAddOrder} open={modalAddOrder} />
+      <FormEditInfoOrder handleClose={handleModalEditInfoOrder} open={modalEditInfoOrder} />
 
       <FilterTableAdvanced
         /* eslint-disable @typescript-eslint/no-explicit-any */

@@ -39,6 +39,7 @@ const SalaryPayEmployeePage = Loadable(lazy(() => import('../page/category/salar
 const OrderPage = Loadable(lazy(() => import('../page/order')))
 const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
 const RequestEditOrderPage = Loadable(lazy(() => import('../page/requestEditOrder')))
+const CancelOrderPage = Loadable(lazy(() => import('../page/listCancelOrder')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -77,6 +78,10 @@ const MainRoutes = {
         {
           path: ROUTES.ORDER_REQUEST,
           element: <RequestEditOrderPage />
+        },
+        {
+          path: ROUTES.ORDER_CANCEL,
+          element: <CancelOrderPage />
         }
       ]
     },
@@ -197,7 +202,7 @@ const MainRoutes = {
             PERMISSION.KETOAN,
             PERMISSION.HCNS
           ])
-        },
+        }
       ]
     },
     {

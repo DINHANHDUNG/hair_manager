@@ -11,7 +11,7 @@ import {
 } from '../../app/services/statistic'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
-import { FooterBoxSection } from './FooterBoxSection'
+import { FooterBoxSection, FooterBoxSection2 } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
@@ -39,7 +39,7 @@ const Dashboard = React.memo(() => {
 
   const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
     return (
-      <Grid item xs={12} sm={6} md={6} lg={3}>
+      <Grid item xs={12} sm={6} md={6} lg={4}>
         <Card
           sx={{
             bgcolor: theme.palette.background.paper,
@@ -62,7 +62,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.secondary.dark}
                 icon={<IconUsersGroup stroke={1.5} size='1.3rem' />}
-                textTitle='Tổng số đơn'
+                textTitle='Tổng số'
               />
               <FooterBoxSection
                 elementLeft={currentMonthEmployee || 0}
@@ -83,7 +83,7 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.error.dark}
                 icon={<IconUser stroke={1.5} size='1.3rem' />}
-                textTitle='Đang giao'
+                textTitle='Số đơn hoàn thành'
               />
               <FooterBoxSection
                 elementLeft={currentMonthStaff || 0}
@@ -104,17 +104,27 @@ const Dashboard = React.memo(() => {
                 backgroundBoxIcon={theme.palette.secondary.light}
                 colorBoxIcon={theme.palette.orange.dark}
                 icon={<IconCoin stroke={1.5} size='1.3rem' />}
-                textTitle='Đã giao'
+                textTitle='Số đơn chậm'
               />
-              <FooterBoxSection
-                elementLeft={currency(totalSalaryAdvance)}
-                elementRight={''}
-                colorRight={theme.palette.success.dark}
+              <FooterBoxSection2
+                elementLeft={'Chậm 1: 30'}
+                elementRight={'1-3 ngày'}
+                colorRight={theme.palette.error.dark}
+              />
+              <FooterBoxSection2
+                elementLeft={'Chậm 2: 30'}
+                elementRight={'4-6 ngày'}
+                colorRight={theme.palette.error.dark}
+              />
+              <FooterBoxSection2
+                elementLeft={'Chậm 1: 90'}
+                elementRight={'>7 ngày'}
+                colorRight={theme.palette.error.dark}
               />
             </>
           }
         />
-        <CardContentBoxSection
+        {/* <CardContentBoxSection
           element={
             <>
               <HeaderBoxSection
@@ -130,7 +140,7 @@ const Dashboard = React.memo(() => {
               />
             </>
           }
-        />
+        /> */}
 
         {/* <Grid item xs={12} sm={6} md={6} lg={3} classes={classes.CardContent}>
           <Card classes={styleDashboard(theme).CardContent1} sx={{ mb: 1 }}>

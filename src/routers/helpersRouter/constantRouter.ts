@@ -9,6 +9,7 @@ const ROUTES = {
   ORDER_DETAIL: 'order-detail',
   ORDER_ADD: 'order-add',
   ORDER_REQUEST: 'order-request',
+  ORDER_CANCEL: 'order-cancel',
   LOGIN: 'login',
   NOT_AUTHORIZED: 'not-authorized',
   SAMPLE_PAGE: 'sample-page',

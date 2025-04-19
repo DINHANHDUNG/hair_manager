@@ -23,6 +23,8 @@ import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { EmployeeType } from '../../types/employee'
+import { AddCircle, FileDownload, Preview } from '@mui/icons-material'
+import FormAddEditInvoice from '../order/modalInvoice'
 
 const RequestEditOrderPage = React.memo(() => {
   const navigate = useNavigate()
@@ -47,6 +49,7 @@ const RequestEditOrderPage = React.memo(() => {
   const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
+  const [modalInvoice, setModalInvoice] = React.useState(false)
   // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
 
   const [deleteEmployee, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteEmployeeMutation()
@@ -82,6 +85,10 @@ const RequestEditOrderPage = React.memo(() => {
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
+  }
+
+  const handleModalInvoice = () => {
+    setModalInvoice(!modalInvoice)
   }
 
   const handleClickOpenForm = () => {
@@ -180,6 +187,24 @@ const RequestEditOrderPage = React.memo(() => {
               label='Delete'
               className='textPrimary'
               color='inherit'
+            />,
+            <GridActionsCellItem
+              icon={<AddCircle />}
+              label='Tạo invoice'
+              onClick={() => handleModalInvoice()}
+              showInMenu
+            />,
+            <GridActionsCellItem
+              icon={<Preview />}
+              label='Preview'
+              //  onClick={() => handleModalInvoice()}
+              showInMenu
+            />,
+            <GridActionsCellItem
+              icon={<FileDownload />}
+              label='Tải đơn'
+              // onClick={() => handleModalInvoice()}
+              showInMenu
             />
           ]
         }
@@ -326,7 +351,7 @@ const RequestEditOrderPage = React.memo(() => {
           />
         </div>
       </MainCard>
-
+      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
       {/* <SelectColumn
         handleComfirm={(value) => {
           handleFilterChange('key', value)
