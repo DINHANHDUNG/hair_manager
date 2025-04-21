@@ -22,6 +22,7 @@ import { convertDateToApi, removeNullOrEmpty } from '../../help'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { EmployeeType } from '../../types/employee'
 import FormAddEditInvoice from '../order/modalInvoice'
+import FormReject from './FormReject'
 
 const CancelOrderPage = React.memo(() => {
   const navigate = useNavigate()
@@ -47,6 +48,7 @@ const CancelOrderPage = React.memo(() => {
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
+  const [modalReject, setModalReject] = React.useState(false)
   // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
 
   const [deleteEmployee, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteEmployeeMutation()
@@ -88,6 +90,10 @@ const CancelOrderPage = React.memo(() => {
     setModalInvoice(!modalInvoice)
   }
 
+  const handleModalReject = () => {
+    setModalReject(!modalReject)
+  }
+
   const handleClickOpenForm = () => {
     // setOpenFormAdd(true)
     navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)
@@ -124,7 +130,8 @@ const CancelOrderPage = React.memo(() => {
       code: 'ORD002',
       amount: 2000000,
       paidAmount: 2000000,
-      paymentStatus: 'Đã thanh toán'
+      paymentStatus: 'Đã thanh toán',
+      reject: ''
     },
     {
       id: 3,
@@ -132,7 +139,8 @@ const CancelOrderPage = React.memo(() => {
       code: 'ORD003',
       amount: 1750000,
       paidAmount: 500000,
-      paymentStatus: 'Thanh toán một phần'
+      paymentStatus: 'Thanh toán một phần',
+      reject: ''
     },
     {
       id: 4,
@@ -140,7 +148,8 @@ const CancelOrderPage = React.memo(() => {
       code: 'ORD004',
       amount: 1250000,
       paidAmount: 0,
-      paymentStatus: 'Chưa thanh toán'
+      paymentStatus: 'Chưa thanh toán',
+      reject: 'Không thích'
     },
     {
       id: 5,
@@ -148,7 +157,8 @@ const CancelOrderPage = React.memo(() => {
       code: 'ORD005',
       amount: 2300000,
       paidAmount: 2300000,
-      paymentStatus: 'Đã thanh toán'
+      paymentStatus: 'Đã thanh toán',
+      reject: ''
     }
   ]
 
@@ -176,13 +186,24 @@ const CancelOrderPage = React.memo(() => {
         flex: 1
       },
       {
+        field: 'reject',
+        headerName: 'Lý do từ chối',
+        flex: 1
+      },
+      {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
         getActions: (params: GridRenderCellParams<any, number>) => {
           return [
             <GridActionsCellItem icon={<LibraryAddCheck />} label='Approver' className='textPrimary' color='inherit' />,
-            <GridActionsCellItem icon={<DoDisturbAlt />} label='Delete' className='textPrimary' color='inherit' />
+            <GridActionsCellItem
+              icon={<DoDisturbAlt />}
+              label='Delete'
+              className='textPrimary'
+              color='inherit'
+              onClick={handleModalReject}
+            />
           ]
         }
       }
@@ -329,6 +350,7 @@ const CancelOrderPage = React.memo(() => {
         </div>
       </MainCard>
       <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
+      <FormReject handleClose={handleModalReject} open={modalReject} />
       {/* <SelectColumn
         handleComfirm={(value) => {
           handleFilterChange('key', value)

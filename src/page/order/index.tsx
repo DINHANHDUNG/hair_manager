@@ -1,19 +1,21 @@
+import { AddCircle, AddTask, BorderAll, FileDownload, HighlightOff, Verified } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Autocomplete, Button, Collapse, Grid, IconButton, OutlinedInput, TextField, Tooltip } from '@mui/material'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled, useTheme } from '@mui/material/styles'
-import { Box, maxWidth } from '@mui/system'
+import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
+  GridCellParams,
   GridColDef,
+  GridColumnGroupingModel,
   GridRenderCellParams,
   GridRenderEditCellParams,
   GridRowParams,
@@ -21,9 +23,10 @@ import {
   GridRowsProp
 } from '@mui/x-data-grid'
 import { useDialogs } from '@toolpad/core'
+import dayjs from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useGetListCompanyQuery } from '../../app/services/company'
 import {
   useDeleteEmployeeMutation,
@@ -31,32 +34,23 @@ import {
   useUploadFileEmployeeMutation
 } from '../../app/services/employee'
 import { useGetStaticEmployeeDetailQuery } from '../../app/services/statistic'
-import { URL_FILE_EXCEL_EMPLOYEE } from '../../common/apiKey'
-import { STATUS_WORKING_EMPLOYEE } from '../../common/contants'
-import MyButton from '../../components/button/MyButton'
 import { CardContentBoxSection } from '../../components/cardContentBoxSection'
-import SelectColumn from '../../components/filterTableCustom/SelectColumn'
+import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
+import { DateEditCell } from '../../components/table-data-grid/cellDate'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
+import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import { VisuallyHiddenInput } from '../../components/ui-component/visuallyHiddenInput'
 import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
-import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { CompanyType } from '../../types/company'
-import { EmployeeType, HistoryEmployeeType } from '../../types/employee'
+import { EmployeeType } from '../../types/employee'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
-import { GridColumnGroupingModel } from '@mui/x-data-grid'
-import { DateTimePicker } from '@mui/x-date-pickers'
-import dayjs from 'dayjs'
-import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
-import { TextEditCell } from '../../components/table-data-grid/textEditCell'
-import { DateEditCell } from '../../components/table-data-grid/cellDate'
-import { AddCircle, AddTask, BorderAll, HighlightOff, Verified } from '@mui/icons-material'
-import FormAddEditInvoice from './modalInvoice'
 import FormAddNewOrder from './modalAddNew'
 import FormEditInfoOrder from './modalEditInfoOrder'
+import FormAddEditInvoice from './modalInvoice'
+import ModalProductionHistory from './modalProductionHistory'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -67,6 +61,16 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
     paddingRight: 5
   }
 }))
+
+const statusColors: Record<string, { label: string; color: string; textColor?: string }> = {
+  'Đơn mới': { label: 'Đơn mới', color: '#ffffff', textColor: '#000000' },
+  'Đang sản xuất': { label: 'Đang sản xuất', color: '#FFEB3B', textColor: '#000000' },
+  'Đã giao': { label: 'Đã giao', color: '#2196F3', textColor: '#ffffff' },
+  'Nhận đơn': { label: 'Nhận đơn', color: '#2196F3', textColor: '#ffffff' },
+  'Hoàn thành': { label: 'Hoàn thành', color: '#4CAF50', textColor: '#ffffff' },
+  'Huỷ đơn': { label: 'Huỷ đơn', color: '#F44336', textColor: '#ffffff' },
+  'Yêu cầu sửa': { label: 'Yêu cầu sửa', color: '#9C27B0', textColor: '#ffffff' }
+}
 
 const customerOptions = [
   { label: 'Khách A', value: 'a' },
@@ -128,6 +132,7 @@ const OrderPage = React.memo(() => {
   const [modalInvoice, setModalInvoice] = React.useState(false)
   const [modalAddOrder, setModalAddOrder] = React.useState(false)
   const [modalEditInfoOrder, setModalEditInfoOrder] = React.useState(false)
+  const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
 
   const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
   const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
@@ -197,6 +202,10 @@ const OrderPage = React.memo(() => {
 
   const handleModalEditInfoOrder = () => {
     setModalEditInfoOrder(!modalEditInfoOrder)
+  }
+
+  const handleModalProductionHistory = () => {
+    setModalProductionHistory(!modalProductionHistory)
   }
 
   const handleDelete = async (id: number) => {
@@ -304,7 +313,7 @@ const OrderPage = React.memo(() => {
       customer: 'c',
       numberPhone: '0999888746',
       address: 'Yên Phong',
-      customer_Progress: 'Đang chia hàng',
+      customer_Progress: '01/04 - Đang chia hàng',
       status_Progress: 'Đang sản xuất',
       birthDay: '2025-04-10', // dùng chung cho các cột có renderCell là birthDay
       rate: 'Tốt',
@@ -323,8 +332,8 @@ const OrderPage = React.memo(() => {
       customer: 'b',
       numberPhone: '0999888746',
       address: 'Yên Phong',
-      customer_Progress: 'Đang gửi lace',
-      status_Progress: 'Đã đóng gói',
+      customer_Progress: '02/04 - Đang gửi lace',
+      status_Progress: 'Hoàn thành',
       birthDay: '2025-04-09',
       rate: 'Khá',
       statusWorking: 'IN_PROGRESS',
@@ -342,8 +351,8 @@ const OrderPage = React.memo(() => {
       customer: 'c',
       numberPhone: '0999888746',
       address: 'Yên Phong',
-      customer_Progress: 'Đang làm màu',
-      status_Progress: 'Chờ giao',
+      customer_Progress: '01/04 - Đang làm màu',
+      status_Progress: 'Huỷ đơn',
       birthDay: '2025-04-08',
       rate: 'Trung bình',
       statusWorking: 'PENDING',
@@ -397,16 +406,34 @@ const OrderPage = React.memo(() => {
 
       {
         field: 'customer_Progress',
-        headerName: 'Tình trạng sản xuất',
-        editable: true,
-        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusSX} />
+        headerName: 'Lịch sử sản xuất'
+        // editable: true,
+        // renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusSX} />
       },
 
       {
         field: 'status_Progress',
         headerName: 'Tình trạng đơn hàng',
         editable: true,
-        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusOrder} />
+        renderEditCell: (params: GridRenderEditCellParams) => (
+          <AutocompleteEditCell {...params} options={statusOrder} />
+        ),
+        renderCell: (params: GridRenderCellParams) => {
+          const status = statusColors[params.value as string]
+          if (!status) return null
+
+          return (
+            <Chip
+              label={status.label}
+              sx={{
+                backgroundColor: status.color,
+                color: status.textColor || '#000',
+                fontWeight: 500
+              }}
+              size='small'
+            />
+          )
+        }
       },
 
       {
@@ -476,7 +503,7 @@ const OrderPage = React.memo(() => {
         type: 'actions',
         getActions: (params: GridRenderCellParams<EmployeeType, number>) => [
           <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
+            icon={<VisibilityOutlinedIcon />}
             label='Edit'
             className='textPrimary'
             color='inherit'
@@ -517,6 +544,12 @@ const OrderPage = React.memo(() => {
             icon={<Verified />}
             label='Hoàn thành'
             // onClick={() => handleCopy(params.row)}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            icon={<FileDownload />}
+            label='Tải đơn'
+            // onClick={() => handleModalInvoice()}
             showInMenu
           />
         ]
@@ -562,6 +595,12 @@ const OrderPage = React.memo(() => {
       ]
     }
   ]
+
+  const onCellDoubleClick = (param: GridCellParams) => {
+    if (param.field === 'customer_Progress') {
+      handleModalProductionHistory()
+    }
+  }
 
   const columns: GridColDef[] = React.useMemo(
     () => data.columns.map((colDef) => renderColumn(colDef)),
@@ -766,6 +805,7 @@ const OrderPage = React.memo(() => {
             onProcessRowUpdateError={(error) => {
               console.error('Row update error:', error)
             }}
+            onCellDoubleClick={onCellDoubleClick}
             otherProps={{
               columnGroupingModel: columnGroupingModel
             }}
@@ -797,6 +837,7 @@ const OrderPage = React.memo(() => {
       <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
       <FormAddNewOrder handleClose={handleModalAddOrder} open={modalAddOrder} />
       <FormEditInfoOrder handleClose={handleModalEditInfoOrder} open={modalEditInfoOrder} />
+      <ModalProductionHistory handleClose={handleModalProductionHistory} open={modalProductionHistory} />
 
       <FilterTableAdvanced
         /* eslint-disable @typescript-eslint/no-explicit-any */

@@ -6,6 +6,7 @@ import {
   GridApiPro,
   GridAutosizeOptions,
   GridCallbackDetails,
+  GridCellParams,
   gridClasses,
   GridColDef,
   GridColumnOrderChangeParams,
@@ -63,6 +64,7 @@ interface TableDataGridProps {
     event: MuiEvent<React.MouseEvent<HTMLElement>>, // MuiEvent<React.MouseEvent<HTMLElement>>
     details: GridCallbackDetails // GridCallbackDetails
   ) => void
+  onCellDoubleClick?: (params: GridCellParams, event: React.MouseEvent<HTMLElement>) => void
   totalCount?: number
   rowHeight?: number
   pinnedColumns?: GridPinnedColumnFields | undefined
@@ -88,6 +90,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   onRowSelectionChange,
   onRowClick,
   onRowDoubleClick,
+  onCellDoubleClick,
   onFilterChange,
   pageSizeOptions,
   searchValue,
@@ -265,6 +268,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       keepNonExistentRowsSelected
       onRowClick={onRowClick}
       onRowDoubleClick={onRowDoubleClick}
+      onCellDoubleClick={onCellDoubleClick}
       columns={columns}
       disableColumnFilter
       rows={rows}
