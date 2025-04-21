@@ -4,6 +4,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
@@ -503,11 +504,18 @@ const OrderPage = React.memo(() => {
         type: 'actions',
         getActions: (params: GridRenderCellParams<EmployeeType, number>) => [
           <GridActionsCellItem
-            icon={<VisibilityOutlinedIcon />}
+            icon={<EditOutlinedIcon />}
             label='Edit'
             className='textPrimary'
             color='inherit'
             onClick={handleModalEditInfoOrder}
+          />,
+          <GridActionsCellItem
+            icon={<VisibilityOutlinedIcon />}
+            label='Edit'
+            className='textPrimary'
+            color='inherit'
+            // onClick={handleModalEditInfoOrder}
           />,
           <GridActionsCellItem
             onClick={() => handleDelete(params.row.id)}
