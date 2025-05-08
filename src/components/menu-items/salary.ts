@@ -28,14 +28,7 @@ const salarys = {
   id: 'salary-manager',
   title: 'Lương thưởng',
   type: 'group',
-  premissions: [
-    PERMISSION.ADMIN,
-    PERMISSION.GIAMDOC,
-    PERMISSION.HCNS,
-    PERMISSION.KETOAN,
-    PERMISSION.TUYENDUNG,
-    PERMISSION.SALE
-  ],
+  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE],
   children: [
     {
       id: 'salary-advance',
@@ -44,14 +37,7 @@ const salarys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_ADVANCE}`,
       icon: icons.IconCash,
-      premissions: [
-        PERMISSION.ADMIN,
-        PERMISSION.GIAMDOC,
-        PERMISSION.HCNS,
-        PERMISSION.KETOAN,
-        PERMISSION.TUYENDUNG,
-        PERMISSION.SALE
-      ]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
     },
     {
       id: 'salary-refund',
@@ -60,7 +46,7 @@ const salarys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_REFUND}`,
       icon: icons.IconCashBanknote,
-      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN]
     },
     {
       id: 'salary-pay-staff',
@@ -69,7 +55,7 @@ const salarys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF}`,
       icon: icons.IconUserPentagon,
-      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.KETOAN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN]
     },
     {
       id: 'salary-pay-employee',
@@ -78,7 +64,7 @@ const salarys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE}`,
       icon: icons.IconUsersGroup,
-      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.KETOAN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN]
     }
   ]
 }

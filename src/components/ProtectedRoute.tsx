@@ -21,7 +21,7 @@ const ProtectedRoute = ({ roles, element }: ProtectedRouteProps) => {
     return <div>Đang xử lý dữ liệu vui lòng chờ...</div>
   }
 
-  if (!roles.some((e) => auth?.user?.role?.name === e)) {
+  if (!roles.some((e) => auth?.user?.role === e)) {
     // Nếu người dùng không có vai trò được yêu cầu, chuyển hướng tới trang không được phép
     return <Navigate to={`/${ROUTES.NOT_AUTHORIZED}`} />
   }

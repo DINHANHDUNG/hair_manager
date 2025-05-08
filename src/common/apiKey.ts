@@ -8,6 +8,7 @@ export const NetWork = {
   refresh_token: 'auth/refresh-token',
 
   //Account
+  me: 'account/me',
   account: 'account',
   accountActive: (accountId: number) => `account/${accountId}/active`,
   account_changePass: 'account/change-password',

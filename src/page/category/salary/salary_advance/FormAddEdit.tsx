@@ -86,8 +86,8 @@ const validationSchema = yup.object({
 
 export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
   const user = useAppSelector(authStore)?.user
-  const checkPremision = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => user?.role?.name === e
+  const checkPremision = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some(
+    (e) => user?.role === e
   )
   const [addSalaryAdvance, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddSalaryAdvanceMutation()

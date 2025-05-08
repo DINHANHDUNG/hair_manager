@@ -13,14 +13,12 @@ export const OPTIONGENDER = [
   { value: 'OTHER', label: 'Khác' }
 ]
 
-// export const OPTIONSPOSITION = [
-//   { value: 'ADMIN', label: 'Admin' },
-//   { value: 'GIAMDOC', label: 'Giám đốc' },
-//   { value: 'KETOAN', label: 'Kế toán' },
-//   { value: 'HCNS', label: 'Hành chính nhân sự' },
-//   { value: 'TUYENDUNG', label: 'Tuyển dụng' },
-//   { value: 'SALE', label: 'Bán hàng' }
-// ]
+export const OPTIONSPOSITION = [
+  { value: 'ADMIN', label: 'Admin' },
+  { value: 'QUANLY', label: 'Quản lý' },
+  { value: 'SALE', label: 'Sale' },
+  { value: 'KETOAN', label: 'Kế toán' }
+]
 
 export const OPTIONSTATUSWORK = [
   { value: 'WORKING', label: 'Đang làm việc' },

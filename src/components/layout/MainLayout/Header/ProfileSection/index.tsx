@@ -158,7 +158,7 @@ const ProfileSection = () => {
                     <Stack sx={{ mb: 1 }}>
                       <Stack direction='row' spacing={0.5} alignItems='center'>
                         <Typography variant='h4'>{auth?.staff?.name}</Typography>
-                        <Typography variant='h4'>({auth?.role?.nameVI})</Typography>
+                        <Typography variant='h4'>({auth?.role})</Typography>
                       </Stack>
                       <Typography component='span' variant='subtitle2' sx={{ fontWeight: 400 }}>
                         Tài khoản: {auth?.username}

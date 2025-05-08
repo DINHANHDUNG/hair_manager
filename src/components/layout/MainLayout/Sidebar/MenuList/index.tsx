@@ -11,7 +11,7 @@ import { MenuItem } from '../../../../../types'
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
 const MenuList = () => {
-  const role = useAppSelector(authStore)?.user?.role?.name
+  const role = useAppSelector(authStore)?.user?.role
 
   const navItems = menuItems().map((item: MenuItem) => {
     if (item?.premissions?.some((e) => role === e)) {

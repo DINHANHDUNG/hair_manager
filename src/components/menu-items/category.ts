@@ -26,14 +26,7 @@ const categorys = {
   id: 'category-manager',
   title: 'Danh mục',
   type: 'group',
-  premissions: [
-    PERMISSION.ADMIN,
-    PERMISSION.GIAMDOC,
-    PERMISSION.HCNS,
-    PERMISSION.KETOAN,
-    PERMISSION.SALE,
-    PERMISSION.TUYENDUNG
-  ],
+  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE],
   children: [
     {
       id: 'category-persion',
@@ -42,7 +35,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`,
       icon: icons.IconUser,
-      premissions: [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN]
     },
     {
       id: 'category-worker',
@@ -51,14 +44,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER}`,
       icon: icons.IconBriefcase,
-      premissions: [
-        PERMISSION.ADMIN,
-        PERMISSION.GIAMDOC,
-        PERMISSION.HCNS,
-        PERMISSION.KETOAN,
-        PERMISSION.SALE,
-        PERMISSION.TUYENDUNG
-      ]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
     },
     {
       id: 'category-customer',
@@ -67,15 +53,8 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER}`,
       icon: icons.IconUsersGroup,
-      premissions: [
-        PERMISSION.ADMIN,
-        PERMISSION.GIAMDOC,
-        PERMISSION.HCNS,
-        PERMISSION.KETOAN,
-        PERMISSION.SALE,
-        PERMISSION.TUYENDUNG
-      ]
-    },
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+    }
     // {
     //   id: 'category-partner',
     //   title: 'Vender',
@@ -89,7 +68,7 @@ const categorys = {
     //     PERMISSION.HCNS,
     //     PERMISSION.KETOAN,
     //     PERMISSION.SALE,
-    //     PERMISSION.TUYENDUNG
+    //
     //   ]
     // },
     // {
@@ -105,7 +84,7 @@ const categorys = {
     //     PERMISSION.HCNS,
     //     PERMISSION.KETOAN,
     //     PERMISSION.SALE,
-    //     PERMISSION.TUYENDUNG
+    //
     //   ]
     // }
   ]

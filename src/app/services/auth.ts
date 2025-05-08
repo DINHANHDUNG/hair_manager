@@ -41,7 +41,7 @@ export const authApi = createApi({
     }),
     getAccount: builder.query({
       query: () => ({
-        url: NetWork.account,
+        url: NetWork.me,
         method: GET
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
@@ -52,6 +52,12 @@ export const authApi = createApi({
           console.error('Get Account failed', err)
         }
       }
+    }),
+    getListAccount: builder.query({
+      query: () => ({
+        url: NetWork.account,
+        method: GET
+      })
     }),
     getRoles: builder.query({
       query: () => ({
@@ -68,5 +74,6 @@ export const {
   useGetAccountQuery,
   useGetRolesQuery,
   useChange_pass_staffMutation,
-  useChange_pass_accMutation
+  useChange_pass_accMutation,
+  useGetListAccountQuery
 } = authApi

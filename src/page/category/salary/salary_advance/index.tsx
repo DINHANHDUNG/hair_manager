@@ -65,8 +65,8 @@ const SalaryAdvancePage = React.memo(() => {
   const classes = styleSalaryAdvancePage(theme)
   const dialogs = useDialogs()
   const user = useAppSelector(authStore)?.user
-  const checkPremisionRefund = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => user?.role?.name === e
+  const checkPremisionRefund = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some(
+    (e) => user?.role === e
   )
   const [searchParams, setSearchParams] = useSearchParams()
 

@@ -17,7 +17,7 @@ import { authStore } from '../../../../../../app/selectedStore'
 
 const NavGroup = ({ item }: { item: MenuItem }) => {
   const theme = useTheme()
-  const role = useAppSelector(authStore)?.user?.role?.name
+  const role = useAppSelector(authStore)?.user?.role
   // menu list collapse & items
   const items = item.children?.map((menu: MenuItem) => {
     if (menu?.premissions?.some((e) => role === e)) {

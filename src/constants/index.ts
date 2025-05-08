@@ -14,9 +14,7 @@ export const config = {
 
 export const PERMISSION = {
   ADMIN: 'ADMIN',
-  HCNS: 'HCNS',
-  GIAMDOC: 'GIAMDOC',
   KETOAN: 'KETOAN',
-  TUYENDUNG: 'TUYENDUNG',
-  SALE: 'SALE'
+  SALE: 'SALE',
+  QUANLY: 'QUANLY'
 }

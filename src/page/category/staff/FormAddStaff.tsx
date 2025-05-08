@@ -4,9 +4,9 @@ import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { useGetRolesQuery } from '../../../app/services/auth'
+import { useGetListAccountQuery, useGetRolesQuery } from '../../../app/services/auth'
 import { useAddStaffMutation } from '../../../app/services/staff'
-import { OPTIONGENDER } from '../../../common/contants'
+import { OPTIONGENDER, OPTIONSPOSITION } from '../../../common/contants'
 import { VALIDATE } from '../../../common/validate'
 import MyButton from '../../../components/button/MyButton'
 import SubmitButton from '../../../components/button/SubmitButton'
@@ -16,8 +16,6 @@ import MyTextField from '../../../components/input/MyTextField'
 import MySelect from '../../../components/select/MySelect'
 import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
-import { RoleType } from '../../../types/account'
-
 interface Props {
   open: boolean
   handleClose: () => void
@@ -26,15 +24,15 @@ interface Props {
 
 type FormValues = {
   name: string
-  gender?: string
-  birthDay: string
-  email?: string
+  // gender?: string
+  // birthDay: string
+  // email?: string
   address?: string
   phoneNumber: string
   identificationCard: string
-  addressOrigin?: string
-  ethnic?: string
-  roleId: number
+  // addressOrigin?: string
+  // ethnic?: string
+  role: string
 }
 
 const validationSchema = yup.object({
@@ -43,12 +41,12 @@ const validationSchema = yup.object({
     .max(255, 'Độ dài không được quá 255')
     .required('Trường này là bắt buộc')
     .matches(VALIDATE.nameRegex, 'Vui lòng nhập đúng định dạng'),
-  gender: yup.string(),
-  birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
-  email: yup.string().email('Email không hợp lệ'),
+  // gender: yup.string(),
+  // birthDay: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
+  // email: yup.string().email('Email không hợp lệ'),
   address: yup.string().max(255, 'Độ dài không được quá 255'),
-  addressOrigin: yup.string().max(255, 'Độ dài không được quá 255'),
-  ethnic: yup.string().max(255, 'Độ dài không được quá 255'),
+  // addressOrigin: yup.string().max(255, 'Độ dài không được quá 255'),
+  // ethnic: yup.string().max(255, 'Độ dài không được quá 255'),
   identificationCard: yup
     .string()
     .required('Trường này là bắt buộc')
@@ -59,13 +57,15 @@ const validationSchema = yup.object({
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
-  roleId: yup.number().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền')
+  role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền')
 })
 
 export default function FormAddStaff(Props: Props) {
   const { open, handleClose, handleSave } = Props
-  const { data: dataRole } = useGetRolesQuery({})
-  const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
+  const { data: dataListAcccout } = useGetListAccountQuery({})
+
+  const listAccount =
+    dataListAcccout?.data?.rows?.map((e: any) => ({ ...e, value: e?.id, label: e?.staff?.name })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()
@@ -83,9 +83,9 @@ export default function FormAddStaff(Props: Props) {
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    const date = moment(data.birthDay).startOf('day')
-    const isoDateStr = date?.toISOString()
-    addStaff({ ...data, birthDay: isoDateStr })
+    // const date = moment(data.birthDay).startOf('day')
+    // const isoDateStr = date?.toISOString()
+    addStaff({ ...data })
   }
 
   useEffect(() => {
@@ -108,14 +108,14 @@ export default function FormAddStaff(Props: Props) {
 
   type Field =
     | 'name'
-    | 'gender'
-    | 'birthDay'
-    | 'email'
+    // | 'gender'
+    // | 'birthDay'
+    // | 'email'
     | 'address'
-    | 'addressOrigin'
+    // | 'addressOrigin'
     | 'identificationCard'
     | 'phoneNumber'
-    | 'roleId'
+    | 'role'
 
   useEffect(() => {
     if (!loadingAdd && isErrorAdd) {
@@ -153,12 +153,12 @@ export default function FormAddStaff(Props: Props) {
               //   variant='standard'
             />
           </Grid>
-          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MyTextField name='identificationCard' control={control} label='Căn cước công dân' errors={errors} />
-          </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='gender' control={control} label='Giới tính' errors={errors} options={OPTIONGENDER} />
+            <MyTextField name='identificationCard' control={control} label='Căn cước công dân' errors={errors} />
           </Grid>
+          {/* <Grid item xs={12} sm={12} md={12} lg={6}>
+            <MySelect name='gender' control={control} label='Giới tính' errors={errors} options={OPTIONGENDER} />
+          </Grid> */}
           {/* <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyDatePicker
               name='birthDay'
@@ -184,15 +184,10 @@ export default function FormAddStaff(Props: Props) {
             <MyTextField name='ethnic' control={control} label='Dân tộc' errors={errors} />
           </Grid> */}
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='roleId' control={control} label='Chức vụ' errors={errors} options={[
-                { value: 'admin', label: 'Admin' },
-                { value: 'sale', label: 'Sale' },
-                { value: 'quanly', label: 'Quản lý' },
-                { value: 'ketoan', label: 'Kế toán' },
-              ]} />
+            <MySelect name='role' control={control} label='Chức vụ' errors={errors} options={OPTIONSPOSITION} />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='account' control={control} label='Tài khoản' errors={errors} options={listRole} />
+            <MySelect name='account' control={control} label='Tài khoản' errors={errors} options={listAccount} />
           </Grid>
         </Grid>
         <Grid container spacing={gridSpacingForm}>

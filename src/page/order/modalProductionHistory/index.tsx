@@ -2,33 +2,23 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid, IconButton, Typography } from '@mui/material'
 import moment from 'moment'
 import { useEffect, useMemo, useState } from 'react'
-import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { useAddEmployeeMutation } from '../../../app/services/employee'
-import { OPTIONGENDER } from '../../../common/contants'
 import { VALIDATE } from '../../../common/validate'
-import MyButton from '../../../components/button/MyButton'
 import SubmitButton from '../../../components/button/SubmitButton'
 import MyDatePicker from '../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
 import MyTextField from '../../../components/input/MyTextField'
-import MySelect from '../../../components/select/MySelect'
-import Toast from '../../../components/toast'
-import { gridSpacingForm } from '../../../constants'
 import SubCard from '../../../components/ui-component/cards/SubCard'
+import { gridSpacingForm } from '../../../constants'
 //Icon
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import AppsIcon from '@mui/icons-material/Apps'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import FormatListNumberedRtlIcon from '@mui/icons-material/FormatListNumberedRtl'
-import Timeline from '@mui/lab/Timeline'
-import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
-import { GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid'
-import { GridColDef } from '@mui/x-data-grid'
-import { GridActionsCellItem } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid'
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
+import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 
 interface Props {
   open: boolean
@@ -40,7 +30,6 @@ type FormValues = {
   note: string
 }
 
-type Field = 'note' | 'date'
 
 const validationSchema = yup.object({
   note: yup.string().required('Trường này là bắt buộc').max(255, 'Độ dài không được quá 255'),
@@ -50,7 +39,6 @@ const validationSchema = yup.object({
 
 export default function ModalProductionHistory(Props: Props) {
   const { open, handleClose } = Props
-  const [typeList, setTypeList] = useState(true)
   const dialogs = useDialogs()
   const [idUpdate, setIdUpdate] = useState<number>()
   const [paginationModel, setPaginationModel] = useState({

@@ -16,7 +16,6 @@ import MyTextField from '../../../components/input/MyTextField'
 import MySelect from '../../../components/select/MySelect'
 import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
-import { RoleType } from '../../../types/account'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import MyAutocomplete from '../../../components/select/MyAutocomplete'
 import { convertDataLabel } from '../../../app/hooks'
@@ -68,8 +67,8 @@ const validationSchema = yup.object({
 export default function FormAddAccount(Props: Props) {
   const { open, handleClose, handleSave } = Props
   const [showPassword, setShowPassword] = useState(false)
-  const { data: dataRole } = useGetRolesQuery({})
-  const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
+  // const { data: dataRole } = useGetRolesQuery({})
+  // const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()

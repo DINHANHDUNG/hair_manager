@@ -7,22 +7,9 @@ export interface AccountType {
   deletedAt: string
   username: string
   password: string
-  email: string
   accessToken: string
   refreshToken: string
-  active: boolean
+  active: true
+  role: string
   staff: StaffType
-  roles: string[]
-  role: RoleType
-}
-
-export interface RoleType {
-  id: number
-  createdAt: string
-  updatedAt: string
-  deletedAt: string
-  name: string
-  nameVI: string
-  isActive: boolean
-  permission: string
 }

@@ -16,7 +16,6 @@ import Toast from '../../../../components/toast'
 import { gridSpacingForm, PERMISSION } from '../../../../constants'
 import { StaffType } from '../../../../types/staff'
 import { useGetRolesQuery } from '../../../../app/services/auth'
-import { RoleType } from '../../../../types/account'
 import { useAppSelector } from '../../../../app/hooks'
 import { authStore } from '../../../../app/selectedStore'
 
@@ -81,11 +80,9 @@ interface Props {
 export default function TabInfoStaff(Props: Props) {
   const { data, reloadData } = Props
   const user = useAppSelector(authStore)?.user
-  const checkPremisionEditRole = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => user?.role?.name === e
-  )
-  const { data: dataRole } = useGetRolesQuery({})
-  const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
+  const checkPremisionEditRole = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some((e) => user?.role === e)
+  // const { data: dataRole } = useGetRolesQuery({})
+  // const listRole = dataRole?.data?.map((e: RoleType) => ({ ...e, value: e.id, label: e.nameVI })) || []
   const [updateStaff, { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error }] =
     useUpdateStaffMutation()
   //   const { open, handleClose, handleSave } = Props
@@ -123,7 +120,7 @@ export default function TabInfoStaff(Props: Props) {
     setValue('email', data?.email)
     setValue('addressOrigin', data?.addressOrigin)
     setValue('address', data?.address)
-    setValue('roleId', data?.account?.role?.id)
+    // setValue('roleId', data?.account?.role)
     setValue('representativeName', data?.representativeName)
     setValue('representativePhone', data?.representativePhone)
     setValue('representativePosition', data?.representativePosition)
@@ -232,7 +229,7 @@ export default function TabInfoStaff(Props: Props) {
             control={control}
             label='Chức vụ'
             errors={errors}
-            options={listRole}
+            options={[]}
             variant='outlined'
             disabled={!checkPremisionEditRole}
           />

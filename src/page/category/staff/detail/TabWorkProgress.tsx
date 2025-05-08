@@ -103,10 +103,8 @@ export default function TabWorkProgress(Props: Props) {
   const dialogs = useDialogs()
   const theme = useTheme()
   const matchDownMd = useMediaQuery(theme.breakpoints.down('lg'))
-  const role = useAppSelector(authStore)?.user?.role?.name
-  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => role === e
-  )
+  const role = useAppSelector(authStore)?.user?.role
+  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some((e) => role === e)
   const myFormRef = useRef<Element | null>(null)
   const [typeList, setTypeList] = useState(false)
   const [idUpdate, setIdUpdate] = useState<number>()

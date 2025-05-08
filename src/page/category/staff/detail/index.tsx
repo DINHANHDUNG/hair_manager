@@ -37,8 +37,8 @@ const StaffDetailPage = () => {
   const params = useParams()
   const staffId = params?.id ? Number(params?.id) : null
   const user = useAppSelector(authStore)?.user
-  const checkPremision = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => user?.role?.name === e
+  const checkPremision = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some(
+    (e) => user?.role === e
   )
   const { data: fetchStaff, refetch } = useGetStaffByIdQuery(
     {

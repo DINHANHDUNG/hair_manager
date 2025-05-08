@@ -102,10 +102,8 @@ interface Props {
 export default function TabSalary(Props: Props) {
   const { dataStaff } = Props
   const dialogs = useDialogs()
-  const role = useAppSelector(authStore)?.user?.role?.name
-  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.GIAMDOC, PERMISSION.HCNS, PERMISSION.KETOAN]?.some(
-    (e) => role === e
-  )
+  const role = useAppSelector(authStore)?.user?.role
+  const checkPremisionAdd = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some((e) => role === e)
   const myFormRef = useRef<Element | null>(null)
   const [idUpdate, setIdUpdate] = useState<number>()
   const [paginationModel, setPaginationModel] = useState({

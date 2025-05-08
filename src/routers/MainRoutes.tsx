@@ -111,24 +111,12 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.CATEGORY_CHILD.STAFF,
-          element: createProtectedRoute(<StaffPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.HCNS
-          ])
+          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
         },
         {
           path: ROUTES.CATEGORY_CHILD.STAFF_DETAIL,
           // element: <StaffDetailPage />,
-          element: createProtectedRoute(<StaffDetailPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.SALE,
-            PERMISSION.HCNS,
-            PERMISSION.TUYENDUNG
-          ])
+          element: createProtectedRoute(<StaffDetailPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE])
         },
         {
           path: ROUTES.CATEGORY_CHILD.PARTER,
@@ -149,59 +137,34 @@ const MainRoutes = {
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_ADVANCE,
           // element: <SalaryAdvancePage />
-          element: createProtectedRoute(<SalaryAdvancePage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.SALE,
-            PERMISSION.TUYENDUNG
-          ])
+          element: createProtectedRoute(<SalaryAdvancePage />, [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_REFUND,
           // element: <SalaryRefundPage />,
-          element: createProtectedRoute(<SalaryRefundPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.HCNS
-          ])
+          element: createProtectedRoute(<SalaryRefundPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_PAY_STAFF,
           // element: <SalaryPayPage type='STAFF' />,
-          element: createProtectedRoute(<SalaryPayPage type='STAFF' />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN
-          ])
+          element: createProtectedRoute(<SalaryPayPage type='STAFF' />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
         },
         {
           path: ROUTES.CATEGORY_CHILD.SALARY_PAY_EMPLOYEE,
           // element: <SalaryPayEmployeePage type='EMPLOYEE' />,
           element: createProtectedRoute(<SalaryPayEmployeePage type='EMPLOYEE' />, [
             PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
+
             PERMISSION.KETOAN
           ])
         },
         {
           path: ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER,
-          element: createProtectedRoute(<AccountPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.HCNS
-          ])
+          element: createProtectedRoute(<AccountPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
         },
         {
           path: ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER,
-          element: createProtectedRoute(<CustomerPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.GIAMDOC,
-            PERMISSION.KETOAN,
-            PERMISSION.HCNS
-          ])
+          element: createProtectedRoute(<CustomerPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
         }
       ]
     },
