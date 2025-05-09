@@ -1,8 +1,5 @@
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
 import { Button, Grid, OutlinedInput, Tooltip } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -15,23 +12,23 @@ import {
 import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
-import { useGetStaticStaffDetailQuery } from '../../../app/services/statistic'
+import { useDeleteStaffMutation } from '../../../app/services/staff'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
-import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
-import ROUTES from '../../../routers/helpersRouter/constantRouter'
-import { StaffType } from '../../../types/staff'
 // import DetailStaffDrawer from './DetailStaffDrawer'
 import { IconLockAccess } from '@tabler/icons-react'
+import { handleMutation } from '../../../app/hooks'
+import { useGetListAccountQuery } from '../../../app/services/auth'
+import { OPTIONSPOSITION } from '../../../common/contants'
 import ChangePassword from '../../../components/dialog/ChangePassword'
+import { AccountType } from '../../../types/account'
 import FormAddAccount from './FormAddAccount'
 
 const AccountManagerPage = React.memo(() => {
   const navigate = useNavigate()
   const dialogs = useDialogs()
-  const theme = useTheme()
+
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -46,38 +43,28 @@ const AccountManagerPage = React.memo(() => {
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey
   })
-  const [itemSelected, setItemSelected] = React.useState<StaffType>()
-  const [rowsData, setRowsData] = React.useState<StaffType[]>()
+  const [itemSelected, setItemSelected] = React.useState<AccountType>()
+  const [rowsData, setRowsData] = React.useState<AccountType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
-  const [openStatistics, setOpenStatistics] = React.useState(false)
+
   const [openModalChangePass, setOpenModalChangePass] = React.useState(false)
 
   const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
-  const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
-    useActiveStaffMutation()
 
   const {
-    data: dataApiStaff,
+    data: dataListAcccout,
     isLoading,
     refetch
-  } = useGetListStaffQuery({
+  } = useGetListAccountQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
 
-  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticStaffDetailQuery({})
-  const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ
-  const countStatusStop = dataStaticStaffDetail?.data?.countStatusStop || 0 //Tạm nghỉ
-  const countStatusWorking = dataStaticStaffDetail?.data?.countStatusWorking || 0 //Đang làm việc
-  const countTypeOfficial = dataStaticStaffDetail?.data?.countTypeOfficial || 0 //Chính thức
-  const countTypePartTime = dataStaticStaffDetail?.data?.countTypePartTime || 0 //Bán thời gian
-  const countTypeProbation = dataStaticStaffDetail?.data?.countTypeProbation || 0 //Thử việc
-
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiStaff?.data?.totalCount || 0
+  const rowTotal = dataListAcccout?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -129,13 +116,13 @@ const AccountManagerPage = React.memo(() => {
         field: 'username',
         headerName: 'Tài khoản',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'sale1'
+        renderCell: (params: GridRenderCellParams<AccountType, number>) => params.row.username
       },
       // {
       //   field: 'birthDay',
       //   headerName: 'Ngày sinh',
       //   flex: 1,
-      //   renderCell: (params: GridRenderCellParams<StaffType, number>) =>
+      //   renderCell: (params: GridRenderCellParams<AccountType, number>) =>
       //     params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
       // },
       // {
@@ -143,31 +130,32 @@ const AccountManagerPage = React.memo(() => {
       //   headerName: 'Căn cước',
       //   flex: 1
       // },
-      {
-        field: 'address',
-        headerName: 'Địa chỉ',
-        flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Yên Phong'
-      },
-      { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
+      // {
+      //   field: 'address',
+      //   headerName: 'Địa chỉ',
+      //   flex: 1,
+      //   renderCell: (params: GridRenderCellParams<AccountType, number>) => params.row.address
+      // },
+      // { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
       {
         field: 'chucvu',
         headerName: 'Nhân viên',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Sale'
+        renderCell: (params: GridRenderCellParams<AccountType, number>) => params?.row?.staff?.name
       },
       {
         field: 'account',
         headerName: 'Loại tài khoản',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Kế toán'
+        renderCell: (params: GridRenderCellParams<AccountType, number>) =>
+          OPTIONSPOSITION.find((e) => e.value === params?.row?.role)?.label || ''
       },
       // { field: 'email', headerName: 'Email', flex: 1 },
       // {
       //   field: 'typeWorking',
       //   headerName: 'Hình thức',
       //   flex: 1,
-      //   renderCell: (params: GridRenderCellParams<StaffType, number>) => {
+      //   renderCell: (params: GridRenderCellParams<AccountType, number>) => {
       //     const label = OPTIONTYPEWORK.find((e) => e.value === params.row.typeWorking)?.label || ''
       //     return (
       //       label && (
@@ -188,7 +176,7 @@ const AccountManagerPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (params: GridRenderCellParams<StaffType, number>) => {
+        getActions: (params: GridRenderCellParams<AccountType, number>) => {
           return [
             <GridActionsCellItem
               icon={
@@ -199,22 +187,25 @@ const AccountManagerPage = React.memo(() => {
               label='Lock'
               className='textPrimary'
               color='inherit'
-              onClick={() => setOpenModalChangePass(true)}
-            />,
-            <GridActionsCellItem
-              icon={<EditOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${params.id}`)}
-            />,
-            <GridActionsCellItem
-              icon={<DeleteOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => {
+                setOpenModalChangePass(true)
+                setItemSelected(params.row)
+              }}
             />
+            // <GridActionsCellItem
+            //   icon={<EditOutlinedIcon />}
+            //   label='Delete'
+            //   className='textPrimary'
+            //   color='inherit'
+            //   onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${params.id}`)}
+            // />,
+            // <GridActionsCellItem
+            //   icon={<DeleteOutlinedIcon />}
+            //   label='Delete'
+            //   className='textPrimary'
+            //   color='inherit'
+            //   onClick={() => handleDelete(params.row.id)}
+            // />
           ]
         }
       }
@@ -243,25 +234,8 @@ const AccountManagerPage = React.memo(() => {
 
   const columns: GridColDef[] = React.useMemo(
     () => data.columns?.map((colDef) => renderColumn(colDef)),
-    [data.columns, filters, dataApiStaff]
+    [data.columns, filters, dataListAcccout]
   )
-
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      if (isSuccess) {
-        Toast({ text: successMessage, variant: 'success' })
-        refetch()
-        refetchStatic()
-      }
-    }
-  }
 
   React.useEffect(() => {
     // Update URL parameters when pagination model changes
@@ -273,39 +247,29 @@ const AccountManagerPage = React.memo(() => {
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
-    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isError,
+      isSuccess: isSuccess,
+      loading: loadingDelete,
+      refetch: () => refetch()
+    })
   }, [loadingDelete])
-
-  React.useEffect(() => {
-    handleMutation(loadingActive, isErrorActive, isSuccessActive, 'Thao tác thành công', 'Thao tác không thành công')
-  }, [loadingActive])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiStaff?.data?.rows?.map((row: StaffType, index: number) => ({
+      dataListAcccout?.data?.rows?.map((row: AccountType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [dataApiStaff])
+  }, [dataListAcccout])
 
   return (
     <>
-      {/* <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
-        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-      </IconButton>
-      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
-        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
-          <CardContentBoxSection title={'Đang làm việc'} content={countStatusWorking} />
-          <CardContentBoxSection title={'Đã nghỉ'} content={countStatusOut} />
-          <CardContentBoxSection title={'Tạm nghỉ'} content={countStatusStop} />
-          <CardContentBoxSection title={'Chính thức'} content={countTypeOfficial} />
-          <CardContentBoxSection title={'Thử việc'} content={countTypeProbation} />
-          <CardContentBoxSection title={'Bán thời gian'} content={countTypePartTime} />
-        </Grid>
-      </Collapse> */}
       <MainCard title={'Danh sách tài khoản'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
@@ -346,11 +310,6 @@ const AccountManagerPage = React.memo(() => {
             totalCount={rowTotal}
           />
         </div>
-        {/* <DetailStaffDrawer
-          isVisible={openDetail}
-          changeVisible={handleClickDetail}
-          staff={itemSelected || ({} as StaffType)}
-        /> */}
         <FormAddAccount
           open={openFormAdd}
           handleClose={handleCloseForm}
@@ -360,7 +319,11 @@ const AccountManagerPage = React.memo(() => {
           }}
         />
         {/* <LoadingModal open={isLoading || isFetching} /> */}
-        <ChangePassword handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
+        <ChangePassword
+          accountId={itemSelected?.id}
+          handleClose={() => setOpenModalChangePass(false)}
+          open={openModalChangePass}
+        />
       </MainCard>
     </>
   )

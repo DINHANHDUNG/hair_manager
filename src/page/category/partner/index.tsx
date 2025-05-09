@@ -16,13 +16,13 @@ import { useSearchParams } from 'react-router-dom'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
-import FormAddEditPartner from './FormAddEdit'
-import { PartnerType } from '../../../types/partner'
+import FormAddEditCustomer from './FormAddEdit'
+import { CustomerType } from '../../../types/customer'
 import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../../app/services/partner'
+import { useDeleteCustomerMutation, useGetListCustomerQuery } from '../../../app/services/customer'
 import Toast from '../../../components/toast'
 
-const PartnerPage = React.memo(() => {
+const CustomerPage = React.memo(() => {
   const dialogs = useDialogs()
   //   const navigate = useNavigate()
   //   const theme = useTheme()
@@ -41,26 +41,26 @@ const PartnerPage = React.memo(() => {
     searchKey: initialSearchKey
   })
 
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<PartnerType>()
-  const [rowsData, setRowsData] = React.useState<PartnerType[]>()
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CustomerType>()
+  const [rowsData, setRowsData] = React.useState<CustomerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
 
   const {
-    data: dataApiPartner,
+    data: dataApiCustomer,
     isLoading,
     refetch
-  } = useGetListPartnerQuery({
+  } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
 
-  const [deletePartner, { isLoading: loadingDelete, isSuccess, isError }] = useDeletePartnerMutation()
+  const [deleteCustomer, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteCustomerMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiPartner?.data?.totalCount || 0
+  const rowTotal = dataApiCustomer?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -72,7 +72,7 @@ const PartnerPage = React.memo(() => {
 
   const handleCloseForm = () => {
     setOpenFormAdd(false)
-    setItemSelectedEidt({} as PartnerType)
+    setItemSelectedEidt({} as CustomerType)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -98,7 +98,7 @@ const PartnerPage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      deletePartner({ ids: [Number(id)] })
+      deleteCustomer({ ids: [Number(id)] })
     }
   }
 
@@ -122,7 +122,7 @@ const PartnerPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (param: GridRenderCellParams<PartnerType, number>) => {
+        getActions: (param: GridRenderCellParams<CustomerType, number>) => {
           return [
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
@@ -195,13 +195,13 @@ const PartnerPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiPartner?.data?.rows?.map((row: PartnerType, index: number) => ({
+      dataApiCustomer?.data?.rows?.map((row: CustomerType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [dataApiPartner])
+  }, [dataApiCustomer])
 
   React.useEffect(() => {
     handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
@@ -246,13 +246,13 @@ const PartnerPage = React.memo(() => {
             headerFilters={false}
             totalCount={rowTotal}
             otherProps={{
-              getRowClassName: (params: GridRenderCellParams<PartnerType, number>) =>
+              getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
                 !params.row.isActive ? 'even' : 'odd'
             }}
           />
         </div>
 
-        <FormAddEditPartner
+        <FormAddEditCustomer
           itemSelectedEdit={itemSelectedEdit}
           open={openFormAdd}
           handleClose={handleCloseForm}
@@ -266,4 +266,4 @@ const PartnerPage = React.memo(() => {
   )
 })
 
-export default PartnerPage
+export default CustomerPage

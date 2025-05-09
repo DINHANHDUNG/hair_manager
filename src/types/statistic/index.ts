@@ -17,7 +17,7 @@ export type StaticStatusEmployeeType = {
   countStatusFail: number
   countStatusInCompany: number
   countStatusInHome: number
-  countStatusInPartner: number
+  countStatusInCustomer: number
   countStatusOut: number
   countStatusWaiting: number
 }

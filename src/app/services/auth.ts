@@ -2,13 +2,14 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { axiosBaseQuery } from '../baseQuery'
 import { setCredentials, setUser } from '../features/auth/authSlice'
 import { NetWork } from '../../common/apiKey'
-import { GET, POST } from '../../common/contants'
+import { GET, POST, PUT } from '../../common/contants'
 // import { ReponseData } from '../../types'
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: axiosBaseQuery,
   //   tagTypes: [],
+  tagTypes: ['Account', 'DetailAccount'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
@@ -57,7 +58,24 @@ export const authApi = createApi({
       query: () => ({
         url: NetWork.account,
         method: GET
-      })
+      }),
+      providesTags: (result) => (result ? [{ type: 'Account', id: 'LIST' }] : [])
+    }),
+    addAccount: builder.mutation({
+      query: (data) => ({
+        url: NetWork.account,
+        method: POST,
+        data: data
+      }),
+      invalidatesTags: [{ type: 'Account', id: 'LIST' }]
+    }),
+    updateAccount: builder.mutation({
+      query: (data) => ({
+        url: NetWork.accountId(data.id),
+        method: PUT,
+        data: data
+      }),
+      invalidatesTags: [{ type: 'Account', id: 'LIST' }]
     }),
     getRoles: builder.query({
       query: () => ({
@@ -75,5 +93,7 @@ export const {
   useGetRolesQuery,
   useChange_pass_staffMutation,
   useChange_pass_accMutation,
-  useGetListAccountQuery
+  useGetListAccountQuery,
+  useAddAccountMutation,
+  useUpdateAccountMutation
 } = authApi

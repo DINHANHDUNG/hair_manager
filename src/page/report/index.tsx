@@ -15,13 +15,13 @@ import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useGetListPartnerQuery } from '../../app/services/partner'
+import { useGetListCustomerQuery } from '../../app/services/customer'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
-import { PartnerType } from '../../types/partner'
+import { CustomerType } from '../../types/customer'
 import FilterTableAdvanced from './FilterTableAdvanced'
 
 const ReportTotalPage = React.memo(() => {
@@ -47,23 +47,23 @@ const ReportTotalPage = React.memo(() => {
     dateTo: initialEndDate
   })
 
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<PartnerType>()
-  const [rowsData, setRowsData] = React.useState<PartnerType[]>()
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CustomerType>()
+  const [rowsData, setRowsData] = React.useState<CustomerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
   const {
-    data: dataApiPartner,
+    data: dataApiCustomer,
     isLoading,
     refetch
-  } = useGetListPartnerQuery({
+  } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiPartner?.data?.totalCount || 0
+  const rowTotal = dataApiCustomer?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -419,7 +419,7 @@ const ReportTotalPage = React.memo(() => {
               columnGroupingModel: columnGroupingModel
             }}
             // otherProps={{
-            //   getRowClassName: (params: GridRenderCellParams<PartnerType, number>) =>
+            //   getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'
             // }}
           />

@@ -9,8 +9,8 @@ import SubmitButton from '../../../components/button/SubmitButton'
 import MyTextField from '../../../components/input/MyTextField'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
 import { gridSpacingForm } from '../../../constants'
-import { PartnerType } from '../../../types/partner'
-import { useAddPartnerMutation, useUpdatePartnerMutation } from '../../../app/services/partner'
+import { CustomerType } from '../../../types/customer'
+import { useAddCustomerMutation, useUpdateCustomerMutation } from '../../../app/services/customer'
 import Toast from '../../../components/toast'
 import MySelect from '../../../components/select/MySelect'
 import { OPTIONGENDER } from '../../../common/contants'
@@ -19,47 +19,38 @@ interface Props {
   open: boolean
   handleClose: () => void
   handleSave: () => void
-  itemSelectedEdit?: PartnerType
+  itemSelectedEdit?: CustomerType
 }
 
 type FormValues = {
-  code?: string
+  note?: string
   name: string
   address: string
   email?: string
-  taxCode: string
+
   phoneNumber: string
-  representativeName?: string
-  representativePosition?: string
-  representativePhone?: string
 }
 
 const validationSchema = yup.object({
-  code: yup.string().max(255, 'Độ dài không được quá 255').optional(),
+  note: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   name: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   address: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
-  taxCode: yup.string().required('Trường này là bắt buộc'),
+
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
-  representativeName: yup.string().max(255, 'Độ dài không được quá 255').optional(),
-  representativePosition: yup.string().max(255, 'Độ dài không được quá 255').optional(),
-  representativePhone: yup
-    .string()
-    .max(11)
-    .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRegex.test(value))
-    .optional(),
+
   email: yup.string().email('Vui lòng nhập đúng định dạng email').optional()
 })
 
-export default function FormAddEditPartner({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
-  const [addPartner, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
-    useAddPartnerMutation()
+export default function FormAddEditCustomer({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
+  const [addCustomer, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
+    useAddCustomerMutation()
 
-  const [editPartner, { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }] =
-    useUpdatePartnerMutation()
+  const [editCustomer, { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }] =
+    useUpdateCustomerMutation()
 
   const {
     control,
@@ -73,8 +64,8 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
   })
 
   const onSubmit: SubmitHandler<FormValues> = (value) => {
-    if (itemSelectedEdit?.id) return editPartner({ ...value, id: itemSelectedEdit.id })
-    addPartner({ ...value })
+    if (itemSelectedEdit?.id) return editCustomer({ ...value, id: itemSelectedEdit.id })
+    addCustomer({ ...value })
   }
 
   const handleMutation = (
@@ -95,16 +86,7 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
     if (!itemSelectedEdit?.id) reset()
   }, [open])
 
-  type Field =
-    | 'name'
-    | 'email'
-    | 'address'
-    | 'phoneNumber'
-    | 'code'
-    | 'taxCode'
-    | 'representativeName'
-    | 'representativePosition'
-    | 'representativePhone'
+  type Field = 'name' | 'email' | 'address' | 'phoneNumber' | 'note'
 
   useEffect(() => {
     if (!loadingAdd && isErrorAdd) {
@@ -143,11 +125,7 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
     setValue('email', itemSelectedEdit?.email)
     setValue('address', itemSelectedEdit?.address || '')
     setValue('phoneNumber', itemSelectedEdit?.phoneNumber || '')
-    setValue('code', itemSelectedEdit?.code)
-    setValue('taxCode', itemSelectedEdit?.taxCode || '')
-    setValue('representativeName', itemSelectedEdit?.representativeName)
-    setValue('representativePosition', itemSelectedEdit?.representativePosition)
-    setValue('representativePhone', itemSelectedEdit?.representativePhone)
+    setValue('note', itemSelectedEdit?.note)
   }, [itemSelectedEdit])
 
   return (
@@ -172,10 +150,10 @@ export default function FormAddEditPartner({ open, handleClose, handleSave, item
           <Grid item xs={12} sm={12} md={12} lg={6}>
             <MyTextField name='address' control={control} label='Địa chỉ' errors={errors} />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <MySelect name='gender' control={control} label='Giới tính' errors={errors} options={OPTIONGENDER} />
-          </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={6}>
+          </Grid> */}
+          <Grid item xs={12} sm={12} md={12} lg={12}>
             <MyTextField name='note' control={control} label='Ghi chú' errors={errors} />
           </Grid>
         </Grid>

@@ -98,7 +98,7 @@ const WorkerPage = React.memo(() => {
 
   const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
   const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
-  const countStatusInPartner = dataStaticStaffDetail?.data?.countStatusInPartner || 0 //Cho vendor mượn
+  const countStatusInCustomer = dataStaticStaffDetail?.data?.countStatusInCustomer || 0 //Cho vendor mượn
   const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
   const countStatusInHome = dataStaticStaffDetail?.data?.countStatusInHome || 0 //Chờ giao việc
   const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
@@ -474,7 +474,7 @@ const WorkerPage = React.memo(() => {
       <Collapse in={openStatistics} timeout='auto' unmountOnExit>
         <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
           <CardContentBoxSection title={'Trong công ty'} content={countStatusInCompany} />
-          <CardContentBoxSection title={'Cho vendor mượn'} content={countStatusInPartner} />
+          <CardContentBoxSection title={'Cho vendor mượn'} content={countStatusInCustomer} />
           <CardContentBoxSection title={'Đã nghỉ việc'} content={countStatusOut} />
           <CardContentBoxSection title={'Chờ giao việc'} content={countStatusInHome} />
           <CardContentBoxSection title={'Chờ phỏng vấn'} content={countStatusWaiting} />

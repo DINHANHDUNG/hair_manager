@@ -34,18 +34,18 @@ import {
   useGetListHistoryEmployeeQuery,
   useUpdateHistoryEmployeeMutation
 } from '../../../../app/services/employee'
-import { useGetListPartnerQuery } from '../../../../app/services/partner'
+import { useGetListCustomerQuery } from '../../../../app/services/customer'
 import MyAutocomplete from '../../../../components/select/MyAutocomplete'
 import TableDataGrid from '../../../../components/table-data-grid/TableComponentDataGrid'
 import { EmployeeType, HistoryEmployeeType } from '../../../../types/employee'
 import { CompanyType } from '../../../../types/company'
-import { PartnerType } from '../../../../types/partner'
+import { CustomerType } from '../../../../types/customer'
 
 type Field = 'date' | 'note' | 'status'
 
 type FormValues = {
   companyId?: object | undefined
-  partnerId?: object | undefined
+  customerId?: object | undefined
   note?: string
   employeeCode?: string
   status: string
@@ -66,7 +66,7 @@ const validationSchema = yup.object({
     }
     return yup.object().optional()
   }),
-  partnerId: yup.lazy((_, context) => {
+  customerId: yup.lazy((_, context) => {
     if (context.parent.status === 'IN_PARTNER') {
       return yup.object().required('Trường này là bắt buộc')
     }
@@ -102,7 +102,7 @@ const renderContentRight = (item: HistoryEmployeeType) => {
       </Typography>
       <Typography variant='caption' color='GrayText'>
         {labelStatus}{' '}
-        {`${item?.companyId ? ` | ${item?.company?.name}` : ''}${item?.partnerId ? ` | ${item?.partner?.name}` : ''}${item?.employeeCode ? ` | ${item?.employeeCode}` : ''}`}
+        {`${item?.companyId ? ` | ${item?.company?.name}` : ''}${item?.customerId ? ` | ${item?.customer?.name}` : ''}${item?.employeeCode ? ` | ${item?.employeeCode}` : ''}`}
       </Typography>
     </>
   )
@@ -133,11 +133,11 @@ export default function TabWorkProgress(Props: Props) {
   })
   const [rowsData, setRowsData] = useState<HistoryEmployeeType[]>()
 
-  const { data: dataApiPartner } = useGetListPartnerQuery({})
+  const { data: dataApiCustomer } = useGetListCustomerQuery({})
   const { data: dataApiCompany } = useGetListCompanyQuery({})
 
   const dataOptionCompany = convertDataLabel({ data: dataApiCompany?.data?.rows || [], key: 'name', value: 'id' })
-  const dataOptionPartner = convertDataLabel({ data: dataApiPartner?.data?.rows || [], key: 'name', value: 'id' })
+  const dataOptionCustomer = convertDataLabel({ data: dataApiCustomer?.data?.rows || [], key: 'name', value: 'id' })
 
   const {
     data: dataApi,
@@ -181,12 +181,12 @@ export default function TabWorkProgress(Props: Props) {
       renderCell: (params: GridRenderCellParams<HistoryEmployeeType, number>) => {
         const label = STATUS_WORKING_EMPLOYEE.find((e) => e.value === params.row.status)?.label || ''
         const company = params?.row?.companyId ? ` | ${params?.row?.company?.name ?? ''}` : ''
-        const partner = params?.row?.partnerId ? ` | ${params?.row?.partner?.name ?? ''}` : ''
+        const customer = params?.row?.customerId ? ` | ${params?.row?.customer?.name ?? ''}` : ''
         return (
           label && (
             <Chip
               size='small'
-              label={label + company + partner}
+              label={label + company + customer}
               sx={{
                 color: theme.palette.background.default,
                 bgcolor: theme.palette.success.dark
@@ -243,7 +243,7 @@ export default function TabWorkProgress(Props: Props) {
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     const company = data?.companyId as CompanyType
-    const partner = data?.partnerId as PartnerType
+    const customer = data?.customerId as CustomerType
     const date = moment(data.date).startOf('day')
     const isoDateStr = date?.toISOString()
     if (idUpdate) {
@@ -252,7 +252,7 @@ export default function TabWorkProgress(Props: Props) {
         employeeId: dataEmployee.id,
         date: isoDateStr,
         id: idUpdate,
-        partnerId: partner?.id,
+        customerId: customer?.id,
         companyId: company?.id
       })
     } else {
@@ -260,7 +260,7 @@ export default function TabWorkProgress(Props: Props) {
         ...data,
         employeeId: dataEmployee.id,
         date: isoDateStr,
-        partnerId: partner?.id,
+        customerId: customer?.id,
         companyId: company?.id
       })
     }
@@ -278,8 +278,8 @@ export default function TabWorkProgress(Props: Props) {
     if (item.companyId) {
       setValue('companyId', { ...item.company, label: item.company.name, value: item.company.id })
     }
-    if (item.partnerId) {
-      setValue('partnerId', { ...item.partner, label: item.partner.name, value: item.partner.id })
+    if (item.customerId) {
+      setValue('customerId', { ...item.customer, label: item.customer.name, value: item.customer.id })
     }
     clearErrors()
     scrollFormAddEdit()
@@ -478,11 +478,11 @@ export default function TabWorkProgress(Props: Props) {
               {statusValue === 'IN_PARTNER' && (
                 <Grid item xs={12} sm={12} md={12} lg={12}>
                   <MyAutocomplete
-                    name='partnerId'
+                    name='customerId'
                     control={control}
                     label='Chọn vendor'
                     errors={errors}
-                    options={dataOptionPartner}
+                    options={dataOptionCustomer}
                     isOptionEqualToValue={(option, value) => {
                       return option.value === value.value
                     }}

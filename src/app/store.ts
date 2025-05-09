@@ -10,7 +10,7 @@ import { pokemonApi } from './services/pokemon'
 import { authApi } from './services/auth'
 import { staffApi } from './services/staff'
 import { companyApi } from './services/company'
-import { partnerApi } from './services/partner'
+import { customerApi } from './services/customer'
 import { employeeApi } from './services/employee'
 import { salaryAdvanceApi } from './services/salaryAdvance'
 import { salaryRefundApi } from './services/salaryRefund'
@@ -27,7 +27,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [staffApi.reducerPath]: staffApi.reducer,
     [companyApi.reducerPath]: companyApi.reducer,
-    [partnerApi.reducerPath]: partnerApi.reducer,
+    [customerApi.reducerPath]: customerApi.reducer,
     [employeeApi.reducerPath]: employeeApi.reducer,
     [salaryAdvanceApi.reducerPath]: salaryAdvanceApi.reducer,
     [salaryRefundApi.reducerPath]: salaryRefundApi.reducer,
@@ -40,7 +40,7 @@ export const store = configureStore({
       authApi.middleware,
       staffApi.middleware,
       companyApi.middleware,
-      partnerApi.middleware,
+      customerApi.middleware,
       employeeApi.middleware,
       salaryAdvanceApi.middleware,
       salaryRefundApi.middleware,

@@ -9,35 +9,38 @@ import { StaffType } from '../../../types/staff'
 export const staffApi = createApi({
   reducerPath: 'staffApi',
   baseQuery: axiosBaseQuery,
-  tagTypes: ['Staff'], // Đảm bảo tagType là 'Staff'
+  tagTypes: ['Staff', 'DetailStaff'], // Đảm bảo tagType là 'Staff'
   endpoints: (builder) => ({
     getListStaff: builder.query({
       query: (params) => ({
         url: NetWork.staff,
         method: GET,
-        params: params,
-        providesTags: (result: ReponseData2<{ rows: StaffType[] }>) => (result ? [{ type: 'Staff', id: 'LIST' }] : []) // Cung cấp tag 'Staff' với id 'LIST'
-      })
+        params: params
+      }),
+      providesTags: (result) => (result ? [{ type: 'Staff', id: 'LIST' }] : [])
     }),
     getStaffById: builder.query({
       query: (params: { staffId: number }) => ({
         url: NetWork.staffId(params.staffId),
         method: GET
-      })
+      }),
+      providesTags: (result) => (result ? [{ type: 'DetailStaff', id: 'DETAIL' }] : [])
     }),
     addStaff: builder.mutation({
       query: (data) => ({
         url: NetWork.staff,
         method: POST,
         data: data
-      })
+      }),
+      invalidatesTags: [{ type: 'Staff', id: 'LIST' }]
     }),
     updateStaff: builder.mutation({
       query: (data) => ({
         url: NetWork.staffId(data.id),
         method: PUT,
         data: data
-      })
+      }),
+      invalidatesTags: [{ type: 'Staff', id: 'LIST' }]
     }),
     deleteStaff: builder.mutation({
       query: (data: { ids: Array<number> }) => ({
@@ -45,7 +48,8 @@ export const staffApi = createApi({
         method: DELETE,
         data: data
         // invalidatesTags: [{ type: 'Staff', id: 'LIST' }] // Vô hiệu hóa tag 'Staff' với id 'LIST' để gọi lại getListStaff
-      })
+      }),
+      invalidatesTags: [{ type: 'Staff', id: 'LIST' }]
     }),
     activeStaff: builder.mutation({
       query: (data: { staffId: number; active: boolean }) => ({

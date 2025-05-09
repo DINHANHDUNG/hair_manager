@@ -16,10 +16,10 @@ import { useSearchParams } from 'react-router-dom'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
-import FormAddEditPartner from './FormAddEdit'
-import { PartnerType } from '../../../types/partner'
+import FormAddEditCustomer from './FormAddEdit'
+import { CustomerType } from '../../../types/customer'
 import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../../app/services/partner'
+import { useDeleteCustomerMutation, useGetListCustomerQuery } from '../../../app/services/customer'
 import Toast from '../../../components/toast'
 import { IconAB2 } from '@tabler/icons-react'
 import ChangeAccountStaff from './ChangeStaff'
@@ -43,27 +43,27 @@ const CustomerPage = React.memo(() => {
     searchKey: initialSearchKey
   })
 
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<PartnerType>()
-  const [rowsData, setRowsData] = React.useState<PartnerType[]>()
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CustomerType>()
+  const [rowsData, setRowsData] = React.useState<CustomerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openFormChangeStaff, setOpenFormChangeStaff] = React.useState(false)
 
   const {
-    data: dataApiPartner,
+    data: dataApiCustomer,
     isLoading,
     refetch
-  } = useGetListPartnerQuery({
+  } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
 
-  const [deletePartner, { isLoading: loadingDelete, isSuccess, isError }] = useDeletePartnerMutation()
+  const [deleteCustomer, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteCustomerMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiPartner?.data?.totalCount || 0
+  const rowTotal = dataApiCustomer?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -75,7 +75,7 @@ const CustomerPage = React.memo(() => {
 
   const handleCloseForm = () => {
     setOpenFormAdd(false)
-    setItemSelectedEidt({} as PartnerType)
+    setItemSelectedEidt({} as CustomerType)
   }
 
   const handleClickOpenFormChangeStaff = () => {
@@ -84,7 +84,7 @@ const CustomerPage = React.memo(() => {
 
   const handleCloseFormChangeStaff = () => {
     setOpenFormChangeStaff(false)
-    setItemSelectedEidt({} as PartnerType)
+    setItemSelectedEidt({} as CustomerType)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -110,45 +110,45 @@ const CustomerPage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      deletePartner({ ids: [Number(id)] })
+      deleteCustomer({ ids: [Number(id)] })
     }
   }
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      name: 'Nguyễn Văn A',
-      phoneNumber: '84901234567',
-      email: 'nguyenvana@example.com',
-      address: '123 Đường Lê Lợi, Quận 1, TP.HCM',
-      gender: 'Nam',
-      note: 'Khách hàng lâu năm',
-      isActive: true
-    },
-    {
-      id: 2,
-      order: 2,
-      name: 'Trần Thị B',
-      phoneNumber: '84907654321',
-      email: 'tranthib@example.com',
-      address: '456 Đường Cách Mạng Tháng 8, Quận 10, TP.HCM',
-      gender: 'Nữ',
-      note: 'Ưu tiên liên hệ buổi sáng',
-      isActive: false
-    },
-    {
-      id: 3,
-      order: 3,
-      name: 'Lê Văn C',
-      phoneNumber: '84888888888',
-      email: 'levanc@example.com',
-      address: '789 Đường Trường Chinh, Tân Bình, TP.HCM',
-      gender: 'Nam',
-      note: 'Khách mới',
-      isActive: true
-    }
-  ]
+  // const fakeData = [
+  //   {
+  //     id: 1,
+  //     order: 1,
+  //     name: 'Nguyễn Văn A',
+  //     phoneNumber: '84901234567',
+  //     email: 'nguyenvana@example.com',
+  //     address: '123 Đường Lê Lợi, Quận 1, TP.HCM',
+  //     gender: 'Nam',
+  //     note: 'Khách hàng lâu năm',
+  //     isActive: true
+  //   },
+  //   {
+  //     id: 2,
+  //     order: 2,
+  //     name: 'Trần Thị B',
+  //     phoneNumber: '84907654321',
+  //     email: 'tranthib@example.com',
+  //     address: '456 Đường Cách Mạng Tháng 8, Quận 10, TP.HCM',
+  //     gender: 'Nữ',
+  //     note: 'Ưu tiên liên hệ buổi sáng',
+  //     isActive: false
+  //   },
+  //   {
+  //     id: 3,
+  //     order: 3,
+  //     name: 'Lê Văn C',
+  //     phoneNumber: '84888888888',
+  //     email: 'levanc@example.com',
+  //     address: '789 Đường Trường Chinh, Tân Bình, TP.HCM',
+  //     gender: 'Nam',
+  //     note: 'Khách mới',
+  //     isActive: true
+  //   }
+  // ]
 
   const data = {
     columns: [
@@ -161,7 +161,7 @@ const CustomerPage = React.memo(() => {
       { field: 'phoneNumber', headerName: 'Mã định danh (Whatsapp)', flex: 1 },
       { field: 'email', headerName: 'Email', flex: 1 },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
-      { field: 'gender', headerName: 'Giới tính', flex: 1 },
+      // { field: 'gender', headerName: 'Giới tính', flex: 1 },
       { field: 'note', headerName: 'Ghi chú', flex: 1 },
 
       {
@@ -169,7 +169,7 @@ const CustomerPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         flex: 1,
-        getActions: (param: GridRenderCellParams<PartnerType, number>) => {
+        getActions: (param: GridRenderCellParams<CustomerType, number>) => {
           return [
             <GridActionsCellItem
               icon={<IconAB2 />}
@@ -253,13 +253,13 @@ const CustomerPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      dataApiCustomer?.data?.rows?.map((row: CustomerType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [fakeData])
+  }, [dataApiCustomer])
 
   React.useEffect(() => {
     handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
@@ -304,13 +304,13 @@ const CustomerPage = React.memo(() => {
             headerFilters={false}
             totalCount={rowTotal}
             otherProps={{
-              getRowClassName: (params: GridRenderCellParams<PartnerType, number>) =>
+              getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
                 !params.row.isActive ? 'even' : 'odd'
             }}
           />
         </div>
 
-        <FormAddEditPartner
+        <FormAddEditCustomer
           itemSelectedEdit={itemSelectedEdit}
           open={openFormAdd}
           handleClose={handleCloseForm}
