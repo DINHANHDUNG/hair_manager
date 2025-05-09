@@ -56,7 +56,7 @@ const categorys = {
       premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
     }
     // {
-    //   id: 'category-partner',
+    //   id: 'category-customer',
     //   title: 'Vender',
     //   type: 'item',
     //   breadcrumbs: false,

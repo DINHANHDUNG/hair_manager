@@ -5,7 +5,7 @@ import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { VALIDATE } from '../../common/validate'
-import { useChange_pass_accMutation } from '../../app/services/auth'
+import { useChange_pass_accMutation, useChange_pass_staffMutation } from '../../app/services/auth'
 import { useEffect, useState } from 'react'
 import Toast from '../toast'
 import SubmitButton from '../button/SubmitButton'
@@ -15,6 +15,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 interface Props {
   open: boolean
   handleClose: () => void
+  accountId?: number
 }
 
 type Field = 'newPassword' | 'repeatPassword' | 'currentPassword'
@@ -40,8 +41,9 @@ const validationSchema = yup.object({
     .oneOf([yup.ref('newPassword')], 'Mật khẩu xác nhận không khớp')
 })
 
-export default function ChangePassword({ open, handleClose }: Props) {
-  const [changePass, { isLoading, isSuccess, isError, error }] = useChange_pass_accMutation()
+export default function ChangePassword({ open, handleClose, accountId }: Props) {
+  const [changePass, { isLoading, isSuccess, isError, error }] = useChange_pass_staffMutation() //Đổi mk nhân viên
+  // useChange_pass_accMutation //Đổi mk tải khoản đang đăng nhập
   const [showPassword, setShowPassword] = useState(false)
   const {
     control,
@@ -63,7 +65,7 @@ export default function ChangePassword({ open, handleClose }: Props) {
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (value) => {
-    changePass({ ...value })
+    changePass({ ...value, accountId: accountId })
   }
 
   const handleMutation = (

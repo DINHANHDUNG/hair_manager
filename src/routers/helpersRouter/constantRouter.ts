@@ -26,7 +26,7 @@ const ROUTES = {
   CATEGORY_CHILD: {
     STAFF: 'staff',
     STAFF_DETAIL: 'staff/:id',
-    PARTER: 'partner',
+    PARTER: 'customer',
     COMPANY: 'company',
     WORKER: 'worker',
     WORKER_DETAIL: 'worker/:id',

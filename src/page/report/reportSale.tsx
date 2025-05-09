@@ -1,28 +1,18 @@
 import CloseIcon from '@mui/icons-material/Close'
 import IconSearch from '@mui/icons-material/Search'
-import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
-import {
-  GridActionsCellItem,
-  GridCallbackDetails,
-  GridColDef,
-  GridRenderCellParams,
-  GridRowParams,
-  GridRowSelectionModel,
-  GridRowsProp
-} from '@mui/x-data-grid'
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
+import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { GridCallbackDetails, GridColDef, GridRowParams, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
+import { useDialogs } from '@toolpad/core'
+import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useGetListCustomerQuery } from '../../app/services/customer'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import { gridSpacing } from '../../constants'
-import { PartnerType } from '../../types/partner'
-import { useDialogs } from '@toolpad/core'
-import { useDeletePartnerMutation, useGetListPartnerQuery } from '../../app/services/partner'
-import Toast from '../../components/toast'
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import FilterTableAdvanced from './FilterTableAdvanced'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
-import moment from 'moment'
+import { gridSpacing } from '../../constants'
+import FilterTableAdvanced from './FilterTableAdvanced'
 
 const ReportTotalSalePage = React.memo(() => {
   const dialogs = useDialogs()
@@ -79,17 +69,17 @@ const ReportTotalSalePage = React.memo(() => {
   ]
 
   const {
-    data: dataApiPartner,
+    data: dataApiCustomer,
     isLoading,
     refetch
-  } = useGetListPartnerQuery({
+  } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiPartner?.data?.totalCount || 0
+  const rowTotal = dataApiCustomer?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -323,7 +313,7 @@ const ReportTotalSalePage = React.memo(() => {
             //   // columnGroupingModel: columnGroupingModel
             // }}
             // otherProps={{
-            //   getRowClassName: (params: GridRenderCellParams<PartnerType, number>) =>
+            //   getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'
             // }}
           />

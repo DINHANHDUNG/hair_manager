@@ -244,7 +244,7 @@ const ProfileSection = () => {
                           }
                         }}
                       >
-                        <ListItemButton
+                        {/* <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           // selected={selectedIndex === 0}
                           onClick={(event) =>
@@ -259,7 +259,7 @@ const ProfileSection = () => {
                             <IconSettings stroke={1.5} size='1.3rem' />
                           </ListItemIcon>
                           <ListItemText primary={<Typography variant='body2'>Thông tin tài khoản</Typography>} />
-                        </ListItemButton>
+                        </ListItemButton> */}
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           // selected={selectedIndex === 1}

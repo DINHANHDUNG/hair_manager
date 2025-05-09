@@ -1,12 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
+import { Button, Grid, OutlinedInput } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -17,27 +12,21 @@ import {
   GridRowsProp
 } from '@mui/x-data-grid'
 import { useDialogs } from '@toolpad/core'
-import moment from 'moment'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
-import { useGetStaticStaffDetailQuery } from '../../../app/services/statistic'
-import { OPTIONTYPEWORK } from '../../../common/contants'
-import { CardContentBoxSection } from '../../../components/cardContentBoxSection'
+import { useSearchParams } from 'react-router-dom'
+import { handleMutation } from '../../../app/hooks'
+import { useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
+import { OPTIONSPOSITION } from '../../../common/contants'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
-import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
-import Chip from '../../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../../constants'
-import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { StaffType } from '../../../types/staff'
 import DetailStaffDrawer from './DetailStaffDrawer'
 import FormAddStaff from './FormAddStaff'
+import LoadingModal from '../../../components/ui-component/LoadingModal'
 
 const StaffPage = React.memo(() => {
-  const navigate = useNavigate()
   const dialogs = useDialogs()
-  const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -57,11 +46,8 @@ const StaffPage = React.memo(() => {
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
-  const [openStatistics, setOpenStatistics] = React.useState(false)
 
   const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
-  const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
-    useActiveStaffMutation()
 
   const {
     data: dataApiStaff,
@@ -72,14 +58,6 @@ const StaffPage = React.memo(() => {
     limit: paginationModel.pageSize,
     ...filters
   })
-
-  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticStaffDetailQuery({})
-  const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ
-  const countStatusStop = dataStaticStaffDetail?.data?.countStatusStop || 0 //Tạm nghỉ
-  const countStatusWorking = dataStaticStaffDetail?.data?.countStatusWorking || 0 //Đang làm việc
-  const countTypeOfficial = dataStaticStaffDetail?.data?.countTypeOfficial || 0 //Chính thức
-  const countTypePartTime = dataStaticStaffDetail?.data?.countTypePartTime || 0 //Bán thời gian
-  const countTypeProbation = dataStaticStaffDetail?.data?.countTypeProbation || 0 //Thử việc
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiStaff?.data?.totalCount || 0
@@ -109,7 +87,8 @@ const StaffPage = React.memo(() => {
 
   const onRowClick = (params: GridRowParams) => {
     setItemSelected(params.row)
-    handleClickDetail()
+    // handleClickDetail()
+    handleClickOpenForm()
   }
 
   const handleDelete = async (id: number) => {
@@ -131,53 +110,26 @@ const StaffPage = React.memo(() => {
         width: 30
       },
       { field: 'name', headerName: 'Họ tên', flex: 1 },
-      // {
-      //   field: 'birthDay',
-      //   headerName: 'Ngày sinh',
-      //   flex: 1,
-      //   renderCell: (params: GridRenderCellParams<StaffType, number>) =>
-      //     params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
-      // },
-      // {
-      //   field: 'identificationCard',
-      //   headerName: 'Căn cước',
-      //   flex: 1
-      // },
+      {
+        field: 'identificationCard',
+        headerName: 'Căn cước',
+        flex: 1
+      },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       { field: 'phoneNumber', headerName: 'Số điện thoại', flex: 1 },
       {
         field: 'chucvu',
         headerName: 'Chức vụ',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Sale'
+        renderCell: (params: GridRenderCellParams<StaffType, number>) =>
+          OPTIONSPOSITION.find((e) => e.value === params?.row?.role)?.label || ''
       },
       {
         field: 'account',
         headerName: 'Tài khoản',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => 'Tài khoản 1'
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => params.row.account.username
       },
-      // { field: 'email', headerName: 'Email', flex: 1 },
-      // {
-      //   field: 'typeWorking',
-      //   headerName: 'Hình thức',
-      //   flex: 1,
-      //   renderCell: (params: GridRenderCellParams<StaffType, number>) => {
-      //     const label = OPTIONTYPEWORK.find((e) => e.value === params.row.typeWorking)?.label || ''
-      //     return (
-      //       label && (
-      //         <Chip
-      //           size='small'
-      //           label={label}
-      //           sx={{
-      //             color: theme.palette.background.default,
-      //             bgcolor: theme.palette.success.dark
-      //           }}
-      //         />
-      //       )
-      //     )
-      //   }
-      // },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -198,10 +150,13 @@ const StaffPage = React.memo(() => {
             // />,
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
-              label='Delete'
+              label='Edit'
               className='textPrimary'
               color='inherit'
-              onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}/${params.id}`)}
+              onClick={() => {
+                setItemSelected(params.row)
+                handleClickOpenForm()
+              }}
             />,
             <GridActionsCellItem
               icon={<DeleteOutlinedIcon />}
@@ -241,23 +196,6 @@ const StaffPage = React.memo(() => {
     [data.columns, filters, dataApiStaff]
   )
 
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      if (isSuccess) {
-        Toast({ text: successMessage, variant: 'success' })
-        refetch()
-        refetchStatic()
-      }
-    }
-  }
-
   React.useEffect(() => {
     // Update URL parameters when pagination model changes
     setSearchParams({
@@ -268,12 +206,15 @@ const StaffPage = React.memo(() => {
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
-    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isError,
+      isSuccess: isSuccess,
+      loading: loadingDelete,
+      refetch: () => refetch()
+    })
   }, [loadingDelete])
-
-  React.useEffect(() => {
-    handleMutation(loadingActive, isErrorActive, isSuccessActive, 'Thao tác thành công', 'Thao tác không thành công')
-  }, [loadingActive])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
@@ -288,19 +229,6 @@ const StaffPage = React.memo(() => {
 
   return (
     <>
-      {/* <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
-        {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-      </IconButton>
-      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
-        <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
-          <CardContentBoxSection title={'Đang làm việc'} content={countStatusWorking} />
-          <CardContentBoxSection title={'Đã nghỉ'} content={countStatusOut} />
-          <CardContentBoxSection title={'Tạm nghỉ'} content={countStatusStop} />
-          <CardContentBoxSection title={'Chính thức'} content={countTypeOfficial} />
-          <CardContentBoxSection title={'Thử việc'} content={countTypeProbation} />
-          <CardContentBoxSection title={'Bán thời gian'} content={countTypePartTime} />
-        </Grid>
-      </Collapse> */}
       <MainCard title={'Danh sách nhân viên'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6}>
@@ -347,6 +275,7 @@ const StaffPage = React.memo(() => {
           staff={itemSelected || ({} as StaffType)}
         />
         <FormAddStaff
+          itemSelected={itemSelected}
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
@@ -354,7 +283,7 @@ const StaffPage = React.memo(() => {
             handleCloseForm()
           }}
         />
-        {/* <LoadingModal open={isLoading || isFetching} /> */}
+        <LoadingModal open={isLoading} />
       </MainCard>
     </>
   )

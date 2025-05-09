@@ -70,9 +70,10 @@ export interface OptionType {
   label: string
 }
 
-export interface ErrorType {
+export interface ErrorType<T> {
   data: {
     errors: string
+    keyError: T
     message: string
     status: string
   }

@@ -1,25 +1,26 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
-import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
-import { useGetListAccountQuery, useGetRolesQuery } from '../../../app/services/auth'
-import { useAddStaffMutation } from '../../../app/services/staff'
-import { OPTIONGENDER, OPTIONSPOSITION } from '../../../common/contants'
+import { handleMutation } from '../../../app/hooks'
+import { useGetListAccountQuery } from '../../../app/services/auth'
+import { useAddStaffMutation, useGetStaffByIdQuery, useUpdateStaffMutation } from '../../../app/services/staff'
+import { OPTIONSPOSITION } from '../../../common/contants'
 import { VALIDATE } from '../../../common/validate'
 import MyButton from '../../../components/button/MyButton'
 import SubmitButton from '../../../components/button/SubmitButton'
-import MyDatePicker from '../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
 import MyTextField from '../../../components/input/MyTextField'
 import MySelect from '../../../components/select/MySelect'
-import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
+import { ErrorType } from '../../../types'
+import { StaffType } from '../../../types/staff'
 interface Props {
   open: boolean
   handleClose: () => void
   handleSave: () => void
+  itemSelected?: StaffType
 }
 
 type FormValues = {
@@ -33,6 +34,7 @@ type FormValues = {
   // addressOrigin?: string
   // ethnic?: string
   role: string
+  accountId: string
 }
 
 const validationSchema = yup.object({
@@ -57,23 +59,39 @@ const validationSchema = yup.object({
     .required('Trường này là bắt buộc')
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
-  role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền')
+  role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền'),
+  accountId: yup.string().required('Trường này là bắt buộc')
 })
 
 export default function FormAddStaff(Props: Props) {
-  const { open, handleClose, handleSave } = Props
+  const { open, handleClose, itemSelected } = Props
   const { data: dataListAcccout } = useGetListAccountQuery({})
 
-  const listAccount =
-    dataListAcccout?.data?.rows?.map((e: any) => ({ ...e, value: e?.id, label: e?.staff?.name })) || []
+  const {
+    data: fetchData,
+    isLoading,
+    refetch
+  } = useGetStaffByIdQuery(
+    {
+      staffId: itemSelected?.id || 0
+    },
+    {
+      skip: !itemSelected?.id
+    }
+  )
+
+  const listAccount = dataListAcccout?.data?.rows?.map((e: any) => ({ ...e, value: e?.id, label: e?.username })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()
+
+  const [editStaff, { isLoading: loadingEdit, isSuccess: isSuccessEdit, isError: isErrorEdit, error: errorEdit }] =
+    useUpdateStaffMutation()
   // Khởi tạo react-hook-form với schema xác thực
   const {
     control,
     handleSubmit,
-    // setValue,
+    setValue,
     reset,
     setError,
     formState: { errors, isSubmitting }
@@ -85,26 +103,16 @@ export default function FormAddStaff(Props: Props) {
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     // const date = moment(data.birthDay).startOf('day')
     // const isoDateStr = date?.toISOString()
-    addStaff({ ...data })
+    if (itemSelected?.id) {
+      editStaff({ ...data, id: itemSelected?.id, accountId: Number(data.accountId) })
+      return
+    }
+    addStaff({ ...data, accountId: Number(data.accountId) })
   }
 
   useEffect(() => {
-    reset()
-  }, [open])
-
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (isSuccess) handleSave()
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      isSuccess && Toast({ text: successMessage, variant: 'success' })
-    }
-  }
+    if (!open) reset()
+  }, [open, reset])
 
   type Field =
     | 'name'
@@ -119,23 +127,59 @@ export default function FormAddStaff(Props: Props) {
 
   useEffect(() => {
     if (!loadingAdd && isErrorAdd) {
-      const newError = error as {
-        data: {
-          errors: string
-          keyError: Field
-          message: string
-          status: string
-        }
-      }
+      const newError = error as ErrorType<Field>
       newError &&
         setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
     }
-    handleMutation(loadingAdd, isErrorAdd, isSuccessAdd, 'Thêm mới thành công', 'Thêm mới không thành công')
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isErrorAdd,
+      isSuccess: isSuccessAdd,
+      loading: loadingAdd,
+      refetch: () => handleClose()
+    })
   }, [loadingAdd])
+
+  useEffect(() => {
+    if (!loadingEdit && isErrorEdit) {
+      const newError = errorEdit as ErrorType<Field>
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isErrorEdit,
+      isSuccess: isSuccessEdit,
+      loading: loadingEdit,
+      refetch: () => handleClose()
+    })
+  }, [loadingEdit])
+
+  useEffect(() => {
+    if (!isLoading && fetchData?.data) {
+      const newData = fetchData?.data
+      setValue('name', newData?.name || '')
+      setValue('address', newData?.address || '')
+      setValue('phoneNumber', newData?.phoneNumber || '')
+      setValue('role', newData?.role || '')
+      setValue('accountId', newData?.accountId || '')
+      setValue('identificationCard', newData?.identificationCard || '')
+    }
+  }, [isLoading, fetchData, open])
+
+  useEffect(() => {
+    if (!itemSelected?.id) reset()
+  }, [open, itemSelected])
+
+  useEffect(() => {
+    if (itemSelected?.id) refetch()
+  }, [open, itemSelected?.id, refetch])
 
   return (
     <CustomDialog
-      title='Thêm mới '
+      title={itemSelected?.id ? 'Cập nhật' : 'Thêm mới'}
       open={open}
       onClose={handleClose}
       //   onSave={handleSave}
@@ -187,7 +231,7 @@ export default function FormAddStaff(Props: Props) {
             <MySelect name='role' control={control} label='Chức vụ' errors={errors} options={OPTIONSPOSITION} />
           </Grid>
           <Grid item xs={12} sm={12} md={12} lg={6}>
-            <MySelect name='account' control={control} label='Tài khoản' errors={errors} options={listAccount} />
+            <MySelect name='accountId' control={control} label='Tài khoản' errors={errors} options={listAccount} />
           </Grid>
         </Grid>
         <Grid container spacing={gridSpacingForm}>

@@ -1,5 +1,5 @@
 import { CompanyType } from '../company'
-import { PartnerType } from '../partner'
+import { CustomerType } from '../customer'
 import { StaffType } from '../staff'
 
 export type EmployeeType = {
@@ -39,8 +39,8 @@ export type HistoryEmployeeType = {
   employeeCode: string
   employeeId: number
   companyId: number | null
-  partnerId: number | null
+  customerId: number | null
   employee: EmployeeType
   company: CompanyType
-  partner: PartnerType
+  customer: CustomerType
 }

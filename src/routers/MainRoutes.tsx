@@ -12,7 +12,7 @@ const DashboarOrderdDefault = Loadable(lazy(() => import('../page/report')))
 const DashboarOrderdSale = Loadable(lazy(() => import('../page/report/reportSale')))
 
 // admin routing
-const AdminPage = Loadable(lazy(() => import('../page/admin/AdminPage')))
+// const AdminPage = Loadable(lazy(() => import('../page/admin/AdminPage')))
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('../page/utilities/Typography')))
@@ -22,7 +22,7 @@ const UtilsInput = Loadable(lazy(() => import('../page/utilities/Input')))
 const SamplePage = Loadable(lazy(() => import('../page/home/HomePage')))
 const StaffPage = Loadable(lazy(() => import('../page/category/staff')))
 const StaffDetailPage = Loadable(lazy(() => import('../page/category/staff/detail')))
-const PartnerPage = Loadable(lazy(() => import('../page/category/partner')))
+// const CustomerPage = Loadable(lazy(() => import('../page/category/customer')))
 const CompanyPage = Loadable(lazy(() => import('../page/category/company')))
 const WorkerPage = Loadable(lazy(() => import('../page/category/worker')))
 const WorkerDetailPage = Loadable(lazy(() => import('../page/category/worker/detail')))
@@ -120,7 +120,7 @@ const MainRoutes = {
         },
         {
           path: ROUTES.CATEGORY_CHILD.PARTER,
-          element: <PartnerPage />
+          element: <CustomerPage />
         },
         {
           path: ROUTES.CATEGORY_CHILD.COMPANY,

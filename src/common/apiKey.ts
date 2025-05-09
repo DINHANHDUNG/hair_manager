@@ -10,6 +10,7 @@ export const NetWork = {
   //Account
   me: 'account/me',
   account: 'account',
+  accountId: (accountId: number) => `account/${accountId}`,
   accountActive: (accountId: number) => `account/${accountId}/active`,
   account_changePass: 'account/change-password',
   changePass_acc: 'staff/change-password',
@@ -42,9 +43,10 @@ export const NetWork = {
   company: 'company',
   companyId: (companyId: number) => `company/${companyId}`,
 
-  //Partner
-  partner: 'partner',
-  partnerId: (partnerId: number) => `partner/${partnerId}`,
+  //Customer
+  customer: 'customer',
+  customerId: (customerId: number) => `customer/${customerId}`,
+  customerChangeAcc: () => `customer/change-account`,
 
   //SalaryAdvance
   salaryAdvance: 'salary-advance',
