@@ -1,12 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
-import MyDatePicker from '../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
-import MyTextField from '../../../components/input/MyTextField'
-import MyAutocompleteFreeSolo from '../../../components/select/MyAutocompleteFreeSolo'
-import { validationSchemaOrder } from './validationSchema'
 import ItemOrder from '../modalAddNew/ItemOrder'
+import { validationSchemaOrder } from './validationSchema'
+import { FormValuesOrder } from '../../../types/order'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -21,16 +19,17 @@ export default function FormEditInfoOrder({ open, handleClose }: Props) {
     setValue,
     watch,
     getValues,
+
     formState: { errors, isSubmitting }
-  } = useForm<any>({
+  } = useForm<FormValuesOrder>({
     resolver: yupResolver(validationSchemaOrder),
     // context: { permAddEditPaymentAcc },
     defaultValues: {
-      itemOrders: [{ name: '', size: '', quantity: '', unit: '', unitPrice: '', money: '' }],
-      invoices: [
-        { content: '', image: '' },
-        { content: '', image: '' }
-      ]
+      products: [{ name: '', size: '', quantity: '', unit: '', price: '', money: '' }]
+      // invoices: [
+      //   { content: '', image: '' },
+      //   { content: '', image: '' }
+      // ]
     }
   })
 
@@ -40,7 +39,7 @@ export default function FormEditInfoOrder({ open, handleClose }: Props) {
     remove: removeItemOrders
   } = useFieldArray({
     control,
-    name: 'itemOrders' // Array field name
+    name: 'products' // Array field name
   })
 
   const handleAddItemOrder = () => {
@@ -48,7 +47,7 @@ export default function FormEditInfoOrder({ open, handleClose }: Props) {
       name: '',
       size: '',
       unit: '',
-      unitPrice: '',
+      price: '',
       money: '',
       quantity: ''
     })
@@ -76,6 +75,7 @@ export default function FormEditInfoOrder({ open, handleClose }: Props) {
             handleDeleteItemOrder={handleDeleteItemOrder}
             handleAddItemOrder={handleAddItemOrder}
             fieldsItemOrders={fieldsItemOrders}
+            setValue={setValue}
           />
         </Grid>
       </form>

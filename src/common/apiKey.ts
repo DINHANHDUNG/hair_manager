@@ -22,7 +22,7 @@ export const NetWork = {
   //Staff
   staff: 'staff',
   staffId: (staffId: number) => `staff/${staffId}`,
-  staffActive: (staffId: number) => `staff/${staffId}/active`,
+  staffActive: (staffId: number, active: boolean) => `staff/${staffId}/active/${active}`,
   staffHistory: `staff-history`,
   staffHistoryList: (staffId: number) => `staff-history/staff/${staffId}`,
   staffHistoryId: (staffHistoryId: number) => `staff-history/${staffHistoryId}`,
@@ -71,5 +71,12 @@ export const NetWork = {
   staticEmployeeTotal: 'statistic/employee-total',
   staticEmployeeDetail: 'statistic/employee-detail',
   staticSalaryAdvance: 'statistic/salary-advance',
-  staticEmployeeByMonth: 'statistic/employee-by-month'
+  staticEmployeeByMonth: 'statistic/employee-by-month',
+  //StaticOrder
+  staticOrderTotal: 'statistic/order-total',
+  staticOrderDetail: 'statistic/order-detail',
+
+  //Order
+  order: 'order',
+  orderId: (orderId: number) => `order/${orderId}`,
 }

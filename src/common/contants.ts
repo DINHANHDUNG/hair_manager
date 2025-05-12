@@ -1,4 +1,5 @@
 import colors from '../assets/scss/_themes-vars.module.scss'
+import { COLORS } from './colors'
 export const POST = 'POST'
 export const PUT = 'PUT'
 export const GET = 'GET'
@@ -86,3 +87,64 @@ export const FILE_ACCEPT_TYPES = {
 }
 
 export const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.jfif', '.heic', '.heif']
+
+export const OPTIONS_ORDER_KEY = {
+  NEW: 'NEW',
+  PROCESSING: 'PROCESSING',
+  DELIVERING: 'DELIVERING',
+  RECEIVED: 'RECEIVED',
+  DONE: 'DONE',
+  CANCEL: 'CANCEL',
+  REPAIR: 'REPAIR'
+}
+
+export const OPTIONS_STATUS_ORDER = [
+  { value: OPTIONS_ORDER_KEY.NEW, label: 'Đơn mới' },
+  { value: OPTIONS_ORDER_KEY.PROCESSING, label: 'Đang sản xuất' },
+  { value: OPTIONS_ORDER_KEY.DELIVERING, label: 'Đang giao' },
+  { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
+  { value: OPTIONS_ORDER_KEY.DONE, label: 'Hoàn thành' },
+  { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Sửa đơn' },
+  { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Huỷ đơn' }
+]
+
+export const checkColor = (val: string) => {
+  switch (val) {
+    case OPTIONS_ORDER_KEY.NEW:
+      return '#000000'
+    case OPTIONS_ORDER_KEY.PROCESSING:
+      return '#000000'
+    case OPTIONS_ORDER_KEY.DELIVERING:
+      return '#ffffff'
+    case OPTIONS_ORDER_KEY.RECEIVED:
+      return '#ffffff'
+    case OPTIONS_ORDER_KEY.DONE:
+      return '#ffffff'
+    case OPTIONS_ORDER_KEY.CANCEL:
+      return '#ffffff'
+    case OPTIONS_ORDER_KEY.REPAIR:
+      return '#ffffff'
+    default:
+      return COLORS.black
+  }
+}
+export const checkBg = (val: string) => {
+  switch (val) {
+    case OPTIONS_ORDER_KEY.NEW:
+      return '#ffffff'
+    case OPTIONS_ORDER_KEY.PROCESSING:
+      return '#FFEB3B'
+    case OPTIONS_ORDER_KEY.DELIVERING:
+      return '#FFEB3B'
+    case OPTIONS_ORDER_KEY.RECEIVED:
+      return '#2196F3'
+    case OPTIONS_ORDER_KEY.DONE:
+      return '#4CAF50'
+    case OPTIONS_ORDER_KEY.CANCEL:
+      return '#F44336'
+    case OPTIONS_ORDER_KEY.REPAIR:
+      return '#9C27B0'
+    default:
+      return COLORS.black
+  }
+}

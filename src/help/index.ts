@@ -17,3 +17,22 @@ export function removeNullOrEmpty<T extends Record<string, any>>(obj: T): Partia
 
   return result
 }
+
+export const convertDataLabelAutoComplate = ({
+  data,
+  key,
+  value,
+  subKey
+}: {
+  data: any
+  key: string
+  value: string
+  subKey?: string
+}) => {
+  const newData = data.map((e: any) => ({
+    ...e,
+    label: (e?.[key] || '') + (subKey ? `- ${e?.[subKey]}` : ''),
+    value: e?.[value].toString() || ''
+  }))
+  return newData || []
+}

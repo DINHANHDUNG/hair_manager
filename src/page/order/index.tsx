@@ -1,15 +1,15 @@
 import { AddCircle, AddTask, BorderAll, FileDownload, HighlightOff, Verified } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
 import {
   GridActionsCellItem,
@@ -27,14 +27,14 @@ import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useGetListCompanyQuery } from '../../app/services/company'
+import { useSearchParams } from 'react-router-dom'
 import {
-  useDeleteEmployeeMutation,
-  useGetListEmployeeQuery,
-  useUploadFileEmployeeMutation
-} from '../../app/services/employee'
-import { useGetStaticEmployeeDetailQuery } from '../../app/services/statistic'
+  useAddOrderMutation,
+  useDeleteOrderMutation,
+  useGetListOrderQuery
+  // useUploadFileOrderMutation
+} from '../../app/services/order'
+import { useGetStaticOrderDetailQuery } from '../../app/services/statistic'
 import { CardContentBoxSection } from '../../components/cardContentBoxSection'
 import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
 import { DateEditCell } from '../../components/table-data-grid/cellDate'
@@ -44,14 +44,14 @@ import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
-import { CompanyType } from '../../types/company'
-import { EmployeeType } from '../../types/employee'
+import { OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddEditWorker from './FormAddEditWorker'
 import FormAddNewOrder from './modalAddNew'
 import FormEditInfoOrder from './modalEditInfoOrder'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
+import { checkBg, checkColor, OPTIONS_STATUS_ORDER } from '../../common/contants'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -62,16 +62,6 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
     paddingRight: 5
   }
 }))
-
-const statusColors: Record<string, { label: string; color: string; textColor?: string }> = {
-  'Đơn mới': { label: 'Đơn mới', color: '#ffffff', textColor: '#000000' },
-  'Đang sản xuất': { label: 'Đang sản xuất', color: '#FFEB3B', textColor: '#000000' },
-  'Đã giao': { label: 'Đã giao', color: '#2196F3', textColor: '#ffffff' },
-  'Nhận đơn': { label: 'Nhận đơn', color: '#2196F3', textColor: '#ffffff' },
-  'Hoàn thành': { label: 'Hoàn thành', color: '#4CAF50', textColor: '#ffffff' },
-  'Huỷ đơn': { label: 'Huỷ đơn', color: '#F44336', textColor: '#ffffff' },
-  'Yêu cầu sửa': { label: 'Yêu cầu sửa', color: '#9C27B0', textColor: '#ffffff' }
-}
 
 const customerOptions = [
   { label: 'Khách A', value: 'a' },
@@ -87,15 +77,7 @@ const statusSX = [
   { value: 'Đang xử lý mềm mượt', label: 'Đang xử lý mềm mượt' }
 ]
 
-const statusOrder = [
-  { value: 'Đang sản xuất', label: 'Đang sản xuất' },
-  { value: 'Đã đóng gói', label: 'Đã đóng gói' },
-  { value: 'Chờ giao', label: 'Chờ giao' }
-]
-
 const OrderPage = React.memo(() => {
-  const navigate = useNavigate()
-  const theme = useTheme()
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -124,18 +106,17 @@ const OrderPage = React.memo(() => {
     phoneNumber: initialPhone,
     name: initialName
   })
-  const fileRef = React.useRef<HTMLInputElement>(null)
-  const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
+  // const fileRef = React.useRef<HTMLInputElement>(null)
+  const [rowsData, setRowsData] = React.useState<OrderType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
-  const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openStatistics, setOpenStatistics] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
   const [modalAddOrder, setModalAddOrder] = React.useState(false)
   const [modalEditInfoOrder, setModalEditInfoOrder] = React.useState(false)
   const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
 
-  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
+  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticOrderDetailQuery({})
   const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
   const countStatusInCustomer = dataStaticStaffDetail?.data?.countStatusInCustomer || 0 //Cho vendor mượn
   const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
@@ -143,17 +124,13 @@ const OrderPage = React.memo(() => {
   const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
   const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
 
-  const { data: dataApiCompany } = useGetListCompanyQuery({
-    page: 1
-  })
-  const listCompany =
-    dataApiCompany?.data?.rows?.map((e: CompanyType) => ({ ...e, value: e.id.toString(), label: e.name })) || []
-  const [deleteEmployee, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteEmployeeMutation()
+  const [deleteOrder, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteOrderMutation()
+  
   const {
-    data: dataApiEmployee,
+    data: dataApiOrder,
     isLoading,
     refetch
-  } = useGetListEmployeeQuery(
+  } = useGetListOrderQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
       limit: paginationModel.pageSize,
@@ -162,36 +139,18 @@ const OrderPage = React.memo(() => {
       dateTo: filters.dateTo ? convertDateToApi(filters.dateTo) : ''
     })
   )
-  const [
-    uploadFileEmployee,
-    { isLoading: loadingUpload, isSuccess: isSuccessUpload, isError: isErrorUpload, error: ErrorUpload }
-  ] = useUploadFileEmployeeMutation()
+  // const [
+  //   uploadFileOrder,
+  //   { isLoading: loadingUpload, isSuccess: isSuccessUpload, isError: isErrorUpload, error: ErrorUpload }
+  // ] = useUploadFileOrderMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiEmployee?.data?.totalCount || 0
+  const rowTotal = dataApiOrder?.data?.totalCount || 0
 
   //Start filter
-  const listFilter = [
-    { value: 'code', label: 'Mã công nhân' },
-    { value: 'name', label: 'Tên công nhân' },
-    { value: 'identificationCard', label: 'Căn cước công dân' },
-    { value: 'phoneNumber', label: 'Số điện thoại' }
-  ]
-  const [openFilter, setOpenFilter] = React.useState(false)
-  const anchorRef = React.useRef<HTMLDivElement>(null)
+
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
   const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
-
-  const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as Node)) {
-      return
-    }
-    setOpenFilter(false)
-  }
-
-  const handleToggle = () => {
-    setOpenFilter((prevOpen) => !prevOpen)
-  }
 
   const handleModalInvoice = () => {
     setModalInvoice(!modalInvoice)
@@ -216,7 +175,7 @@ const OrderPage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      deleteEmployee({ ids: [Number(id)] })
+      deleteOrder({ ids: [Number(id)] })
     }
   }
 
@@ -231,41 +190,36 @@ const OrderPage = React.memo(() => {
     setOpenFilterAdvanced((prevOpen) => !prevOpen)
   }
 
-  const prevOpen = React.useRef(openFilter)
   const prevOpenAdvanced = React.useRef(openFilterAdvanced)
   React.useEffect(() => {
-    if (prevOpen.current === true && openFilter === false) {
-      anchorRef?.current?.focus()
-    }
-
     if (prevOpenAdvanced.current === true && openFilterAdvanced === false) {
       anchorAdvancedRef?.current?.focus()
     }
 
-    prevOpen.current = openFilter
+    // prevOpen.current = openFilter
     prevOpenAdvanced.current = openFilterAdvanced
-  }, [openFilter, openFilterAdvanced])
+  }, [openFilterAdvanced])
 
   //End filter
 
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const fileExtension = file.name.split('.').pop()?.toLowerCase()
-      const validExtensions = ['xlsx', 'xls']
+  // const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0]
+  //   if (file) {
+  //     const fileExtension = file.name.split('.').pop()?.toLowerCase()
+  //     const validExtensions = ['xlsx', 'xls']
 
-      if (fileExtension && validExtensions.includes(fileExtension)) {
-        const formData = new FormData()
-        formData.append('file', file)
-        uploadFileEmployee(formData)
-      } else {
-        Toast({ text: 'Vui lòng chọn file excel (xlsx, xls)', variant: 'error' })
-      }
-    }
-    if (fileRef.current) {
-      fileRef.current.value = ''
-    }
-  }
+  //     if (fileExtension && validExtensions.includes(fileExtension)) {
+  //       const formData = new FormData()
+  //       formData.append('file', file)
+  //       uploadFileOrder(formData)
+  //     } else {
+  //       Toast({ text: 'Vui lòng chọn file excel (xlsx, xls)', variant: 'error' })
+  //     }
+  //   }
+  //   if (fileRef.current) {
+  //     fileRef.current.value = ''
+  //   }
+  // }
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -274,10 +228,6 @@ const OrderPage = React.memo(() => {
   const handleClickOpenForm = () => {
     // setOpenFormAdd(true)
     handleModalAddOrder()
-  }
-
-  const handleCloseForm = () => {
-    setOpenFormAdd(false)
   }
 
   const handleFilterChange = (field: string, value: string) => {
@@ -306,66 +256,6 @@ const OrderPage = React.memo(() => {
     return newRow // Quan trọng: phải return lại row đã cập nhật
   }, [])
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      code: 'DH001',
-      customer: 'c',
-      numberPhone: '0999888746',
-      address: 'Yên Phong',
-      customer_Progress: '01/04 - Đang chia hàng',
-      status_Progress: 'Đang sản xuất',
-      birthDay: '2025-04-10', // dùng chung cho các cột có renderCell là birthDay
-      rate: 'Tốt',
-      statusWorking: 'COMPLETED',
-      order_edit: 'Sửa cổ áo',
-      order_edit_pull: '2025-04-11',
-      statusWorking2: 'Đang sản xuất',
-      order_edit_date_push: '2025-04-13',
-      order_edit_note: 'Giao lại đúng hạn',
-      discount: '30'
-    },
-    {
-      id: 2,
-      order: 2,
-      code: 'DH002',
-      customer: 'b',
-      numberPhone: '0999888746',
-      address: 'Yên Phong',
-      customer_Progress: '02/04 - Đang gửi lace',
-      status_Progress: 'Hoàn thành',
-      birthDay: '2025-04-09',
-      rate: 'Khá',
-      statusWorking: 'IN_PROGRESS',
-      order_edit: 'Chỉnh chiều dài',
-      order_edit_pull: '2025-04-10',
-      statusWorking2: 'Đang sản xuất',
-      order_edit_date_push: '2025-04-12',
-      order_edit_note: 'Cần kiểm tra lại',
-      discount: '30'
-    },
-    {
-      id: 3,
-      order: 3,
-      code: 'DH003',
-      customer: 'c',
-      numberPhone: '0999888746',
-      address: 'Yên Phong',
-      customer_Progress: '01/04 - Đang làm màu',
-      status_Progress: 'Huỷ đơn',
-      birthDay: '2025-04-08',
-      rate: 'Trung bình',
-      statusWorking: 'PENDING',
-      order_edit: '',
-      order_edit_pull: '',
-      statusWorking2: 'Đang sản xuất',
-      order_edit_date_push: '',
-      order_edit_note: '',
-      discount: '30'
-    }
-  ]
-
   const data = {
     columns: [
       {
@@ -376,7 +266,7 @@ const OrderPage = React.memo(() => {
       { field: 'code', headerName: 'Mã đơn hàng', editable: true },
 
       {
-        field: 'customer',
+        field: 'customerName',
         headerName: 'Khách hàng',
         editable: true,
         renderEditCell: (params: GridRenderEditCellParams) => (
@@ -385,7 +275,7 @@ const OrderPage = React.memo(() => {
       },
 
       {
-        field: 'numberPhone',
+        field: 'customerPhone',
         headerName: 'Số điện thoại',
         editable: true,
         preProcessEditCellProps: (params: GridRenderEditCellParams) => {
@@ -399,65 +289,69 @@ const OrderPage = React.memo(() => {
       },
 
       {
-        field: 'address',
+        field: 'customerAddress',
         headerName: 'Địa chỉ',
         editable: true,
         renderEditCell: TextEditCell
       },
 
       {
-        field: 'customer_Progress',
+        field: 'historyProductions',
         headerName: 'Lịch sử sản xuất'
         // editable: true,
         // renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusSX} />
       },
 
       {
-        field: 'status_Progress',
+        field: 'statusOrder',
         headerName: 'Tình trạng đơn hàng',
         editable: true,
         renderEditCell: (params: GridRenderEditCellParams) => (
-          <AutocompleteEditCell {...params} options={statusOrder} />
+          <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
         ),
         renderCell: (params: GridRenderCellParams) => {
-          const status = statusColors[params.value as string]
+          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
           if (!status) return null
 
           return (
             <Chip
               label={status.label}
               sx={{
-                backgroundColor: status.color,
-                color: status.textColor || '#000',
+                backgroundColor: checkBg(status.value),
+                color: checkColor(status.value),
                 fontWeight: 500
               }}
               size='small'
+              variant='outlined'
             />
           )
         }
       },
 
       {
-        field: 'name',
+        field: 'dateReceive',
         headerName: 'Ngày xưởng nhận đơn',
         editable: true,
-        renderCell: (params: any) => (params.row.name ? dayjs(params.row.name).format('DD/MM/YYYY') : ''),
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
 
       {
-        field: 'birthDay',
+        field: 'dateEstimateDelivery',
         headerName: 'Ngày dự kiến xuất',
         editable: true,
-        renderCell: (params: any) => (params.row.birthDay ? dayjs(params.row.birthDay).format('DD/MM/YYYY') : ''),
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row.dateEstimateDelivery ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
 
       {
-        field: 'birthDay2',
+        field: 'dateDelivery',
         headerName: 'Ngày thực tế giao',
         editable: true,
-        renderCell: (params: any) => (params.row.birthDay2 ? dayjs(params.row.birthDay2).format('DD/MM/YYYY') : ''),
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row.dateDelivery ? dayjs(params.row.dateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
 
@@ -467,11 +361,11 @@ const OrderPage = React.memo(() => {
       { field: 'order_edit', headerName: 'Đơn sửa', editable: true, renderEditCell: TextEditCell },
 
       {
-        field: 'order_edit_pull',
+        field: 'dateReceive2',
         headerName: 'Ngày xưởng nhận',
         editable: true,
-        renderCell: (params: any) =>
-          params.row.order_edit_pull ? dayjs(params.row.order_edit_pull).format('DD/MM/YYYY') : '',
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
 
@@ -479,14 +373,16 @@ const OrderPage = React.memo(() => {
         field: 'statusWorking2',
         headerName: 'Trạng thái',
         editable: true,
-        renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusOrder} />
+        renderEditCell: (params: GridRenderEditCellParams) => (
+          <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
+        )
       },
 
       {
         field: 'order_edit_date_push',
         headerName: 'Ngày xưởng giao lại',
         editable: true,
-        renderCell: (params: any) =>
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
@@ -502,7 +398,7 @@ const OrderPage = React.memo(() => {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
-        getActions: (params: GridRenderCellParams<EmployeeType, number>) => [
+        getActions: (params: GridRenderCellParams<OrderType, number>) => [
           <GridActionsCellItem
             icon={<EditOutlinedIcon />}
             label='Edit'
@@ -605,7 +501,7 @@ const OrderPage = React.memo(() => {
   ]
 
   const onCellDoubleClick = (param: GridCellParams) => {
-    if (param.field === 'customer_Progress') {
+    if (param.field === 'historyProductions') {
       handleModalProductionHistory()
     }
   }
@@ -706,32 +602,13 @@ const OrderPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      dataApiOrder?.data?.rows?.map((row: any, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [fakeData])
-
-  React.useEffect(() => {
-    if (!loadingUpload) {
-      const newError = ErrorUpload as {
-        data: {
-          errors: string
-          message: string
-          status: string
-        }
-      }
-      handleMutation(
-        loadingUpload,
-        isErrorUpload,
-        isSuccessUpload,
-        'Tải lên thành công',
-        ErrorUpload ? newError?.data?.message : 'Tải lên không thành công'
-      )
-    }
-  }, [loadingUpload])
+  }, [dataApiOrder])
 
   return (
     <>
@@ -820,14 +697,14 @@ const OrderPage = React.memo(() => {
             pinnedColumns={{ right: ['actions'] }}
           />
         </div>
-        <FormAddEditWorker
+        {/* <FormAddEditWorker
           open={openFormAdd}
           handleClose={handleCloseForm}
           handleSave={() => {
             refetch()
             handleCloseForm()
           }}
-        />
+        /> */}
       </MainCard>
 
       {/* <SelectColumn

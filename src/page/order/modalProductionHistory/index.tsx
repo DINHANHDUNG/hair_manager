@@ -30,7 +30,6 @@ type FormValues = {
   note: string
 }
 
-
 const validationSchema = yup.object({
   note: yup.string().required('Trường này là bắt buộc').max(255, 'Độ dài không được quá 255'),
 
@@ -49,26 +48,26 @@ export default function ModalProductionHistory(Props: Props) {
   const rows: GridRowsProp = rowsData || []
   const rowTotal = 0
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      date: '2025-04-01',
-      note: 'Đang chia hàng'
-    },
-    {
-      id: 2,
-      order: 2,
-      date: '2025-04-02',
-      note: 'Đã gửi lace'
-    },
-    {
-      id: 3,
-      order: 3,
-      date: '2025-04-03',
-      note: 'Đang làm màu'
-    }
-  ]
+  // const fakeData = [
+  //   {
+  //     id: 1,
+  //     order: 1,
+  //     date: '2025-04-01',
+  //     note: 'Đang chia hàng'
+  //   },
+  //   {
+  //     id: 2,
+  //     order: 2,
+  //     date: '2025-04-02',
+  //     note: 'Đã gửi lace'
+  //   },
+  //   {
+  //     id: 3,
+  //     order: 3,
+  //     date: '2025-04-03',
+  //     note: 'Đang làm màu'
+  //   }
+  // ]
 
   const data = [
     {
@@ -170,16 +169,16 @@ export default function ModalProductionHistory(Props: Props) {
     reset()
   }, [open])
 
-  useEffect(() => {
-    // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
-    const updatedRows =
-      fakeData?.map((row, index: number) => ({
-        ...row,
-        order: paginationModel.page * paginationModel.pageSize + index + 1
-      })) || []
+  // useEffect(() => {
+  //   // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+  //   const updatedRows =
+  //     fakeData?.map((row, index: number) => ({
+  //       ...row,
+  //       order: paginationModel.page * paginationModel.pageSize + index + 1
+  //     })) || []
 
-    setRowsData(updatedRows)
-  }, [fakeData])
+  //   setRowsData(updatedRows)
+  // }, [fakeData])
 
   return (
     <CustomDialog title='Lịch sử sản xuất' open={open} onClose={handleClose} maxWidth='lg' fullWidth>

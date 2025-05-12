@@ -26,7 +26,7 @@ const categorys = {
   id: 'category-manager',
   title: 'Danh mục',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE],
+  premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY, PERMISSION.KETOAN, PERMISSION.SALE],
   children: [
     {
       id: 'category-persion',
@@ -35,7 +35,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`,
       icon: icons.IconUser,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN]
+      premissions: [PERMISSION.ADMIN]
     },
     {
       id: 'category-worker',
@@ -44,7 +44,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER}`,
       icon: icons.IconBriefcase,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN]
     },
     {
       id: 'category-customer',

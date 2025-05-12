@@ -1,10 +1,21 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { useEffect } from 'react'
+import { ErrorOption, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { handleMutation } from '../../../app/hooks'
+import { useGetListCustomerQuery } from '../../../app/services/customer'
+import { useAddOrderMutation } from '../../../app/services/order'
+import MyButton from '../../../components/button/MyButton'
+import SubmitButton from '../../../components/button/SubmitButton'
 import MyDatePicker from '../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
+import { InputPropsNumber } from '../../../components/input'
 import MyTextField from '../../../components/input/MyTextField'
-import MyAutocompleteFreeSolo from '../../../components/select/MyAutocompleteFreeSolo'
+import MyAutocomplete from '../../../components/select/MyAutocomplete'
+import { gridSpacingForm } from '../../../constants'
+import { convertDataLabelAutoComplate } from '../../../help'
+import { ErrorType } from '../../../types'
+import { FieldCOrder, FormValuesOrder } from '../../../types/order'
 import ItemOrder from './ItemOrder'
 import { validationSchemaOrder } from './validationSchema'
 interface Props {
@@ -12,43 +23,27 @@ interface Props {
   handleClose: () => void
 }
 
-const selectOptions = [
-  { value: 'Khách hàng 1', label: 'Khách hàng 1', address: 'Yên Phong', phoneNumber: '0333999887' },
-  { value: 'Khách hàng 2', label: 'Khách hàng 2', address: 'Từ Sơn', phoneNumber: '0447999887' },
-  { value: 'Khách hàng 3', label: 'Khách hàng 3', address: 'Hà Nội', phoneNumber: '0986999887' }
-]
-
-const selectOptions2 = [
-  { value: '0333999887', label: '0333999887', address: 'Yên Phong', phoneNumber: '0333999887' },
-  { value: '0447999887', label: '0447999887', address: 'Từ Sơn', phoneNumber: '0447999887' },
-  { value: '0986999887', label: '0986999887', address: 'Hà Nội', phoneNumber: '0986999887' }
-]
-
-const selectOptions3 = [
-  { value: 'Yên Phong', label: 'Yên Phong', address: 'Yên Phong', phoneNumber: '0333999887' },
-  { value: 'Từ Sơn', label: 'Từ Sơn', address: 'Từ Sơn', phoneNumber: '0447999887' },
-  { value: 'Hà Nội', label: 'Hà Nội', address: 'Hà Nội', phoneNumber: '0986999887' }
-]
-
 export default function FormAddNewOrder({ open, handleClose }: Props) {
+  const [addOrder, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
+    useAddOrderMutation()
+  const { data: dataApiCustomer } = useGetListCustomerQuery({ isActive: true })
+  const dataOptionCustomer = convertDataLabelAutoComplate({
+    data: dataApiCustomer?.data?.rows || [],
+    key: 'name',
+    value: 'id'
+  })
   const {
     control,
     handleSubmit,
-    // reset,
     setError,
     setValue,
-    watch,
-    getValues,
     formState: { errors, isSubmitting }
-  } = useForm<any>({
+  } = useForm<FormValuesOrder>({
     resolver: yupResolver(validationSchemaOrder),
     // context: { permAddEditPaymentAcc },
     defaultValues: {
-      itemOrders: [{ name: '', size: '', quantity: '', unit: '', unitPrice: '', money: '' }],
-      invoices: [
-        { content: '', image: '' },
-        { content: '', image: '' }
-      ]
+      products: [{ name: '', size: '', quantity: '', unit: '', price: '', money: '' }]
+      // customerId: ''
     }
   })
 
@@ -58,7 +53,7 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
     remove: removeItemOrders
   } = useFieldArray({
     control,
-    name: 'itemOrders' // Array field name
+    name: 'products' // Array field name
   })
 
   const handleAddItemOrder = () => {
@@ -66,7 +61,7 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
       name: '',
       size: '',
       unit: '',
-      unitPrice: '',
+      price: '',
       money: '',
       quantity: ''
     })
@@ -78,12 +73,38 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
 
   const onSubmit: SubmitHandler<any> = (value) => {
     console.log('Submitted Data: ', value)
+    addOrder(value)
     // Call API or handle save action
     // addCustomer({
     //   ...value
     // })
   }
 
+  useEffect(() => {
+    fieldsItemOrders.forEach((e, idx) => {
+      const qty = Number(e.quantity) || 0
+      const pr = Number(e.price) || 0
+      const total = qty * pr
+      // ép string nếu bạn lưu money dưới dạng string
+      setValue(`products.${idx}.money`, total.toString(), { shouldValidate: true })
+    })
+  }, [fieldsItemOrders, setValue])
+
+  useEffect(() => {
+    if (!loadingAdd && isErrorAdd) {
+      const newError = error as ErrorType<FieldCOrder>
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isErrorAdd,
+      isSuccess: isSuccessAdd,
+      loading: loadingAdd,
+      refetch: () => handleClose()
+    })
+  }, [loadingAdd])
   return (
     <CustomDialog title={'Thêm mới đơn'} open={open} onClose={handleClose} maxWidth='md' fullWidth>
       <form id='form-add-new-customer' onSubmit={handleSubmit(onSubmit)}>
@@ -101,62 +122,46 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6}>
-            <MyAutocompleteFreeSolo
-              title='Tên khách hàng'
-              name='fullName'
+            <MyAutocomplete
+              name={`customerId`}
               control={control}
-              // label='Pick or type a value'
               errors={errors}
-              options={selectOptions} //Object là object[] hoặc string[]
-              // mb={2}
-              textFieldProps={{
-                variant: 'outlined'
-              }}
-              freeSolo
-              onChange={(_, value) => {
-                console.log(value)
-
-                setValue('address', value?.address || '')
-                setValue('phoneNumber', value?.phoneNumber || '')
-              }}
-              placeholder='Nhập tên khách hàng'
+              options={dataOptionCustomer ?? []}
+              title='Khách hàng'
+              placeholder='Chọn khách hàng'
               size='small'
+              fullWidth
               require
+              onChange={(_, v) => {
+                const selectedValue = v as any // Ép kiểu cho giá trị v
+                setValue(`customerId`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
+                // setValue('customerName', selectedValue?.name || '')
+                setValue('customerAddress', selectedValue?.address || '')
+                setValue('customerPhone', selectedValue?.phoneNumber || '')
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6}>
-            <MyAutocompleteFreeSolo
+            <MyTextField
+              name='customerAddress'
+              control={control}
+              errors={errors}
               title='Địa chỉ khách hàng'
-              name='address'
-              control={control}
-              // label='Pick or type a value'
-              errors={errors}
-              options={selectOptions3} //Object là object[] hoặc string[]
-              // mb={2}
-              textFieldProps={{
-                variant: 'outlined'
-              }}
-              freeSolo
-              placeholder='Nhập địa chỉ khách hàng'
+              variant='outlined'
               size='small'
+              placeholder='Nhập địa chỉ'
               require
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6}>
-            <MyAutocompleteFreeSolo
-              title='Số điện thoại khách hàng'
-              name='phoneNumber'
+            <MyTextField
+              name='customerPhone'
               control={control}
-              // label='Pick or type a value'
               errors={errors}
-              options={selectOptions2} //Object là object[] hoặc string[]
-              // mb={2}
-              textFieldProps={{
-                variant: 'outlined'
-              }}
-              freeSolo
-              placeholder='Nhập số điện thoại khách hàng'
+              title='Số điện thoại khách hàng'
+              variant='outlined'
               size='small'
+              placeholder='Nhập số điện thoại'
               require
             />
           </Grid>
@@ -170,6 +175,7 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
               size='small'
               placeholder='Nhập tiền discount'
               require
+              InputProps={InputPropsNumber(true)}
             />
           </Grid>
           <ItemOrder
@@ -178,7 +184,18 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
             handleDeleteItemOrder={handleDeleteItemOrder}
             handleAddItemOrder={handleAddItemOrder}
             fieldsItemOrders={fieldsItemOrders}
+            setValue={setValue}
           />
+        </Grid>
+        <Grid container spacing={gridSpacingForm}>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
+            <MyButton variant='outlined' sx={{ float: 'right', ml: 1 }} onClick={handleClose}>
+              HỦY
+            </MyButton>
+            <SubmitButton variant='outlined' sx={{ float: 'right' }} loading={isSubmitting}>
+              LƯU
+            </SubmitButton>
+          </Grid>
         </Grid>
       </form>
     </CustomDialog>
