@@ -1,13 +1,13 @@
-import { Button, Card, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Button, Grid, Stack, Typography } from '@mui/material'
 import { RiAddLine, RiDeleteBin7Line } from '@remixicon/react'
+import { Control, FieldArrayWithId, FieldErrors, UseFormSetValue } from 'react-hook-form'
 import { COLORS } from '../../../common/colors'
 import MyTextField from '../../../components/input/MyTextField'
-import { Control, FieldArrayWithId, FieldErrors, UseFormSetValue, useWatch } from 'react-hook-form'
 // import MyRadio from '../../../components/radio'
 // import { useGetListCurrencyQuery } from '../../../app/services/currency'
+import { OPTIONS_UNIT } from '../../../common/contants'
+import MyAutocomplete from '../../../components/select/MyAutocomplete'
 import { FormValuesOrder } from '../../../types/order'
-import MyAutocompleteFreeSolo from '../../../components/select/MyAutocompleteFreeSolo'
-import { useEffect } from 'react'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
@@ -18,13 +18,6 @@ interface Props {
   handleDeleteItemOrder: (index: number) => void
   setValue: UseFormSetValue<FormValuesOrder>
 } /* eslint-enable @typescript-eslint/no-explicit-any */
-
-const selectOptions = [
-  { value: 'wig', label: 'wig' },
-  { value: 'bundles', label: 'bundles' },
-  { value: 'pieces', label: 'pieces' },
-  { value: 'kg', label: 'kg' }
-]
 
 export default function ItemOrder(props: Props) {
   // const permEdit = useHasPermission(Perm_Customer_PaymentAccount_Edit || [])
@@ -118,28 +111,21 @@ export default function ItemOrder(props: Props) {
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4} lg={4}>
-                  <MyAutocompleteFreeSolo
+                  <MyAutocomplete
                     title='Đơn vị'
                     name={`products.${index}.unit`}
                     control={control}
-                    // label='Pick or type a value'
                     errors={errors}
-                    options={selectOptions} //Object là object[] hoặc string[]
-                    // mb={2}
-                    textFieldProps={{
-                      variant: 'outlined'
-                    }}
-                    freeSolo
-                    placeholder='Nhập đơn vị'
+                    options={OPTIONS_UNIT ?? []}
+                    placeholder='Chọn đơn vị'
                     size='small'
+                    fullWidth
                     require
-                    onChange={(_, value) => {
-                      console.log(value)
-
-                      // setValue('address', value?.address || '')
-                      // setValue('phoneNumber', value?.phoneNumber || '')
-                    }}
                     messageErrors={errors?.products?.[index]?.unit?.message}
+                    onChange={(_, v) => {
+                      const selectedValue = v as any // Ép kiểu cho giá trị v
+                      setValue(`products.${index}.unit`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12} md={4} lg={4}>

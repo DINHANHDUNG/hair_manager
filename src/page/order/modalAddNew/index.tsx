@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Grid } from '@mui/material'
 import { useEffect } from 'react'
-import { ErrorOption, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { ErrorOption, SubmitHandler, useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { handleMutation } from '../../../app/hooks'
 import { useGetListCustomerQuery } from '../../../app/services/customer'
 import { useAddOrderMutation } from '../../../app/services/order'
@@ -18,6 +18,8 @@ import { ErrorType } from '../../../types'
 import { FieldCOrder, FormValuesOrder } from '../../../types/order'
 import ItemOrder from './ItemOrder'
 import { validationSchemaOrder } from './validationSchema'
+import moment from 'moment'
+import Toast from '../../../components/toast'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -71,44 +73,91 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
     removeItemOrders(index)
   }
 
-  const onSubmit: SubmitHandler<any> = (value) => {
+  const onSubmit: SubmitHandler<FormValuesOrder> = (value) => {
     console.log('Submitted Data: ', value)
-    addOrder(value)
+    const date = moment(value.dateOrder).startOf('day')
+    const isoDateStr = date?.toISOString()
+    const convertValue = {
+      ...value,
+      dateOrder: isoDateStr,
+      discount: value.discount ? Number(value.discount) : 0,
+      customerId: value.customerId ? Number(value.customerId) : 0,
+      products: products?.map((e) => ({
+        name: e.name,
+        size: e.size,
+        quantity: e.price ? Number(e.quantity) : 0,
+        unit: e.unit,
+        price: e.price ? Number(e.price) : 0
+      }))
+    }
+    addOrder(convertValue)
     // Call API or handle save action
     // addCustomer({
     //   ...value
     // })
   }
 
-  useEffect(() => {
-    fieldsItemOrders.forEach((e, idx) => {
-      const qty = Number(e.quantity) || 0
-      const pr = Number(e.price) || 0
-      const total = qty * pr
-      // ép string nếu bạn lưu money dưới dạng string
-      setValue(`products.${idx}.money`, total.toString(), { shouldValidate: true })
-    })
-  }, [fieldsItemOrders, setValue])
+  const products = useWatch({
+    control,
+    name: 'products'
+  })
 
   useEffect(() => {
-    if (!loadingAdd && isErrorAdd) {
-      const newError = error as ErrorType<FieldCOrder>
-      newError &&
-        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    if (products && Array.isArray(products)) {
+      products.forEach((e, idx) => {
+        const qty = Number(e.quantity) || 0
+        const pr = Number(e.price) || 0
+        const total = qty * pr
+        const currentMoney = Number(e.money)
+
+        // Chỉ setValue khi giá trị thay đổi
+        if (currentMoney !== total) {
+          setValue(`products.${idx}.money`, total.toString(), { shouldValidate: true })
+        }
+      })
     }
-    handleMutation({
-      successMessage: 'Thao tác thành công',
-      errorMessage: 'Thao tác không thành công',
-      isError: isErrorAdd,
-      isSuccess: isSuccessAdd,
-      loading: loadingAdd,
-      refetch: () => handleClose()
-    })
+  }, [products, setValue])
+
+  useEffect(() => {
+    if (!loadingAdd) {
+      const newError = error as ErrorType<FieldCOrder>
+      if (newError && newError?.data?.keyError) {
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+        return
+      }
+      if (newError && !newError?.data?.keyError) {
+        Toast({
+          text: newError?.data?.message,
+          variant: 'error'
+        })
+        return
+      }
+      handleMutation({
+        successMessage: 'Thao tác thành công',
+        errorMessage: newError && !newError?.data?.keyError ? newError?.data?.message : '',
+        isError: isErrorAdd,
+        isSuccess: isSuccessAdd,
+        loading: loadingAdd,
+        refetch: () => handleClose()
+      })
+    }
   }, [loadingAdd])
   return (
     <CustomDialog title={'Thêm mới đơn'} open={open} onClose={handleClose} maxWidth='md' fullWidth>
       <form id='form-add-new-customer' onSubmit={handleSubmit(onSubmit)}>
         <Grid container direction={'row'} sx={{ mb: 2 }} spacing={1.5}>
+          <Grid item xs={12} sm={12} md={6} lg={6}>
+            <MyTextField
+              name='code'
+              control={control}
+              errors={errors}
+              title='Mã đơn'
+              variant='outlined'
+              size='small'
+              placeholder='Nhập mã đơn'
+              require
+            />
+          </Grid>
           <Grid item xs={12} sm={12} md={6} lg={6}>
             <MyDatePicker
               name='dateOrder'
@@ -165,7 +214,7 @@ export default function FormAddNewOrder({ open, handleClose }: Props) {
               require
             />
           </Grid>
-          <Grid item xs={12} sm={12} md={12} lg={12}>
+          <Grid item xs={12} sm={12} md={6} lg={6}>
             <MyTextField
               name='discount'
               control={control}

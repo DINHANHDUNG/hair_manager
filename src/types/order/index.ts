@@ -23,11 +23,38 @@ export interface OrderType {
   customer: CustomerType
   accountSale: AccountType
   products: Array<ProductType>
-  historyProductions: []
+  historyProductions: Array<HistoryProductionType>
   //dự kiến chưa có đặt tạm
   order_edit_date_push: string
 }
 
+export interface HistoryProductionType {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  date: string
+  status: string
+  orderId: number
+  invoiceRepairId: number
+  order: OrderType
+  invoiceRepair: InvoiceRepairType
+}
+export interface InvoiceRepairType {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  reasonRepair: string
+  dateRepair: string
+  dateReceive: string
+  dateEstimateDelivery: string
+  dateDelivery: string
+  noteRepair: string
+  statusOrder: 0
+  historyProductions: Array<HistoryProductionType>
+  contentInvoiceRepairs: string
+}
 export interface ProductType {
   id: number
   createdAt: string
@@ -52,6 +79,7 @@ export interface ProductType {
 //   isActive: boolean
 // }
 export interface FormValuesOrder {
+  code: string
   dateOrder: string
   customerId: string
   customerPhone: string

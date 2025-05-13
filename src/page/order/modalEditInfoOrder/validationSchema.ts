@@ -18,12 +18,13 @@ export const validationSchemaOrder = yup.object({
     .max(255, `Độ dài không được quá 255`)
     .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
   customerId: requiredString(),
+  code: requiredString(),
   customerAddress: requiredString(),
   customerPhone: yup
     .string()
     .required(`Trường này là bắt buộc`)
     .transform((value, originalValue) => (originalValue === '' ? undefined : value))
-    .matches(VALIDATE.phoneRegex, 'Số điện thoại không đúng định dạng'),
+    .matches(VALIDATE.phoneRelaxed, 'Số điện thoại không đúng định dạng'),
   discount: requiredString(),
 
   products: yup.array().of(itemOrderSchema)

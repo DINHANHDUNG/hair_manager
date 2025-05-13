@@ -42,7 +42,7 @@ import TableDataGrid from '../../components/table-data-grid/TableComponentDataGr
 import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import { gridSpacing } from '../../constants'
+import { gridSpacing, PERMISSION } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
 import { OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
@@ -51,7 +51,8 @@ import FormAddNewOrder from './modalAddNew'
 import FormEditInfoOrder from './modalEditInfoOrder'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
-import { checkBg, checkColor, OPTIONS_STATUS_ORDER } from '../../common/contants'
+import { checkBg, checkColor, OPTIONS_STATUS_HISTORY_PROD, OPTIONS_STATUS_ORDER } from '../../common/contants'
+import { useHasPermission } from '../../app/hooks'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -78,19 +79,24 @@ const statusSX = [
 ]
 
 const OrderPage = React.memo(() => {
+  const permAdd = useHasPermission([PERMISSION.SALE])
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
-  const initialKey = searchParams.get('key') || 'code'
+  // const initialKey = searchParams.get('key') || 'code'
   const initialCode = searchParams.get('code') || ''
 
-  const initialStartDate = searchParams.get('dateFrom') || ''
-  const initialEndDate = searchParams.get('dateTo') || ''
-  const initialPhone = searchParams.get('phoneNumber') || ''
-  const initialName = searchParams.get('name') || ''
+  const initialStartDate = searchParams.get('dateReceiveFrom') || ''
+  const initialEndDate = searchParams.get('dateReceiveTo') || ''
+
+  const initialStartDateDelivery = searchParams.get('dateDeliveryFrom') || ''
+  const initialEndDateDelivery = searchParams.get('dateDeliveryTo') || ''
+
+  const initialStatusOrder = searchParams.get('statusOrder') || ''
+  const initialName = searchParams.get('customerName') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -99,12 +105,14 @@ const OrderPage = React.memo(() => {
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey,
-    key: initialKey,
+    // key: initialKey,
     code: initialCode,
-    dateFrom: initialStartDate,
-    dateTo: initialEndDate,
-    phoneNumber: initialPhone,
-    name: initialName
+    dateReceiveFrom: initialStartDate,
+    dateReceiveTo: initialEndDate,
+    dateDeliveryFrom: initialStartDateDelivery,
+    dateDeliveryTo: initialEndDateDelivery,
+    statusOrder: initialStatusOrder,
+    customerName: initialName
   })
   // const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<OrderType[]>()
@@ -125,7 +133,7 @@ const OrderPage = React.memo(() => {
   const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
 
   const [deleteOrder, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteOrderMutation()
-  
+
   const {
     data: dataApiOrder,
     isLoading,
@@ -135,8 +143,10 @@ const OrderPage = React.memo(() => {
       page: paginationModel.page + 1,
       limit: paginationModel.pageSize,
       ...filters,
-      dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
-      dateTo: filters.dateTo ? convertDateToApi(filters.dateTo) : ''
+      dateReceiveFrom: filters.dateReceiveFrom ? convertDateToApi(filters.dateReceiveFrom) : '',
+      dateReceiveTo: filters.dateReceiveTo ? convertDateToApi(filters.dateReceiveTo) : '',
+      dateDeliveryFrom: filters.dateDeliveryFrom ? convertDateToApi(filters.dateDeliveryFrom) : '',
+      dateDeliveryTo: filters.dateDeliveryTo ? convertDateToApi(filters.dateDeliveryTo) : ''
     })
   )
   // const [
@@ -297,9 +307,25 @@ const OrderPage = React.memo(() => {
 
       {
         field: 'historyProductions',
-        headerName: 'Lịch sử sản xuất'
-        // editable: true,
-        // renderEditCell: (params: GridRenderEditCellParams) => <AutocompleteEditCell {...params} options={statusSX} />
+        headerName: 'Lịch sử sản xuất',
+        renderCell: (params: GridRenderCellParams) => {
+          const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+          const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
+          if (!checkStatus) return null
+
+          return (
+            <Chip
+              label={checkStatus.label}
+              sx={{
+                backgroundColor: checkBg(checkStatus.value),
+                color: checkColor(checkStatus.value),
+                fontWeight: 500
+              }}
+              size='small'
+              // variant='outlined'
+            />
+          )
+        }
       },
 
       {
@@ -407,7 +433,7 @@ const OrderPage = React.memo(() => {
             onClick={handleModalEditInfoOrder}
           />,
           <GridActionsCellItem
-            icon={<VisibilityOutlinedIcon />}
+            icon={<VisibilityOutlinedIcon />} //Dùng cho xem invoid mở file PDF
             label='Edit'
             className='textPrimary'
             color='inherit'
@@ -512,15 +538,22 @@ const OrderPage = React.memo(() => {
   )
 
   const listRenderFilter = [
-    { key: 'name', label: initialName || '' },
+    { key: 'customerName', label: initialName || '' },
     {
-      key: 'date',
+      key: 'dateReceive',
       label:
         initialStartDate && initialEndDate
           ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
           : ''
     },
-    { key: 'phoneNumber', label: initialPhone || '' },
+    {
+      key: 'dateDelivery',
+      label:
+        initialStartDateDelivery && initialEndDateDelivery
+          ? `${moment(initialStartDateDelivery).format('DD/MM/YYYY')} ~ ${moment(initialEndDateDelivery).format('DD/MM/YYYY')}`
+          : ''
+    },
+    { key: 'statusOrder', label: initialStatusOrder || '' },
     {
       key: 'code',
       label: initialCode || ''
@@ -529,11 +562,19 @@ const OrderPage = React.memo(() => {
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
     const handleClose = () => {
-      if (key === 'date') {
+      if (key === 'dateReceive') {
         setFilters((prevFilters) => ({
           ...prevFilters,
-          ['dateTo']: '',
-          ['dateFrom']: ''
+          ['dateReceiveTo']: '',
+          ['dateReceiveFrom']: ''
+        }))
+        return
+      }
+      if (key === 'dateDelivery') {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          ['dateDeliveryTo']: '',
+          ['dateDeliveryFrom']: ''
         }))
         return
       }
@@ -659,9 +700,11 @@ const OrderPage = React.memo(() => {
                   Tải file mẫu
                 </MyButton>
               </Link> */}
-              <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
-                Thêm mới
-              </Button>
+              {permAdd && (
+                <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
+                  Thêm mới
+                </Button>
+              )}
             </div>
           </Grid>
         </Grid>
@@ -729,10 +772,12 @@ const OrderPage = React.memo(() => {
         handleComfirm={(value: any) => {
           setFilters((prevFilters) => ({
             ...prevFilters,
-            ['name']: value.name,
-            ['phoneNumber']: value.phoneNumber,
-            ['dateFrom']: value.date?.[0],
-            ['dateTo']: value.date?.[1],
+            ['customerName']: value.customerName,
+            ['statusOrder']: value.statusOrder,
+            ['dateReceiveFrom']: value.dateReceive?.[0],
+            ['dateReceiveTo']: value.dateReceive?.[1],
+            ['dateDeliveryFrom']: value.dateDelivery?.[0],
+            ['dateDeliveryTo']: value.dateDelivery?.[1],
             ['code']: value.code
           }))
           setOpenFilterAdvanced(false)

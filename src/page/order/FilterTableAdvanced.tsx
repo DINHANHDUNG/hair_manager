@@ -17,41 +17,38 @@ interface Props {
 
 // Define the types for the state
 export interface StateFilterTableAdvanced {
-  phoneNumber: string
+  statusOrder: string
   code: string
-  name: string
-  date: DateRange<Dayjs> | undefined
+  customerName: string
+  dateReceive: DateRange<Dayjs> | undefined
+  dateDelivery: DateRange<Dayjs> | undefined
 }
 
-export default function FilterTableAdvanced({
-  open,
-  anchorRef,
-  handleClose,
-  handleComfirm,
-  value
-}: Props) {
+export default function FilterTableAdvanced({ open, anchorRef, handleClose, handleComfirm, value }: Props) {
   const today = dayjs()
 
   const [state, setState] = useState<StateFilterTableAdvanced>({
-    // company: '',
-    // status: '',
-    // age: [0, 100],
-    date: [today.startOf('month'), today.endOf('month')],
+    dateReceive: [null, null],
+    dateDelivery: [null, null],
     code: '',
-    name: '',
-    phoneNumber: ''
+    customerName: '',
+    statusOrder: ''
   })
 
   useEffect(() => {
     if (open && value) {
       setState({
         code: value?.code || '',
-        name: value?.name || '',
-        phoneNumber: value?.phoneNumber,
-        date:
-          value.dateFrom && value.dateTo
-            ? [dayjs(value.dateFrom), dayjs(value.dateTo)]
-            : [today.startOf('month'), today.endOf('month')]
+        customerName: value?.customerName || '',
+        statusOrder: value?.statusOrder,
+        dateReceive:
+          value.dateReceiveFrom && value.dateReceiveTo
+            ? [dayjs(value.dateReceiveFrom), dayjs(value.dateReceiveTo)]
+            : [null, null],
+        dateDelivery:
+          value.dateDeliveryFrom && value.dateDeliveryTo
+            ? [dayjs(value.dateDeliveryFrom), dayjs(value.dateDeliveryTo)]
+            : [null, null]
       })
     }
   }, [open, value])
@@ -66,32 +63,56 @@ export default function FilterTableAdvanced({
   const handleDateRangeChange = (newValue: DateRange<Dayjs> | undefined) => {
     setState((prevState) => ({
       ...prevState,
-      date: newValue
+      dateReceive: newValue
+    }))
+  }
+
+  const handleDateRangeDeliveryChange = (newValue: DateRange<Dayjs> | undefined) => {
+    setState((prevState) => ({
+      ...prevState,
+      dateDelivery: newValue
     }))
   }
 
   return (
     <PopperComponent clickAway open={open} anchorRef={anchorRef} handleClose={handleClose}>
       <Box sx={{ p: 2, pb: 0 }}>
-        <InputLabel htmlFor={`input-DateRangePickerShortCut`}>{`Từ ngày đến ngày`}</InputLabel>
-        <DateRangePickerShortCut value={state.date} setValue={handleDateRangeChange} variant='outlined' />
+        <InputLabel htmlFor={`input-DateRangePickerShortCut`}>{`Từ ngày đến ngày (Ngày nhận)`}</InputLabel>
+        <DateRangePickerShortCut value={state.dateReceive} setValue={handleDateRangeChange} variant='outlined' />
+      </Box>
+      <Box sx={{ p: 2, pb: 0 }}>
+        <InputLabel htmlFor={`input-DateRangePickerShortCut`}>{`Từ ngày đến ngày (Ngày giao)`}</InputLabel>
+        <DateRangePickerShortCut value={state.dateDelivery} setValue={handleDateRangeDeliveryChange} variant='outlined' />
       </Box>
 
       <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Mã đơn`}</InputLabel>
-        <TextField fullWidth value={state.code} placeholder={'Nhập mã đơn hàng'} onChange={(e) => handleChangeState(e.target.value, 'code')} />
-
+        <TextField
+          fullWidth
+          value={state.code}
+          placeholder={'Nhập mã đơn hàng'}
+          onChange={(e) => handleChangeState(e.target.value, 'code')}
+        />
       </Box>
 
       <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Tên khách hàng`}</InputLabel>
-        <TextField fullWidth value={state.name} placeholder={'Nhập tên khách hàng'} onChange={(e) => handleChangeState(e.target.value, 'name')} />
+        <TextField
+          fullWidth
+          value={state.customerName}
+          placeholder={'Nhập tên khách hàng'}
+          onChange={(e) => handleChangeState(e.target.value, 'customerName')}
+        />
       </Box>
 
       <Box sx={{ p: 2, pb: 2 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>{`Số điện thoại`}</InputLabel>
-        <TextField fullWidth value={state.phoneNumber}  placeholder={'Nhập số điện thoại'} onChange={(e) => handleChangeState(e.target.value, 'phoneNumber')} />
-        
+        <TextField
+          fullWidth
+          value={state.statusOrder}
+          placeholder={'Nhập số điện thoại'}
+          onChange={(e) => handleChangeState(e.target.value, 'statusOrder')}
+        />
       </Box>
 
       <Box sx={{ p: 2, pb: 2 }}>
@@ -111,10 +132,11 @@ export default function FilterTableAdvanced({
           onClick={() =>
             handleComfirm &&
             handleComfirm({
-              name: '',
-              phoneNumber: '',
+              customerName: '',
+              statusOrder: '',
               code: '',
-              date: [null, null]
+              dateReceive: [null, null],
+              dateDelivery: [null, null]
             })
           }
         >

@@ -1,6 +1,7 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import type { RootState, AppDispatch } from './store'
 import Toast from '../components/toast'
+import { authStore } from './selectedStore'
 
 export function isEmpty(obj: any) {
   for (const prop in obj) {
@@ -50,3 +51,14 @@ export const convertDataLabel = ({ data, key, value }: { data: any; key: string;
   return newData || []
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+export const useHasPermission = (...permissionGroups: string[][]): boolean => {
+  // Lấy role từ store
+  const role = useAppSelector(authStore).user.role || ''
+
+  // Nối tất cả các mảng quyền thành 1 mảng duy nhất
+  const allowedPermissions = permissionGroups.flat()
+
+  // Kiểm tra xem có ít nhất 1 quyền trong roles trùng với các quyền cho phép hay không
+  return allowedPermissions.includes(role)
+}
