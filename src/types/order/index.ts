@@ -79,12 +79,12 @@ export interface ProductType {
 //   isActive: boolean
 // }
 export interface FormValuesOrder {
-  code: string
-  dateOrder: string
-  customerId: string
-  customerPhone: string
-  customerAddress: string
-  discount: string
+  code?: string
+  dateOrder?: string
+  customerId?: string
+  customerPhone?: string
+  customerAddress?: string
+  discount?: string
 
   products?: Array<{
     name: string
@@ -100,7 +100,24 @@ export interface FormValuesOrder {
   // }>
 }
 
+export interface FormValuesOrderUpdate {
+  products?: Array<{
+    name: string
+    size: string
+    quantity: string
+    unit: string
+    price: string
+    money: string
+  }>
+  // invoices?: Array<{
+  //   content?: string
+  //   image?: string
+  // }>
+}
+
 export type FieldCOrder = 'customerId' | 'customerPhone' | 'customerAddress' | 'dateOrder' | 'discount'
+
+export type FieldCOrderHistory = 'date' | 'status'
 
 export type DataErrorCustomer = {
   errors: string

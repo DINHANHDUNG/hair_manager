@@ -28,31 +28,32 @@ import dayjs from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { handleMutation, useHasPermission } from '../../app/hooks'
+import { useGetListCustomerQuery } from '../../app/services/customer'
 import {
-  useAddOrderMutation,
   useDeleteOrderMutation,
-  useGetListOrderQuery
+  useGetListOrderQuery,
+  useUpdateOrderMutation
   // useUploadFileOrderMutation
 } from '../../app/services/order'
 import { useGetStaticOrderDetailQuery } from '../../app/services/statistic'
+import { checkBg, checkColor, OPTIONS_STATUS_HISTORY_PROD, OPTIONS_STATUS_ORDER } from '../../common/contants'
+import { VALIDATE } from '../../common/validate'
 import { CardContentBoxSection } from '../../components/cardContentBoxSection'
 import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
 import { DateEditCell } from '../../components/table-data-grid/cellDate'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import { TextEditCell } from '../../components/table-data-grid/textEditCell'
-import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import { gridSpacing, PERMISSION } from '../../constants'
-import { convertDateToApi, removeNullOrEmpty } from '../../help'
-import { OrderType } from '../../types/order'
+import { gridSpacing } from '../../constants'
+import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
+import { Perm_Order_Add, Perm_Order_Edit } from '../../help/permission'
+import { ErrorType } from '../../types'
+import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
-import FormAddEditWorker from './FormAddEditWorker'
 import FormAddNewOrder from './modalAddNew'
-import FormEditInfoOrder from './modalEditInfoOrder'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
-import { checkBg, checkColor, OPTIONS_STATUS_HISTORY_PROD, OPTIONS_STATUS_ORDER } from '../../common/contants'
-import { useHasPermission } from '../../app/hooks'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -64,22 +65,9 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
   }
 }))
 
-const customerOptions = [
-  { label: 'Khách A', value: 'a' },
-  { label: 'Khách B', value: 'b' },
-  { label: 'Khách C', value: 'c' }
-]
-
-const statusSX = [
-  { value: 'Đang chia hàng', label: 'Đang chia hàng' },
-  { value: 'Đã gửi lace', label: 'Đã gửi lace' },
-  { value: 'Đang làm màu', label: 'Đang làm màu' },
-  { value: 'Đang tẩy màu', label: 'Đang tẩy màu' },
-  { value: 'Đang xử lý mềm mượt', label: 'Đang xử lý mềm mượt' }
-]
-
 const OrderPage = React.memo(() => {
-  const permAdd = useHasPermission([PERMISSION.SALE])
+  const permAdd = useHasPermission(Perm_Order_Add)
+  const permEdit = useHasPermission(Perm_Order_Edit)
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -116,12 +104,12 @@ const OrderPage = React.memo(() => {
   })
   // const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<OrderType[]>()
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<OrderType>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [openStatistics, setOpenStatistics] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
   const [modalAddOrder, setModalAddOrder] = React.useState(false)
-  const [modalEditInfoOrder, setModalEditInfoOrder] = React.useState(false)
   const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
 
   const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticOrderDetailQuery({})
@@ -132,12 +120,22 @@ const OrderPage = React.memo(() => {
   const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
   const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
 
+  const { data: dataApiCustomer } = useGetListCustomerQuery({ isActive: true })
+  const dataOptionCustomer = convertDataLabelAutoComplate({
+    data: dataApiCustomer?.data?.rows || [],
+    key: 'name',
+    value: 'id'
+  })
+  const [
+    updateOrder,
+    { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error: errorUpdate }
+  ] = useUpdateOrderMutation()
   const [deleteOrder, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteOrderMutation()
 
   const {
     data: dataApiOrder,
-    isLoading,
-    refetch
+    isLoading
+    // refetch
   } = useGetListOrderQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
@@ -167,14 +165,16 @@ const OrderPage = React.memo(() => {
   }
 
   const handleModalAddOrder = () => {
+    if (!modalAddOrder === false) setItemSelectedEidt({} as OrderType)
     setModalAddOrder(!modalAddOrder)
   }
 
   const handleModalEditInfoOrder = () => {
-    setModalEditInfoOrder(!modalEditInfoOrder)
+    setModalAddOrder(!modalAddOrder)
   }
 
   const handleModalProductionHistory = () => {
+    if (!modalProductionHistory === false) setItemSelectedEidt({} as OrderType)
     setModalProductionHistory(!modalProductionHistory)
   }
 
@@ -256,11 +256,28 @@ const OrderPage = React.memo(() => {
     handleClickDetail()
   }
 
-  const processRowUpdate = React.useCallback((newRow: any, oldRow: any) => {
+  const getChangedFields = (newRow: any, oldRow: any) => {
+    return Object.keys(newRow).find((key) => newRow[key] !== oldRow[key])
+  }
+
+  const processRowUpdate = React.useCallback((newRow: any, oldRow: any, params: any) => {
+    console.log('params', params)
+
     // So sánh hoặc xử lý dữ liệu tại đây
     if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
       // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
       console.log('Updated row:', newRow)
+      const changedFields = getChangedFields(newRow, oldRow)
+      const payload = { ...newRow }
+
+      if (changedFields?.includes('customerId')) {
+        payload.customerId = newRow.customerId ? Number(newRow.customerId) : null
+      }
+      if (changedFields?.includes('discount')) {
+        payload.discount = newRow.discount ? Number(newRow.discount) : null
+      }
+
+      updateOrder(payload)
     }
 
     return newRow // Quan trọng: phải return lại row đã cập nhật
@@ -273,15 +290,15 @@ const OrderPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'code', headerName: 'Mã đơn hàng', editable: true },
-
+      { field: 'code', headerName: 'Mã đơn hàng', editable: true, renderEditCell: TextEditCell },
       {
-        field: 'customerName',
+        field: 'customerId',
         headerName: 'Khách hàng',
         editable: true,
         renderEditCell: (params: GridRenderEditCellParams) => (
-          <AutocompleteEditCell {...params} options={customerOptions} />
-        )
+          <AutocompleteEditCell {...params} options={dataOptionCustomer} />
+        ),
+        renderCell: (params: GridRenderCellParams<OrderType, number>) => params.row?.customer?.name || ''
       },
 
       {
@@ -289,7 +306,7 @@ const OrderPage = React.memo(() => {
         headerName: 'Số điện thoại',
         editable: true,
         preProcessEditCellProps: (params: GridRenderEditCellParams) => {
-          const isValidPhone = /^0\d{9}$/.test(params.props.value) // ví dụ: bắt đầu bằng 0 và 10 số
+          const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
           return {
             ...params.props,
             error: !isValidPhone
@@ -308,6 +325,8 @@ const OrderPage = React.memo(() => {
       {
         field: 'historyProductions',
         headerName: 'Lịch sử sản xuất',
+        // renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+        //   params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
         renderCell: (params: GridRenderCellParams) => {
           const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
           const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
@@ -425,16 +444,23 @@ const OrderPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         getActions: (params: GridRenderCellParams<OrderType, number>) => [
-          <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
-            label='Edit'
-            className='textPrimary'
-            color='inherit'
-            onClick={handleModalEditInfoOrder}
-          />,
+          permEdit ? (
+            <GridActionsCellItem
+              icon={<EditOutlinedIcon />}
+              label='Edit'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => {
+                setItemSelectedEidt(params.row)
+                handleModalEditInfoOrder()
+              }}
+            />
+          ) : (
+            <></>
+          ),
           <GridActionsCellItem
             icon={<VisibilityOutlinedIcon />} //Dùng cho xem invoid mở file PDF
-            label='Edit'
+            label='Eye'
             className='textPrimary'
             color='inherit'
             // onClick={handleModalEditInfoOrder}
@@ -527,7 +553,8 @@ const OrderPage = React.memo(() => {
   ]
 
   const onCellDoubleClick = (param: GridCellParams) => {
-    if (param.field === 'historyProductions') {
+    if (param.field === 'historyProductions' && permEdit) {
+      setItemSelectedEidt(param.row)
       handleModalProductionHistory()
     }
   }
@@ -553,7 +580,10 @@ const OrderPage = React.memo(() => {
           ? `${moment(initialStartDateDelivery).format('DD/MM/YYYY')} ~ ${moment(initialEndDateDelivery).format('DD/MM/YYYY')}`
           : ''
     },
-    { key: 'statusOrder', label: initialStatusOrder || '' },
+    {
+      key: 'statusOrder',
+      label: initialStatusOrder ? OPTIONS_STATUS_ORDER.find((e) => e.value === initialStatusOrder)?.label : ''
+    },
     {
       key: 'code',
       label: initialCode || ''
@@ -597,23 +627,6 @@ const OrderPage = React.memo(() => {
     )
   }
 
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      if (isSuccess) {
-        Toast({ text: successMessage, variant: 'success' })
-        refetch()
-        refetchStatic()
-      }
-    }
-  }
-
   React.useEffect(() => {
     // Tạo một object params rỗng
     const params: { [key: string]: string } = {}
@@ -637,13 +650,35 @@ const OrderPage = React.memo(() => {
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
-    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isError,
+      isSuccess: isSuccess,
+      loading: loadingDelete,
+      refetch: () => refetchStatic()
+    })
   }, [loadingDelete])
+
+  React.useEffect(() => {
+    if (!loadingUpdate) {
+      const newError = errorUpdate as ErrorType<FieldCOrder>
+
+      handleMutation({
+        successMessage: 'Thao tác thành công',
+        errorMessage: newError && !newError?.data?.keyError ? newError?.data?.message : '',
+        isError: isErrorUpdate,
+        isSuccess: isSuccessUpdate,
+        loading: loadingUpdate,
+        refetch: () => refetchStatic()
+      })
+    }
+  }, [loadingUpdate])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiOrder?.data?.rows?.map((row: any, index: number) => ({
+      dataApiOrder?.data?.rows?.map((row: OrderType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
@@ -710,7 +745,7 @@ const OrderPage = React.memo(() => {
         </Grid>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={12} display={'flex'} flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'}>
-            {listRenderFilter.map((val) => RenderFilter({ label: val.label, key: val.key }))}
+            {listRenderFilter.map((val) => RenderFilter({ label: val?.label || '', key: val?.key }))}
           </Grid>
         </Grid>
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
@@ -763,9 +798,12 @@ const OrderPage = React.memo(() => {
       /> */}
 
       <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
-      <FormAddNewOrder handleClose={handleModalAddOrder} open={modalAddOrder} />
-      <FormEditInfoOrder handleClose={handleModalEditInfoOrder} open={modalEditInfoOrder} />
-      <ModalProductionHistory handleClose={handleModalProductionHistory} open={modalProductionHistory} />
+      <FormAddNewOrder itemSelectedEdit={itemSelectedEdit} handleClose={handleModalAddOrder} open={modalAddOrder} />
+      <ModalProductionHistory
+        itemSelectedEdit={itemSelectedEdit}
+        handleClose={handleModalProductionHistory}
+        open={modalProductionHistory}
+      />
 
       <FilterTableAdvanced
         /* eslint-disable @typescript-eslint/no-explicit-any */

@@ -8,6 +8,7 @@ export const DateEditCell = (params: GridRenderEditCellParams) => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <DatePicker
       value={params.value ? dayjs(params.value) : null}
+      format={'DD/MM/YYYY'}
       onChange={(newValue) =>
         params.api.setEditCellValue({
           id: params.id,

@@ -7,7 +7,7 @@ import { axiosBaseQuery } from '../../baseQuery'
 export const orderApi = createApi({
   reducerPath: 'orderApi',
   baseQuery: axiosBaseQuery,
-  tagTypes: ['Order', 'DetailOrder'], // Đảm bảo tagType là 'Order'
+  tagTypes: ['Order', 'DetailOrder', 'History'], // Đảm bảo tagType là 'Order'
   endpoints: (builder) => ({
     getListOrder: builder.query({
       query: (params) => ({
@@ -48,6 +48,56 @@ export const orderApi = createApi({
         // invalidatesTags: [{ type: 'Order', id: 'LIST' }] // Vô hiệu hóa tag 'Order' với id 'LIST' để gọi lại getListOrder
       }),
       invalidatesTags: [{ type: 'Order', id: 'LIST' }]
+    }),
+    //Lịch sử sản xuất
+    getListOrderHistory: builder.query({
+      query: (params) => ({
+        url: NetWork.orderHistoryList(params.orderId),
+        method: GET
+        // params: params
+      }),
+      providesTags: (result) => (result ? [{ type: 'History', id: 'LIST' }] : [])
+    }),
+    // getOrderHistoryById: builder.query({
+    //   query: (params: { orderId: number }) => ({
+    //     url: NetWork.orderId(params.orderId),
+    //     method: GET
+    //   }),
+    //   providesTags: (result) => (result ? [{ type: 'DetailOrder', id: 'DETAIL' }] : [])
+    // }),
+    addOrderHistory: builder.mutation({
+      query: (data) => ({
+        url: NetWork.orderHistory,
+        method: POST,
+        data: data
+      }),
+      invalidatesTags: [
+        { type: 'History', id: 'LIST' },
+        { type: 'Order', id: 'LIST' }
+      ]
+    }),
+    updateOrderHistory: builder.mutation({
+      query: (data) => ({
+        url: NetWork.orderHistoryId(data.id),
+        method: PUT,
+        data: data
+      }),
+      invalidatesTags: [
+        { type: 'History', id: 'LIST' },
+        { type: 'Order', id: 'LIST' }
+      ]
+    }),
+    deleteOrderHistory: builder.mutation({
+      query: (data: { ids: Array<number> }) => ({
+        url: NetWork.orderHistory,
+        method: DELETE,
+        data: data
+        // invalidatesTags: [{ type: 'Order', id: 'LIST' }] // Vô hiệu hóa tag 'Order' với id 'LIST' để gọi lại getListOrder
+      }),
+      invalidatesTags: [
+        { type: 'History', id: 'LIST' },
+        { type: 'Order', id: 'LIST' }
+      ]
     })
   })
 })
@@ -58,5 +108,9 @@ export const {
   useDeleteOrderMutation,
   useAddOrderMutation,
   useGetOrderByIdQuery,
-  useUpdateOrderMutation
+  useUpdateOrderMutation,
+  useAddOrderHistoryMutation,
+  useDeleteOrderHistoryMutation,
+  useGetListOrderHistoryQuery,
+  useUpdateOrderHistoryMutation
 } = orderApi

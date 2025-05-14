@@ -79,4 +79,7 @@ export const NetWork = {
   //Order
   order: 'order',
   orderId: (orderId: number) => `order/${orderId}`,
+  orderHistory: 'history-production',
+  orderHistoryList: (orderId: number) => `history-production/order/${orderId}`,
+  orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`
 }
