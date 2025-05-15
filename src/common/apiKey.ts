@@ -1,6 +1,7 @@
 export const API_URL = process.env.REACT_APP_BASE_URL ?? ''
 export const URL_FILE_EXCEL = process.env.REACT_APP_URL_FILE_EXCEL_STAFF ?? ''
 export const URL_FILE_EXCEL_EMPLOYEE = process.env.REACT_APP_URL_FILE_EXCEL_EMPLOYEE ?? ''
+export const URL_DOMAIN = process.env.REACT_APP_URL_DOMAIN ?? ''
 
 export const NetWork = {
   //Admin
@@ -81,5 +82,11 @@ export const NetWork = {
   orderId: (orderId: number) => `order/${orderId}`,
   orderHistory: 'history-production',
   orderHistoryList: (orderId: number) => `history-production/order/${orderId}`,
-  orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`
+  orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`,
+
+  //invoiceRepair
+  invoiceRepair: 'invoice-repair',
+  invoiceRepairId: (invoiceRepairId: number) => `invoice-repair/${invoiceRepairId}`,
+  invoiceRepairByOrderId: (invoiceRepairId: number) => `invoice-repair/order/${invoiceRepairId}`,
+  invoiceRepairUpload: 'upload-image/content-invoice-repair'
 }

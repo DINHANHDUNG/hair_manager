@@ -47,7 +47,7 @@ import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
-import { Perm_Order_Add, Perm_Order_Edit } from '../../help/permission'
+import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit } from '../../help/permission'
 import { ErrorType } from '../../types'
 import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
@@ -68,6 +68,7 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 const OrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
+  const permInvoiceAdd = useHasPermission(Perm_Invoice_Add)
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -290,11 +291,11 @@ const OrderPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'code', headerName: 'Mã đơn hàng', editable: true, renderEditCell: TextEditCell },
+      { field: 'code', headerName: 'Mã đơn hàng', editable: permEdit, renderEditCell: TextEditCell },
       {
         field: 'customerId',
         headerName: 'Khách hàng',
-        editable: true,
+        editable: permEdit,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={dataOptionCustomer} />
         ),
@@ -304,7 +305,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'customerPhone',
         headerName: 'Số điện thoại',
-        editable: true,
+        editable: permEdit,
         preProcessEditCellProps: (params: GridRenderEditCellParams) => {
           const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
           return {
@@ -318,7 +319,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'customerAddress',
         headerName: 'Địa chỉ',
-        editable: true,
+        editable: permEdit,
         renderEditCell: TextEditCell
       },
 
@@ -350,7 +351,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'statusOrder',
         headerName: 'Tình trạng đơn hàng',
-        editable: true,
+        editable: permEdit,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
         ),
@@ -376,7 +377,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateReceive',
         headerName: 'Ngày xưởng nhận đơn',
-        editable: true,
+        editable: permEdit,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -385,7 +386,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateEstimateDelivery',
         headerName: 'Ngày dự kiến xuất',
-        editable: true,
+        editable: permEdit,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateEstimateDelivery ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -394,21 +395,21 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateDelivery',
         headerName: 'Ngày thực tế giao',
-        editable: true,
+        editable: permEdit,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateDelivery ? dayjs(params.row.dateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
       },
 
-      { field: 'rate', headerName: 'Đánh giá sx', editable: true, renderEditCell: TextEditCell },
-      { field: 'discount', headerName: 'Tiền discount', editable: true, renderEditCell: TextEditCell },
+      { field: 'rate', headerName: 'Đánh giá sx', editable: permEdit, renderEditCell: TextEditCell },
+      { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
 
-      { field: 'order_edit', headerName: 'Đơn sửa', editable: true, renderEditCell: TextEditCell },
+      { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
 
       {
         field: 'dateReceive2',
         headerName: 'Ngày xưởng nhận',
-        editable: true,
+        editable: permEdit,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -417,7 +418,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'statusWorking2',
         headerName: 'Trạng thái',
-        editable: true,
+        editable: permEdit,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
         )
@@ -426,7 +427,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'order_edit_date_push',
         headerName: 'Ngày xưởng giao lại',
-        editable: true,
+        editable: permEdit,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -435,7 +436,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'order_edit_note',
         headerName: 'Ghi chú',
-        editable: true,
+        editable: permEdit,
         renderEditCell: TextEditCell
       },
 
@@ -478,12 +479,16 @@ const OrderPage = React.memo(() => {
             // onClick={() => handleView(params.row)}
             showInMenu
           />,
-          <GridActionsCellItem
-            icon={<AddCircle />}
-            label='Tạo invoice'
-            onClick={() => handleModalInvoice()}
-            showInMenu
-          />,
+          permInvoiceAdd ? (
+            <GridActionsCellItem
+              icon={<AddCircle />}
+              label='Tạo invoice'
+              onClick={() => handleModalInvoice()}
+              showInMenu
+            />
+          ) : (
+            <></>
+          ),
           <GridActionsCellItem
             icon={<BorderAll />}
             label='Đã nhận hàng cần sửa'
@@ -797,7 +802,7 @@ const OrderPage = React.memo(() => {
         handleClose={handleClose}
       /> */}
 
-      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
+      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} orderId={itemSelectedEdit?.id} />
       <FormAddNewOrder itemSelectedEdit={itemSelectedEdit} handleClose={handleModalAddOrder} open={modalAddOrder} />
       <ModalProductionHistory
         itemSelectedEdit={itemSelectedEdit}

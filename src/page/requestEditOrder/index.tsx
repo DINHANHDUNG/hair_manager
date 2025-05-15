@@ -15,19 +15,24 @@ import {
 import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useDeleteEmployeeMutation, useGetListEmployeeQuery } from '../../app/services/employee'
+import { useSearchParams } from 'react-router-dom'
+import { useHasPermission } from '../../app/hooks'
+import { useDeleteInvoiceRepairMutation, useGetListInvoiceRepairQuery } from '../../app/services/invoiceRepair'
+import { checkBg, checkColor, OPTIONS_STATUS_ORDER } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
+import Chip from '../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
-import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { EmployeeType } from '../../types/employee'
+import { Perm_Invoice_Add, Perm_Invoice_Edit } from '../../help/permission'
+import { InvoiceRepairType } from '../../types/invoiceRepair'
 import FormAddEditInvoice from '../order/modalInvoice'
 
 const RequestEditOrderPage = React.memo(() => {
-  const navigate = useNavigate()
+  const permAdd = useHasPermission(Perm_Invoice_Add)
+  const permEdit = useHasPermission(Perm_Invoice_Edit)
+  // const navigate = useNavigate()
 
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -35,29 +40,34 @@ const RequestEditOrderPage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
-  const initialKey = searchParams.get('key') || 'code'
+  // const initialKey = searchParams.get('key') || 'code'
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
     page: initialPage
   })
-
+  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<InvoiceRepairType>()
+  const [orderId, setOrderId] = React.useState<number | undefined>()
+  console.log('====================================')
+  console.log(orderId, itemSelectedEdit)
+  console.log('====================================')
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey,
-    key: initialKey
+    // key: initialKey
   })
-  const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
+  const [rowsData, setRowsData] = React.useState<InvoiceRepairType[]>()
+  console.log('rowsData', rowsData)
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
-  // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
+  // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticInvoiceRepairDetailQuery({})
 
-  const [deleteEmployee, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteEmployeeMutation()
+  const [deleteInvoiceRepair, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteInvoiceRepairMutation()
   const {
-    data: dataApiEmployee,
+    data: dataApiInvoiceRepair,
     isLoading,
     refetch
-  } = useGetListEmployeeQuery(
+  } = useGetListInvoiceRepairQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
       limit: paginationModel.pageSize,
@@ -68,7 +78,7 @@ const RequestEditOrderPage = React.memo(() => {
   )
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiEmployee?.data?.totalCount || 0
+  const rowTotal = dataApiInvoiceRepair?.data?.totalCount || 0
 
   const handleDelete = async (id: number) => {
     const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
@@ -77,7 +87,7 @@ const RequestEditOrderPage = React.memo(() => {
       cancelText: 'Hủy'
     })
     if (confirmed) {
-      deleteEmployee({ ids: [Number(id)] })
+      deleteInvoiceRepair({ ids: [Number(id)] })
     }
   }
 
@@ -87,7 +97,14 @@ const RequestEditOrderPage = React.memo(() => {
     setOpenDetail(!openDetail)
   }
 
-  const handleModalInvoice = () => {
+  const handleModalInvoice = (value?: InvoiceRepairType) => {
+    if (!modalInvoice === false) {
+      setOrderId(undefined)
+      setItemSelectedEidt({} as InvoiceRepairType)
+      setModalInvoice(!modalInvoice)
+      return
+    }
+    setOrderId(value?.orderId)
     setModalInvoice(!modalInvoice)
   }
 
@@ -112,58 +129,53 @@ const RequestEditOrderPage = React.memo(() => {
     handleClickDetail()
   }
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      code: 'SD001',
-      reason: 'Lỗi kích thước',
-      customer_Progress: 'Đang sản xuất',
-      birthDay: '2025-04-12'
-    },
-    {
-      id: 2,
-      order: 2,
-      code: 'SD002',
-      reason: 'Sai màu',
-      customer_Progress: 'Chờ giao',
-      birthDay: '2025-04-10'
-    },
-    {
-      id: 3,
-      order: 3,
-      code: 'SD003',
-      reason: 'Lỗi',
-      customer_Progress: 'Đã giao hàng',
-      birthDay: '2025-04-08'
-    }
-  ]
-
   const data = {
     columns: [
       {
-        field: 'order',
+        field: 'stt',
         headerName: 'No.',
         width: 30
       },
-      { field: 'code', headerName: 'Mã đơn hàng', flex: 1 },
       {
-        field: 'reason',
+        field: 'code',
+        headerName: 'Mã đơn hàng',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) => params.row.order.code || ''
+      },
+      {
+        field: 'reasonRepair',
         headerName: 'Lý do sửa đơn',
         flex: 1
       },
       {
-        field: 'customer_Progress',
+        field: 'statusOrder',
         headerName: 'Tình trạng sửa',
-        flex: 1
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => {
+          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+          if (!status) return null
+
+          return (
+            <Chip
+              label={status.label}
+              sx={{
+                backgroundColor: checkBg(status.value),
+                color: checkColor(status.value),
+                fontWeight: 500
+              }}
+              size='small'
+              variant='outlined'
+            />
+          )
+        }
       },
 
       {
         field: 'dateRequest',
         headerName: 'Ngày yêu cầu sửa',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<EmployeeType, number>) =>
-          params.row.birthDay ? moment(params.row.birthDay).format('DD/MM/YYYY') : ''
+        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) =>
+          params.row.dateRepair ? moment(params.row.dateRepair).format('DD/MM/YYYY') : ''
       },
 
       {
@@ -171,16 +183,23 @@ const RequestEditOrderPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
 
-        getActions: (params: GridRenderCellParams<EmployeeType, number>) => {
+        getActions: (params: GridRenderCellParams<InvoiceRepairType, number>) => {
           return [
-            <GridActionsCellItem
-              icon={<EditOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              // onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}/${params.id}`)}
-              onClick={() => navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)}
-            />,
+            permEdit ? (
+              <GridActionsCellItem
+                icon={<EditOutlinedIcon />}
+                label='Edit'
+                className='textPrimary'
+                color='inherit'
+                // onClick={() => navigate(`/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.WORKER}/${params.id}`)}
+                onClick={() => {
+                  setItemSelectedEidt(params.row)
+                  handleModalInvoice(params.row)
+                }}
+              />
+            ) : (
+              <></>
+            ),
             <GridActionsCellItem
               onClick={() => handleDelete(params.row.id)}
               icon={<DeleteOutlinedIcon />}
@@ -188,12 +207,16 @@ const RequestEditOrderPage = React.memo(() => {
               className='textPrimary'
               color='inherit'
             />,
-            <GridActionsCellItem
-              icon={<AddCircle />}
-              label='Tạo invoice'
-              onClick={() => handleModalInvoice()}
-              showInMenu
-            />,
+            permAdd ? (
+              <GridActionsCellItem
+                icon={<AddCircle />}
+                label='Tạo invoice'
+                onClick={() => handleModalInvoice(params.row)}
+                showInMenu
+              />
+            ) : (
+              <></>
+            ),
             <GridActionsCellItem
               icon={<Preview />}
               label='Preview'
@@ -288,13 +311,13 @@ const RequestEditOrderPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      dataApiInvoiceRepair?.data?.rows?.map((row: any, index: number) => ({
         ...row,
-        order: paginationModel.page * paginationModel.pageSize + index + 1
+        stt: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [fakeData])
+  }, [dataApiInvoiceRepair])
 
   return (
     <>
@@ -351,7 +374,12 @@ const RequestEditOrderPage = React.memo(() => {
           />
         </div>
       </MainCard>
-      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
+      <FormAddEditInvoice
+        handleClose={handleModalInvoice}
+        open={modalInvoice}
+        orderId={orderId}
+        itemSelectedEdit={itemSelectedEdit}
+      />
       {/* <SelectColumn
         handleComfirm={(value) => {
           handleFilterChange('key', value)
