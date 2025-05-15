@@ -37,7 +37,7 @@ const SalaryPayEmployeePage = Loadable(lazy(() => import('../page/category/salar
 
 //Order
 const OrderPage = Loadable(lazy(() => import('../page/order')))
-const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
+// const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
 const RequestEditOrderPage = Loadable(lazy(() => import('../page/requestEditOrder')))
 const CancelOrderPage = Loadable(lazy(() => import('../page/listCancelOrder')))
 
@@ -71,10 +71,10 @@ const MainRoutes = {
           path: ROUTES.DEFAULT,
           element: <OrderPage />
         },
-        {
-          path: ROUTES.ORDER_ADD,
-          element: <FormAddEditOrder />
-        },
+        // {
+        //   path: ROUTES.ORDER_ADD,
+        //   element: <FormAddEditOrder />
+        // },
         {
           path: ROUTES.ORDER_REQUEST,
           element: <RequestEditOrderPage />

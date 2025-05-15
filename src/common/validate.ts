@@ -6,6 +6,7 @@ export const VALIDATE = {
   textNoUppercase: /[A-Z]/,
   dateRegex: /^[A-Za-z]{3}, \d{2} [A-Za-z]{3} \d{4} \d{2}:\d{2}:\d{2} GMT$/,
   phoneRegex: /^(?:\+84|84)?(0[3-9][0-9]{8}|02(96|54|09|04|91|22|75)[0-9]{7})$/,
+  phoneRelaxed: /^[\d+\-\s()]+$/, // 👉 Cho phép +, -, space, (), số
   cccdRegex: /^\d{12}$/,
   passwordRegex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/,
   nameRegex:

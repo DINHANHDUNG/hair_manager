@@ -18,16 +18,16 @@ interface Props {
   accountId?: number
 }
 
-type Field = 'newPassword' | 'repeatPassword' | 'currentPassword'
+type Field = 'newPassword' | 'repeatPassword'
 
 type FormValues = {
-  currentPassword: string
+  // currentPassword: string
   newPassword: string
   repeatPassword: string
 }
 
 const validationSchema = yup.object({
-  currentPassword: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  // currentPassword: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
   newPassword: yup
     .string()
     .max(255, 'Độ dài không được quá 255')
@@ -112,7 +112,7 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
       </Grid>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
-          <Grid item xs={12} sm={6} md={6} lg={4}>
+          {/* <Grid item xs={12} sm={6} md={6} lg={4}>
             <MyTextField
               name='currentPassword'
               control={control}
@@ -136,9 +136,9 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
                 )
               }}
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6} md={6} lg={4}>
+          <Grid item xs={12} sm={6} md={6} lg={6}>
             <MyTextField
               name='newPassword'
               control={control}
@@ -163,7 +163,7 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={4}>
+          <Grid item xs={12} sm={6} md={6} lg={6}>
             <MyTextField
               name='repeatPassword'
               control={control}

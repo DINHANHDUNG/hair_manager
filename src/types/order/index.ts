@@ -1,75 +1,127 @@
+import { AccountType } from '../account'
+import { CustomerType } from '../customer'
+
 export interface OrderType {
   id: number
   createdAt: string
   updatedAt: string
   deletedAt: string
   code: string
-  fullName: string
-  phoneNumber: string
-  address: string
   dateOrder: string
-  bankAccountId: number
-  itemOrders: BankAccountType[]
-}
-
-export interface BankAccountType {
-  id: number
-  createdAt: string
-  updatedAt: string
-  deletedAt: string
-  typeAccount: string
-  bankName: string
-  bankNumber: string
-  personNumber: string
-  isActive: boolean
-  paymentId: number
+  dateReceive: string
+  dateEstimateDelivery: string
+  dateDelivery: string
+  customerName: string
+  customerPhone: string
+  customerAddress: string
   customerId: number
-  payment: {
-    id: number
-    createdAt: string
-    updatedAt: string
-    deletedAt: string
-    code: string
-    name: string
-    isActive: boolean
-  }
+  discount: number
+  statusOrder: string
+  reasonCancel: string
+  isDelete: boolean
+  accountSaleId: number
+  customer: CustomerType
+  accountSale: AccountType
+  products: Array<ProductType>
+  historyProductions: Array<HistoryProductionType>
+  //dự kiến chưa có đặt tạm
+  order_edit_date_push: string
 }
 
-export interface PaymentType {
+export interface HistoryProductionType {
   id: number
   createdAt: string
   updatedAt: string
   deletedAt: string
-  code: string
-  name: string
-  isActive: boolean
+  date: string
+  status: string
+  orderId: number
+  invoiceRepairId: number
+  order: OrderType
+  invoiceRepair: InvoiceRepairType
 }
+export interface InvoiceRepairType {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  reasonRepair: string
+  dateRepair: string
+  dateReceive: string
+  dateEstimateDelivery: string
+  dateDelivery: string
+  noteRepair: string
+  statusOrder: 0
+  historyProductions: Array<HistoryProductionType>
+  contentInvoiceRepairs: string
+}
+export interface ProductType {
+  id: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+  name: string
+  size: string
+  quantity: number
+  unit: string
+  price: number
+  orderId: number
+  order: OrderType
+}
+
+// export interface PaymentType {
+//   id: number
+//   createdAt: string
+//   updatedAt: string
+//   deletedAt: string
+//   code: string
+//   name: string
+//   isActive: boolean
+// }
 export interface FormValuesOrder {
+  code?: string
   dateOrder?: string
-  fullName?: string
-  address?: string
-  phoneNumber?: string
+  customerId?: string
+  customerPhone?: string
+  customerAddress?: string
   discount?: string
 
-  itemOrders?: Array<{
-    name?: string
-    size?: string
-    quantity?: string
-    unit?: string
-    unitPrice?: string
-    money?: string
+  products?: Array<{
+    name: string
+    size: string
+    quantity: string
+    unit: string
+    price: string
+    money: string
   }>
-  invoices?: Array<{
-    content?: string
-    image?: string
-  }>
+  // invoices?: Array<{
+  //   content?: string
+  //   image?: string
+  // }>
 }
 
-export type FieldCustomer = 'fullName' | 'phoneNumber' | 'address' | 'dateOrder'
+export interface FormValuesOrderUpdate {
+  products?: Array<{
+    name: string
+    size: string
+    quantity: string
+    unit: string
+    price: string
+    money: string
+  }>
+  // invoices?: Array<{
+  //   content?: string
+  //   image?: string
+  // }>
+}
+
+export type FieldCOrder = 'customerId' | 'customerPhone' | 'customerAddress' | 'dateOrder' | 'discount'
+
+export type FieldCOrderHistory = 'date' | 'status'
 
 export type DataErrorCustomer = {
   errors: string
-  keyError: FieldCustomer
+  keyError: FieldCOrder
   message: string
   status: string
 }

@@ -27,11 +27,11 @@ import {
   useGridApiContext,
   useGridSelector
 } from '@mui/x-data-grid-pro'
+import { arrayMoveImmutable } from 'array-move'
 import React, { ReactElement, useEffect } from 'react'
+import { isEmpty } from '../../app/hooks'
 import { localStorageHelper } from '../../help/localHelp'
 import CustomToolbar from './CustomToolbarDataGrid'
-import { arrayMoveImmutable } from 'array-move'
-import { isEmpty } from '../../app/hooks'
 
 const ODD_OPACITY = 0.2
 
@@ -72,7 +72,7 @@ interface TableDataGridProps {
   hideFooter?: boolean
   pagination?: boolean
   apiRef?: React.MutableRefObject<GridApiPro> | undefined
-  processRowUpdate?: (newRow: any, oldRow: any) => any | Promise<any>
+  processRowUpdate?: (newRow: any, oldRow: any, params: any) => any | Promise<any>
   onProcessRowUpdateError?: (error: any) => void
 }
 

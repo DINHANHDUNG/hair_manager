@@ -35,7 +35,7 @@ export default function FormAddEditInvoice({ open, handleClose }: Props) {
     resolver: yupResolver(validationSchema),
     // context: { permAddEditPaymentAcc },
     defaultValues: {
-      // itemOrders: [{ name: '', size: '', quantity: '', unit: '', unitPrice: '', money: '' }],
+      // products: [{ name: '', size: '', quantity: '', unit: '', unitPrice: '', money: '' }],
       invoices: [
         { content: '', image: '' },
         { content: '', image: '' }

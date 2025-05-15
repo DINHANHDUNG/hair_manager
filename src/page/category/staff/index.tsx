@@ -1,7 +1,9 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
+import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput } from '@mui/material'
+import { Button, Grid, OutlinedInput, Tooltip } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -15,7 +17,7 @@ import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { handleMutation } from '../../../app/hooks'
-import { useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
+import { useActiveStaffMutation, useDeleteStaffMutation, useGetListStaffQuery } from '../../../app/services/staff'
 import { OPTIONSPOSITION } from '../../../common/contants'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
@@ -48,6 +50,8 @@ const StaffPage = React.memo(() => {
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
 
   const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
+  const [activeStaff, { isLoading: loadingActive, isSuccess: isSuccessActive, isError: isErrorActive }] =
+    useActiveStaffMutation()
 
   const {
     data: dataApiStaff,
@@ -102,6 +106,10 @@ const StaffPage = React.memo(() => {
     }
   }
 
+  const handelActiveStaff = ({ staffId, active }: { staffId: number; active: boolean }) => {
+    activeStaff({ staffId, active })
+  }
+
   const data = {
     columns: [
       {
@@ -137,17 +145,17 @@ const StaffPage = React.memo(() => {
         flex: 1,
         getActions: (params: GridRenderCellParams<StaffType, number>) => {
           return [
-            // <GridActionsCellItem
-            //   icon={
-            //     <Tooltip title={params.row.account.active ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}>
-            //       {params.row.account.active ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
-            //     </Tooltip>
-            //   }
-            //   label='Lock'
-            //   className='textPrimary'
-            //   color='inherit'
-            //   onClick={() => activeStaff({ staffId: Number(params.id), active: !params.row.account.active })}
-            // />,
+            <GridActionsCellItem
+              icon={
+                <Tooltip title={params.row.isActive ? 'Khóa nhân viên' : 'Mở khóa nhân viên'}>
+                  {params.row.isActive ? <LockOpenOutlinedIcon /> : <LockClockOutlinedIcon />}
+                </Tooltip>
+              }
+              label='Lock'
+              className='textPrimary'
+              color='inherit'
+              onClick={() => handelActiveStaff({ staffId: Number(params.id), active: !params.row.isActive })}
+            />,
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
               label='Edit'
@@ -217,6 +225,17 @@ const StaffPage = React.memo(() => {
   }, [loadingDelete])
 
   React.useEffect(() => {
+    handleMutation({
+      successMessage: 'Thao tác thành công',
+      errorMessage: 'Thao tác không thành công',
+      isError: isErrorActive,
+      isSuccess: isSuccessActive,
+      loading: loadingActive,
+      refetch: () => refetch()
+    })
+  }, [loadingActive])
+
+  React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
       dataApiStaff?.data?.rows?.map((row: StaffType, index: number) => ({
@@ -267,6 +286,10 @@ const StaffPage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
+            otherProps={{
+              getRowClassName: (params: GridRenderCellParams<StaffType, number>) =>
+                !params.row.isActive ? 'even' : 'odd'
+            }}
           />
         </div>
         <DetailStaffDrawer
@@ -283,7 +306,7 @@ const StaffPage = React.memo(() => {
             handleCloseForm()
           }}
         />
-        <LoadingModal open={isLoading} />
+        <LoadingModal open={isLoading || loadingActive || loadingDelete} />
       </MainCard>
     </>
   )

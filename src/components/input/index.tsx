@@ -46,3 +46,11 @@ export const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomPr
     )
   }
 )
+
+export const InputPropsNumber = (perm: boolean) => {
+  return {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    inputComponent: perm && (NumericFormatCustom as any)
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+  }
+}
