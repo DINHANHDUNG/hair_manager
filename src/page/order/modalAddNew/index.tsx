@@ -184,7 +184,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
       }
       if (newError && !newError?.data?.keyError) {
         Toast({
-          text: newError?.data?.message,
+          text: newError?.data?.message || '',
           variant: 'error'
         })
         return

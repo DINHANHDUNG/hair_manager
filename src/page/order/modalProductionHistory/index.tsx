@@ -214,7 +214,7 @@ export default function ModalProductionHistory(Props: Props) {
     if (!isLoading) {
       // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
       const updatedRows =
-        fetchData?.data?.rows?.map((row: HistoryProductionType, index: number) => ({
+        fetchData?.data?.map((row: HistoryProductionType, index: number) => ({
           ...row,
           order: paginationModel.page * paginationModel.pageSize + index + 1
         })) || []

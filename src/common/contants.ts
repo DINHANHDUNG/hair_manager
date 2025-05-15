@@ -6,6 +6,9 @@ export const GET = 'GET'
 export const DELETE = 'DELETE'
 export const PATCH = 'PATCH'
 
+export const STATUS_SUCCESS = 'success'
+export const STATUS_ERROR = 'error'
+
 export const LICENSE_KEY = process.env.REACT_APP_PUBLIC_MUI_LICENSE_KEY || ''
 
 export const OPTIONGENDER = [

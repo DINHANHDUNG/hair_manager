@@ -1,5 +1,6 @@
 import { AccountType } from '../account'
 import { CustomerType } from '../customer'
+import { InvoiceRepairType } from '../invoiceRepair'
 
 export interface OrderType {
   id: number
@@ -39,21 +40,6 @@ export interface HistoryProductionType {
   invoiceRepairId: number
   order: OrderType
   invoiceRepair: InvoiceRepairType
-}
-export interface InvoiceRepairType {
-  id: number
-  createdAt: string
-  updatedAt: string
-  deletedAt: string
-  reasonRepair: string
-  dateRepair: string
-  dateReceive: string
-  dateEstimateDelivery: string
-  dateDelivery: string
-  noteRepair: string
-  statusOrder: 0
-  historyProductions: Array<HistoryProductionType>
-  contentInvoiceRepairs: string
 }
 export interface ProductType {
   id: number
