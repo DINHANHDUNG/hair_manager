@@ -35,7 +35,8 @@ const BootstrapDialog = styled(Dialog)<{ customstyles?: React.CSSProperties }>((
     ...customstyles,
     maxHeight: 'calc(100vh - 64px)', // Giới hạn chiều cao tổng thể của modal
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column', 
+    overflowY: 'unset'
   }
 }))
 
@@ -76,6 +77,7 @@ export const CustomDialog: React.FC<CustomDialogProps> = ({
       aria-labelledby={id ? id : 'customized-dialog-title'}
       open={open}
       customstyles={customstyles}
+      // scroll="paper" 
       {...dialogProps}
     >
       {!hiddenTitle && (

@@ -109,7 +109,21 @@ const ReactDropzone: React.FC<ReactDropzoneProps> = ({
             <div style={{ marginBottom: '20px' }}>
               <div
                 {...getRootProps({ className: 'dropzone' })}
+                // style={{
+                //   border: '1px dashed #D3D3D3',
+                //   padding: '20px',
+                //   borderRadius: '8px',
+                //   textAlign: 'center',
+                //   alignItems: 'center',
+                //   color: '#6c757d',
+                //   cursor: disabled ? 'default' : 'pointer',
+                //   opacity: disabled ? 0.5 : 1 // Thay đổi opacity khi disabled
+                //   // ...sx
+                // }}
                 style={{
+                  minHeight: '160px',
+                  maxHeight: '300px',
+                  overflowY: 'auto',
                   border: '1px dashed #D3D3D3',
                   padding: '20px',
                   borderRadius: '8px',
@@ -117,8 +131,7 @@ const ReactDropzone: React.FC<ReactDropzoneProps> = ({
                   alignItems: 'center',
                   color: '#6c757d',
                   cursor: disabled ? 'default' : 'pointer',
-                  opacity: disabled ? 0.5 : 1 // Thay đổi opacity khi disabled
-                  // ...sx
+                  opacity: disabled ? 0.5 : 1
                 }}
               >
                 <input {...getInputProps()} />

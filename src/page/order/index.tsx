@@ -483,7 +483,10 @@ const OrderPage = React.memo(() => {
             <GridActionsCellItem
               icon={<AddCircle />}
               label='Tạo invoice'
-              onClick={() => handleModalInvoice()}
+              onClick={() => {
+                setItemSelectedEidt(params.row)
+                handleModalInvoice()
+              }}
               showInMenu
             />
           ) : (
