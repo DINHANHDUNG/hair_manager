@@ -12,7 +12,7 @@ const dashboard = {
   id: 'dashboard',
   title: 'Báo cáo',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE],
+  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY],
   children: [
     {
       id: ROUTES.DASHBOARD,
@@ -21,7 +21,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     },
     {
       id: ROUTES.DASHBOARD_ORDER,
@@ -30,7 +30,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     },
     {
       id: ROUTES.DASHBOARD_ORDER_SALE,
@@ -39,7 +39,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER_SALE}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     }
   ]
 }

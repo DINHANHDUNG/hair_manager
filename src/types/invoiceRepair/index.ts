@@ -2,6 +2,7 @@ import { HistoryProductionType, OrderType } from '../order'
 
 export interface InvoiceRepairType {
   id: number
+  code: string,
   createdAt: string
   updatedAt: string
   deletedAt: string

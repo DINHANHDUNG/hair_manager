@@ -12,7 +12,7 @@ const order = {
   id: 'order',
   title: 'Quản lý đơn hàng',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE],
+  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY],
   children: [
     {
       id: ROUTES.ORDER,
@@ -21,7 +21,7 @@ const order = {
       url: `/${ROUTES.ORDER}/${ROUTES.DEFAULT}`,
       icon: icons.IconShoppingCartBolt,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     },
     {
       id: ROUTES.ORDER_REQUEST,
@@ -30,7 +30,7 @@ const order = {
       url: `/${ROUTES.ORDER}/${ROUTES.ORDER_REQUEST}`,
       icon: icons.IconAB2,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     },
     {
       id: ROUTES.ORDER_CANCEL,
@@ -39,7 +39,7 @@ const order = {
       url: `/${ROUTES.ORDER}/${ROUTES.ORDER_CANCEL}`,
       icon: icons.IconShoppingCartX,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     }
   ]
 }

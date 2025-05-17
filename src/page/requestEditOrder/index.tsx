@@ -140,7 +140,7 @@ const RequestEditOrderPage = React.memo(() => {
         field: 'code',
         headerName: 'Mã đơn hàng',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) => params.row.order.code || ''
+        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) => params.row.code || ''
       },
       {
         field: 'reasonRepair',

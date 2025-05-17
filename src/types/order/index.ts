@@ -27,6 +27,7 @@ export interface OrderType {
   historyProductions: Array<HistoryProductionType>
   //dự kiến chưa có đặt tạm
   order_edit_date_push: string
+  invoiceRepairs: InvoiceRepairType
 }
 
 export interface HistoryProductionType {
