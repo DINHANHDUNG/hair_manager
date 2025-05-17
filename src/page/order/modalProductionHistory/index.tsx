@@ -17,7 +17,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { GridActionsCellItem, GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid'
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
-import { handleMutation } from '../../../app/hooks'
+import { handleMutation, useHasPermission } from '../../../app/hooks'
 import {
   useAddOrderHistoryMutation,
   useDeleteOrderHistoryMutation,
@@ -30,6 +30,7 @@ import TableDataGrid from '../../../components/table-data-grid/TableComponentDat
 import Toast from '../../../components/toast'
 import { ErrorType } from '../../../types'
 import { FieldCOrderHistory, HistoryProductionType, OrderType } from '../../../types/order'
+import { Perm_Order_Edit } from '../../../help/permission'
 
 interface Props {
   open: boolean
@@ -50,6 +51,7 @@ const validationSchema = yup.object({
 
 export default function ModalProductionHistory(Props: Props) {
   const { open, handleClose, itemSelectedEdit } = Props
+  const permEdit = useHasPermission(Perm_Order_Edit)
   const idOrder = itemSelectedEdit?.id
   const dialogs = useDialogs()
   const {
@@ -361,15 +363,17 @@ export default function ModalProductionHistory(Props: Props) {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
-                  <SubmitButton
-                    variant='contained'
-                    sx={{ float: 'right' }}
-                    loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
-                  >
-                    {idUpdate ? 'Cập nhật' : 'Thêm'}
-                  </SubmitButton>
-                </Grid>
+                {permEdit && (
+                  <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
+                    <SubmitButton
+                      variant='contained'
+                      sx={{ float: 'right' }}
+                      loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
+                    >
+                      {idUpdate ? 'Cập nhật' : 'Thêm'}
+                    </SubmitButton>
+                  </Grid>
+                )}
               </Grid>
             </form>
           </SubCard>

@@ -74,6 +74,8 @@ interface TableDataGridProps {
   apiRef?: React.MutableRefObject<GridApiPro> | undefined
   processRowUpdate?: (newRow: any, oldRow: any, params: any) => any | Promise<any>
   onProcessRowUpdateError?: (error: any) => void
+  getDetailPanelContent?: (row: any) => React.ReactNode
+  getDetailPanelHeight?: (row: any) => number
 }
 
 const autosizeOptions: GridAutosizeOptions = {
@@ -110,7 +112,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   tableKey, // Thêm prop key động
   processRowUpdate,
   onProcessRowUpdateError,
-  apiRef
+  apiRef,
+  getDetailPanelHeight,
+  getDetailPanelContent
 }) => {
   const theme = useTheme()
 
@@ -305,6 +309,8 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       disableRowSelectionOnClick
       processRowUpdate={processRowUpdate}
       onProcessRowUpdateError={onProcessRowUpdateError}
+      getDetailPanelContent={getDetailPanelContent ? (params) => <>{getDetailPanelContent(params.row)}</> : undefined}
+      getDetailPanelHeight={getDetailPanelHeight ? (params) => getDetailPanelHeight(params.row) : undefined}
       // experimentalFeatures={{ newEditingApi: true }}
       sx={{
         // '.MuiDataGrid-columnSeparator': {

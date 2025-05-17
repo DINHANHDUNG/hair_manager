@@ -7,7 +7,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
@@ -47,13 +47,15 @@ import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
-import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit } from '../../help/permission'
+import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_Edit } from '../../help/permission'
 import { ErrorType } from '../../types'
 import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import FormAddNewOrder from './modalAddNew'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
+import { DataGridPro } from '@mui/x-data-grid-pro'
+import InvoiceRepairDetailPanel from './InvoiceRepairDetailPanel'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -68,6 +70,7 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 const OrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
+  const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_Edit)
   const permInvoiceAdd = useHasPermission(Perm_Invoice_Add)
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -331,11 +334,13 @@ const OrderPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams) => {
           const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
           const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
+          const label =
+            moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString() + ' ' + checkStatus?.label
           if (!checkStatus) return null
 
           return (
             <Chip
-              label={checkStatus.label}
+              label={label}
               sx={{
                 backgroundColor: checkBg(checkStatus.value),
                 color: checkColor(checkStatus.value),
@@ -404,41 +409,41 @@ const OrderPage = React.memo(() => {
       { field: 'rate', headerName: 'Đánh giá sx', editable: permEdit, renderEditCell: TextEditCell },
       { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
 
-      { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
+      // { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
 
-      {
-        field: 'dateReceive2',
-        headerName: 'Ngày xưởng nhận',
-        editable: permEdit,
-        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-          params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
-        renderEditCell: DateEditCell
-      },
+      // {
+      //   field: 'dateReceive2',
+      //   headerName: 'Ngày xưởng nhận',
+      //   editable: permEdit,
+      //   renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+      //     params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
+      //   renderEditCell: DateEditCell
+      // },
 
-      {
-        field: 'statusWorking2',
-        headerName: 'Trạng thái',
-        editable: permEdit,
-        renderEditCell: (params: GridRenderEditCellParams) => (
-          <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
-        )
-      },
+      // {
+      //   field: 'statusWorking2',
+      //   headerName: 'Trạng thái',
+      //   editable: permEdit,
+      //   renderEditCell: (params: GridRenderEditCellParams) => (
+      //     <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
+      //   )
+      // },
 
-      {
-        field: 'order_edit_date_push',
-        headerName: 'Ngày xưởng giao lại',
-        editable: permEdit,
-        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-          params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
-        renderEditCell: DateEditCell
-      },
+      // {
+      //   field: 'order_edit_date_push',
+      //   headerName: 'Ngày xưởng giao lại',
+      //   editable: permEdit,
+      //   renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+      //     params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
+      //   renderEditCell: DateEditCell
+      // },
 
-      {
-        field: 'order_edit_note',
-        headerName: 'Ghi chú',
-        editable: permEdit,
-        renderEditCell: TextEditCell
-      },
+      // {
+      //   field: 'order_edit_note',
+      //   headerName: 'Ghi chú',
+      //   editable: permEdit,
+      //   renderEditCell: TextEditCell
+      // },
 
       {
         field: 'actions',
@@ -521,6 +526,37 @@ const OrderPage = React.memo(() => {
     ]
   }
 
+  // Bảng chi tiết – tương ứng group "Theo dõi đơn sửa"
+  const repairColumns: GridColDef[] = [
+    {
+      field: 'reasonRepair',
+      headerName: 'Đơn sửa', // order_edit
+      width: 200
+    },
+    {
+      field: 'statusOrder',
+      headerName: 'Trạng thái', // statusWorking2
+      width: 150
+    },
+    {
+      field: 'dateDelivery',
+      headerName: 'Ngày xưởng giao lại', // order_edit_date_push
+      width: 180,
+      renderCell: (params: GridRenderCellParams) => (params.value ? dayjs(params.value).format('DD/MM/YYYY') : '')
+    },
+    {
+      field: 'noteRepair',
+      headerName: 'Ghi chú', // order_edit_date_note
+      width: 200
+    },
+    {
+      field: 'dateReceive',
+      headerName: 'Ngày xưởng nhận', // dateReceive2
+      width: 180,
+      renderCell: (params: GridRenderCellParams) => (params.value ? dayjs(params.value).format('DD/MM/YYYY') : '')
+    }
+  ]
+
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
       // case 'numberphone':
@@ -555,13 +591,14 @@ const OrderPage = React.memo(() => {
         { field: 'order_edit_pull' },
         { field: 'statusWorking2' },
         { field: 'order_edit_date_push' },
-        { field: 'order_edit_date_note' }
+        { field: 'order_edit_date_note' },
+        { field: 'dateReceive2' }
       ]
     }
   ]
 
   const onCellDoubleClick = (param: GridCellParams) => {
-    if (param.field === 'historyProductions' && permEdit) {
+    if (param.field === 'historyProductions' && permHistoryProductionsView) {
       setItemSelectedEidt(param.row)
       handleModalProductionHistory()
     }
@@ -781,6 +818,8 @@ const OrderPage = React.memo(() => {
               columnGroupingModel: columnGroupingModel
             }}
             pinnedColumns={{ right: ['actions'] }}
+            getDetailPanelContent={(row) => <InvoiceRepairDetailPanel data={row.invoiceRepairs || []} />}
+            getDetailPanelHeight={(row) => (row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 160)}
           />
         </div>
         {/* <FormAddEditWorker

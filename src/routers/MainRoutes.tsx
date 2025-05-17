@@ -164,7 +164,12 @@ const MainRoutes = {
         },
         {
           path: ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER,
-          element: createProtectedRoute(<CustomerPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
+          element: createProtectedRoute(<CustomerPage />, [
+            PERMISSION.ADMIN,
+            PERMISSION.KETOAN,
+            PERMISSION.QUANLY,
+            PERMISSION.SALE,
+          ])
         }
       ]
     },

@@ -35,7 +35,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`,
       icon: icons.IconUser,
-      premissions: [PERMISSION.ADMIN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY]
     },
     {
       id: 'category-worker',
@@ -44,7 +44,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER}`,
       icon: icons.IconBriefcase,
-      premissions: [PERMISSION.ADMIN]
+      premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY]
     },
     {
       id: 'category-customer',
@@ -53,7 +53,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER}`,
       icon: icons.IconUsersGroup,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
     }
     // {
     //   id: 'category-customer',
