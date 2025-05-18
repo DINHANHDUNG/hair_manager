@@ -13,7 +13,7 @@ const itemOrderSchema = yup.object().shape({
 
 export const validationSchemaOrder = yup.object({
   dateOrder: yup.string().when('$idOrder', {
-    is: false,
+    is: (val: any) => !val,
     then: (schema) =>
       schema
         .required(`Trường này là bắt buộc`)
@@ -22,6 +22,7 @@ export const validationSchemaOrder = yup.object({
     otherwise: (schema) => schema.notRequired().max(255, `Độ dài không được quá 255`)
   }),
   customerId: conditionalRequiredString(undefined, '$idOrder', false),
+  // customerId: requiredString(),
   code: conditionalRequiredString(undefined, '$idOrder'),
   customerAddress: conditionalRequiredString(undefined, '$idOrder', false),
   customerPhone: yup.string().when('$idOrder', {

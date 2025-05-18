@@ -39,8 +39,8 @@ const validationSchema = yup.object({
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+    // .max(11)
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
 
   email: yup.string().email('Vui lòng nhập đúng định dạng email').optional()
 })

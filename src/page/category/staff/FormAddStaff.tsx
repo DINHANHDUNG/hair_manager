@@ -57,8 +57,8 @@ const validationSchema = yup.object({
   phoneNumber: yup
     .string()
     .transform((value, originalValue) => (originalValue === '' ? undefined : value))
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+    // .max(11)
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
   role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền'),
   accountId: yup.string().required('Trường này là bắt buộc')
 })

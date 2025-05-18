@@ -28,6 +28,9 @@ interface Props {
 
 export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }: Props) {
   const idOrder = itemSelectedEdit?.id
+
+  console.log('idOrder', idOrder);
+  
   const {
     data: fetchData,
     isLoading,
@@ -60,7 +63,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
     formState: { errors, isSubmitting }
   } = useForm<FormValuesOrder>({
     resolver: yupResolver(validationSchemaOrder),
-    context: { idOrder: idOrder },
+    context: { idOrder: idOrder ? true : false },
     defaultValues: {
       products: [{ name: '', size: '', quantity: '', unit: '', price: '', money: '' }]
       // customerId: ''
@@ -245,6 +248,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
                   variant='outlined'
                   size='small'
                   placeholder='Chọn ngày tạo đơn hàng'
+                  require
                   //   defaultValue={dayjs()}
                 />
               </Grid>
@@ -262,8 +266,10 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
                   onChange={(_, v) => {
                     /* eslint-disable @typescript-eslint/no-explicit-any */
                     const selectedValue = v as any // Ép kiểu cho giá trị v
+                    console.log('selectedValue', selectedValue);
+                    
                     /* eslint-enable @typescript-eslint/no-explicit-any */
-                    setValue(`customerId`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
+                    setValue(`customerId`, selectedValue ? selectedValue?.value?.toString() : null) // set đúng giá trị của `value`
                     // setValue('customerName', selectedValue?.name || '')
                     setValue('customerAddress', selectedValue?.address || '')
                     setValue('customerPhone', selectedValue?.phoneNumber || '')
