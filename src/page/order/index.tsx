@@ -45,7 +45,7 @@ import { DateEditCell } from '../../components/table-data-grid/cellDate'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import { gridSpacing } from '../../constants'
+import { gridSpacing, PERMISSION } from '../../constants'
 import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
 import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_Edit } from '../../help/permission'
 import { ErrorType } from '../../types'
@@ -70,6 +70,7 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 const OrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
+  const checkQL = useHasPermission([PERMISSION.QUANLY])
   const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_Edit)
   const permInvoiceAdd = useHasPermission(Perm_Invoice_Add)
   const dialogs = useDialogs()
@@ -305,19 +306,19 @@ const OrderPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<OrderType, number>) => params.row?.customer?.name || ''
       },
 
-      // {
-      //   field: 'customerPhone',
-      //   headerName: 'Số điện thoại',
-      //   editable: permEdit,
-      //   preProcessEditCellProps: (params: GridRenderEditCellParams) => {
-      //     const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
-      //     return {
-      //       ...params.props,
-      //       error: !isValidPhone
-      //     }
-      //   },
-      //   renderEditCell: TextEditCell
-      // },
+      {
+        field: 'customerPhone',
+        headerName: 'Số điện thoại',
+        editable: permEdit,
+        preProcessEditCellProps: (params: GridRenderEditCellParams) => {
+          const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
+          return {
+            ...params.props,
+            error: !isValidPhone
+          }
+        },
+        renderEditCell: TextEditCell
+      },
 
       {
         field: 'customerAddress',
@@ -407,7 +408,7 @@ const OrderPage = React.memo(() => {
       },
 
       { field: 'rate', headerName: 'Đánh giá sx', editable: permEdit, renderEditCell: TextEditCell },
-      // { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
+      { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
 
       // { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
 
@@ -573,10 +574,17 @@ const OrderPage = React.memo(() => {
     }
   }
 
-  const columns: GridColDef[] = React.useMemo(
-    () => data.columns.map((colDef) => renderColumn(colDef)),
-    [data.columns, filters]
-  )
+  const columns: GridColDef[] = React.useMemo(() => {
+    const checkQL = useHasPermission([PERMISSION.QUANLY])
+
+    const filteredColumns = data.columns.filter((col) => {
+      // Ẩn hai cột này nếu là quản lý
+      if (checkQL && ['discount', 'customerPhone'].includes(col.field)) return false
+      return true
+    })
+
+    return filteredColumns.map((colDef) => renderColumn(colDef))
+  }, [data.columns, filters])
 
   const listRenderFilter = [
     { key: 'customerName', label: initialName || '' },

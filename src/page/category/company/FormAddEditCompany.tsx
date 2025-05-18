@@ -43,14 +43,12 @@ const validationSchema = yup.object({
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
   representativeName: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   representativePosition: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   representativePhone: yup
     .string()
-    .max(11)
-    .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRegex.test(value))
+    .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRelaxed.test(value))
     .optional(),
   note: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   email: yup.string().email('Vui lòng nhập đúng định dạng email').optional(),

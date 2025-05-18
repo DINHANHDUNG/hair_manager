@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { PERMISSION } from '../../constants'
+import { Perm_Account_View, Perm_Category_View, Perm_Customer_View, Perm_Staff_View } from '../../help/permission'
 
 // constant
 const icons = {
@@ -26,7 +27,7 @@ const categorys = {
   id: 'category-manager',
   title: 'Danh mục',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY, PERMISSION.KETOAN, PERMISSION.SALE],
+  premissions: Perm_Category_View,
   children: [
     {
       id: 'category-persion',
@@ -35,7 +36,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.STAFF}`,
       icon: icons.IconUser,
-      premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY]
+      premissions: Perm_Staff_View
     },
     {
       id: 'category-worker',
@@ -44,7 +45,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.ACCOUNT_MANAGER}`,
       icon: icons.IconBriefcase,
-      premissions: [PERMISSION.ADMIN, PERMISSION.QUANLY]
+      premissions: Perm_Account_View
     },
     {
       id: 'category-customer',
@@ -53,7 +54,7 @@ const categorys = {
       breadcrumbs: false,
       url: `/${ROUTES.CATEGORY}/${ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER}`,
       icon: icons.IconUsersGroup,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: Perm_Customer_View
     }
     // {
     //   id: 'category-customer',

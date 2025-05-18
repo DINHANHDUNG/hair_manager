@@ -2,6 +2,7 @@
 import { IconDashboard } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { PERMISSION } from '../../constants'
+import { Perm_DASHBOARD_ALL_View, Perm_DASHBOARD_Menu_View, Perm_DASHBOARD_ORDER_SALE_View, Perm_DASHBOARD_ORDER_View } from '../../help/permission'
 
 // constant
 const icons = { IconDashboard }
@@ -12,7 +13,7 @@ const dashboard = {
   id: 'dashboard',
   title: 'Báo cáo',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY],
+  premissions: Perm_DASHBOARD_Menu_View,
   children: [
     {
       id: ROUTES.DASHBOARD,
@@ -21,7 +22,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: Perm_DASHBOARD_ALL_View
     },
     {
       id: ROUTES.DASHBOARD_ORDER,
@@ -30,7 +31,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: Perm_DASHBOARD_ORDER_View
     },
     {
       id: ROUTES.DASHBOARD_ORDER_SALE,
@@ -39,7 +40,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER_SALE}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
+      premissions: Perm_DASHBOARD_ORDER_SALE_View
     }
   ]
 }

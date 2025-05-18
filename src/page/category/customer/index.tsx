@@ -23,9 +23,13 @@ import { useDeleteCustomerMutation, useGetListCustomerQuery } from '../../../app
 import Toast from '../../../components/toast'
 import { IconAB2 } from '@tabler/icons-react'
 import ChangeAccountStaff from './ChangeStaff'
+import { useHasPermission } from '../../../app/hooks'
+import { Perm_Customer_Add, Perm_Customer_Edit } from '../../../help/permission'
 
 const CustomerPage = React.memo(() => {
   const dialogs = useDialogs()
+  const permAdd = useHasPermission(Perm_Customer_Add)
+  const permEdit = useHasPermission(Perm_Customer_Edit)
   //   const navigate = useNavigate()
   //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -171,36 +175,48 @@ const CustomerPage = React.memo(() => {
         flex: 1,
         getActions: (param: GridRenderCellParams<CustomerType, number>) => {
           return [
-            <GridActionsCellItem
-              icon={<IconAB2 />}
-              label='Edit'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => {
-                setItemSelectedEidt(param.row)
-                handleClickOpenFormChangeStaff()
-              }}
-              disabled={!param.row.isActive}
-            />,
-            <GridActionsCellItem
-              icon={<EditOutlinedIcon />}
-              label='Edit'
-              className='textPrimary'
-              color='inherit'
-              onClick={() => {
-                setItemSelectedEidt(param.row)
-                handleClickOpenForm()
-              }}
-              disabled={!param.row.isActive}
-            />,
-            <GridActionsCellItem
-              onClick={() => handleDelete(param.row.id)}
-              icon={<DeleteOutlinedIcon />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              disabled={!param.row.isActive}
-            />
+            permEdit ? (
+              <GridActionsCellItem
+                icon={<IconAB2 />}
+                label='Edit'
+                className='textPrimary'
+                color='inherit'
+                onClick={() => {
+                  setItemSelectedEidt(param.row)
+                  handleClickOpenFormChangeStaff()
+                }}
+                disabled={!param.row.isActive}
+              />
+            ) : (
+              <></>
+            ),
+            permEdit ? (
+              <GridActionsCellItem
+                icon={<EditOutlinedIcon />}
+                label='Edit'
+                className='textPrimary'
+                color='inherit'
+                onClick={() => {
+                  setItemSelectedEidt(param.row)
+                  handleClickOpenForm()
+                }}
+                disabled={!param.row.isActive}
+              />
+            ) : (
+              <></>
+            ),
+            permEdit ? (
+              <GridActionsCellItem
+                onClick={() => handleDelete(param.row.id)}
+                icon={<DeleteOutlinedIcon />}
+                label='Delete'
+                className='textPrimary'
+                color='inherit'
+                disabled={!param.row.isActive}
+              />
+            ) : (
+              <></>
+            )
           ]
         }
       }
@@ -281,11 +297,13 @@ const CustomerPage = React.memo(() => {
             />
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <div>
-              <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
-                Thêm mới
-              </Button>
-            </div>
+            {permAdd && (
+              <div>
+                <Button variant='outlined' sx={{ mr: 1 }} onClick={handleClickOpenForm}>
+                  Thêm mới
+                </Button>
+              </div>
+            )}
           </Grid>
         </Grid>
 

@@ -56,8 +56,8 @@ const validationSchema = yup.object({
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+    // .max(11)
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
   representativeName: yup
     .string()
     .transform((value, originalValue) => (originalValue === '' ? undefined : value))
@@ -70,8 +70,8 @@ const validationSchema = yup.object({
   representativePhone: yup
     .string()
     .transform((value, originalValue) => (originalValue === '' ? undefined : value))
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng')
+    // .max(11)
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng')
 })
 interface Props {
   data: StaffType

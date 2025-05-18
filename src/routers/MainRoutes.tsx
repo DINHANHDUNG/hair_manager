@@ -5,7 +5,13 @@ import ROUTES from './helpersRouter/constantRouter'
 import { createPrivateRoute, createProtectedRoute } from './helpersRouter/routeHelpers'
 import { PERMISSION } from '../constants'
 import NotAuthorizedPage from '../page/notAuthor/NotAuthorizedPage'
-import { Perm_DASHBOARD_ORDER_SALE_View, Perm_DASHBOARD_ORDER_View, Perm_Order_View } from '../help/permission'
+import {
+  Perm_Customer_View,
+  Perm_DASHBOARD_ORDER_SALE_View,
+  Perm_DASHBOARD_ORDER_View,
+  Perm_Order_View,
+  Perm_Staff_View
+} from '../help/permission'
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../page/dashboard/DashboardPage')))
@@ -113,16 +119,16 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.CATEGORY_CHILD.STAFF,
-          element: createProtectedRoute(<StaffPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN])
+          element: createProtectedRoute(<StaffPage />, Perm_Staff_View)
         },
         {
           path: ROUTES.CATEGORY_CHILD.STAFF_DETAIL,
           // element: <StaffDetailPage />,
-          element: createProtectedRoute(<StaffDetailPage />, [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE])
+          element: createProtectedRoute(<StaffDetailPage />, Perm_Staff_View)
         },
         {
           path: ROUTES.CATEGORY_CHILD.PARTER,
-          element: <CustomerPage />
+          element: createProtectedRoute(<CustomerPage />, Perm_Staff_View)
         },
         {
           path: ROUTES.CATEGORY_CHILD.COMPANY,
@@ -166,12 +172,7 @@ const MainRoutes = {
         },
         {
           path: ROUTES.CATEGORY_CHILD.CUSTOMER_MANAGER,
-          element: createProtectedRoute(<CustomerPage />, [
-            PERMISSION.ADMIN,
-            PERMISSION.KETOAN,
-            PERMISSION.QUANLY,
-            PERMISSION.SALE,
-          ])
+          element: createProtectedRoute(<CustomerPage />, Perm_Customer_View)
         }
       ]
     },

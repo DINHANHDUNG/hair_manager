@@ -70,8 +70,8 @@ const validationSchema = yup.object({
   phoneNumber: yup
     .string()
     .required('Trường này là bắt buộc')
-    .max(11)
-    .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
+    // .max(11)
+    .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
   email: yup.string().email('Email không hợp lệ').optional(),
   gender: yup.string().required('Trường này là bắt buộc'),
   ethnic: yup.string().max(255, 'Độ dài không được quá 255').optional(),
@@ -83,8 +83,8 @@ const validationSchema = yup.object({
   representativeName: yup.string().max(255, 'Độ dài không được quá 255').optional(),
   representativePhone: yup
     .string()
-    .max(11)
-    .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRegex.test(value)),
+    // .max(11)
+    .test('is-valid-phone', 'Vui lòng nhập đúng định dạng', (value) => !value || VALIDATE.phoneRelaxed.test(value)),
   representativePosition: yup.string().max(255, 'Độ dài không được quá 255').optional()
 })
 
