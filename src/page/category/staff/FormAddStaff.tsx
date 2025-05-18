@@ -29,7 +29,7 @@ type FormValues = {
   // birthDay: string
   // email?: string
   address?: string
-  phoneNumber: string
+  phoneNumber?: string
   identificationCard: string
   // addressOrigin?: string
   // ethnic?: string
@@ -56,7 +56,7 @@ const validationSchema = yup.object({
     .matches(VALIDATE.cccdRegex, 'Vui lòng nhập đúng định dạng'),
   phoneNumber: yup
     .string()
-    .required('Trường này là bắt buộc')
+    .transform((value, originalValue) => (originalValue === '' ? undefined : value))
     .max(11)
     .matches(VALIDATE.phoneRegex, 'Vui lòng nhập đúng định dạng'),
   role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền'),
