@@ -5,6 +5,7 @@ import ROUTES from './helpersRouter/constantRouter'
 import { createPrivateRoute, createProtectedRoute } from './helpersRouter/routeHelpers'
 import { PERMISSION } from '../constants'
 import NotAuthorizedPage from '../page/notAuthor/NotAuthorizedPage'
+import { Perm_DASHBOARD_ORDER_SALE_View, Perm_DASHBOARD_ORDER_View, Perm_Order_View } from '../help/permission'
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../page/dashboard/DashboardPage')))
@@ -56,11 +57,11 @@ const MainRoutes = {
         },
         {
           path: ROUTES.DASHBOARD_ORDER,
-          element: <DashboarOrderdDefault />
+          element: createProtectedRoute(<DashboarOrderdDefault />, Perm_DASHBOARD_ORDER_View)
         },
         {
           path: ROUTES.DASHBOARD_ORDER_SALE,
-          element: <DashboarOrderdSale />
+          element: createProtectedRoute(<DashboarOrderdSale />, Perm_DASHBOARD_ORDER_SALE_View)
         }
       ]
     },
@@ -69,7 +70,8 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.DEFAULT,
-          element: <OrderPage />
+          // element: <OrderPage />,
+          element: createProtectedRoute(<OrderPage />, Perm_Order_View)
         },
         // {
         //   path: ROUTES.ORDER_ADD,

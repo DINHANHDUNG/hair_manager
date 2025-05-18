@@ -30,7 +30,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
     },
     {
       id: ROUTES.DASHBOARD_ORDER_SALE,
@@ -39,7 +39,7 @@ const dashboard = {
       url: `/${ROUTES.DASHBOARD}/${ROUTES.DASHBOARD_ORDER_SALE}`,
       icon: icons.IconDashboard,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE]
     }
   ]
 }

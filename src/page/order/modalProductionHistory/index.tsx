@@ -30,7 +30,7 @@ import TableDataGrid from '../../../components/table-data-grid/TableComponentDat
 import Toast from '../../../components/toast'
 import { ErrorType } from '../../../types'
 import { FieldCOrderHistory, HistoryProductionType, OrderType } from '../../../types/order'
-import { Perm_Order_Edit } from '../../../help/permission'
+import { Perm_Order_Add, Perm_Order_Edit } from '../../../help/permission'
 
 interface Props {
   open: boolean
@@ -39,19 +39,20 @@ interface Props {
 }
 
 type FormValues = {
-  date: string
+  date?: string
   status: string
 }
 
 const validationSchema = yup.object({
   status: yup.string().required('Trường này là bắt buộc').max(255, 'Độ dài không được quá 255'),
 
-  date: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng')
+  // date: yup.string().required('Trường này là bắt buộc').matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng')
+  date: yup.string()
 })
 
 export default function ModalProductionHistory(Props: Props) {
   const { open, handleClose, itemSelectedEdit } = Props
-  const permEdit = useHasPermission(Perm_Order_Edit)
+  const permAdd = useHasPermission(Perm_Order_Add)
   const idOrder = itemSelectedEdit?.id
   const dialogs = useDialogs()
   const {
@@ -125,30 +126,30 @@ export default function ModalProductionHistory(Props: Props) {
           />
         )
       }
-    },
-    {
-      field: 'actions',
-      headerName: 'Hành động',
-      type: 'actions',
-      flex: 1,
-      minWidth: 150,
-      getActions: (param: GridRenderCellParams<HistoryProductionType, number>) => [
-        <GridActionsCellItem
-          icon={<EditOutlinedIcon />}
-          label='edit'
-          className='textPrimary'
-          color='inherit'
-          onClick={() => editItem(param.row)}
-        />,
-        <GridActionsCellItem
-          onClick={() => handleDelete(param.row.id)}
-          icon={<DeleteOutlinedIcon />}
-          label='Delete'
-          className='textPrimary'
-          color='inherit'
-        />
-      ]
     }
+    // {
+    //   field: 'actions',
+    //   headerName: 'Hành động',
+    //   type: 'actions',
+    //   flex: 1,
+    //   minWidth: 150,
+    //   getActions: (param: GridRenderCellParams<HistoryProductionType, number>) => [
+    //     <GridActionsCellItem
+    //       icon={<EditOutlinedIcon />}
+    //       label='edit'
+    //       className='textPrimary'
+    //       color='inherit'
+    //       onClick={() => editItem(param.row)}
+    //     />,
+    //     <GridActionsCellItem
+    //       onClick={() => handleDelete(param.row.id)}
+    //       icon={<DeleteOutlinedIcon />}
+    //       label='Delete'
+    //       className='textPrimary'
+    //       color='inherit'
+    //     />
+    //   ]
+    // }
   ]
 
   const renderColumn = (colDef: { field: string; headerName: string }) => {
@@ -199,7 +200,8 @@ export default function ModalProductionHistory(Props: Props) {
   })
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    const date = moment(data.date).startOf('day')
+    // const date = moment(data.date).startOf('day')
+    const date = moment().startOf('day')
     const isoDateStr = date?.toISOString()
     if (idUpdate && idUpdate > 0) {
       updateOrder({ ...data, date: isoDateStr, id: idUpdate, orderId: idOrder })
@@ -293,19 +295,22 @@ export default function ModalProductionHistory(Props: Props) {
   return (
     <CustomDialog title='Lịch sử sản xuất' open={open} onClose={handleClose} maxWidth='lg' fullWidth>
       <Grid container spacing={gridSpacingForm}>
-        <Grid item xs={12} sm={12} md={12} lg={8} xl={8} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={12} md={12} lg={permAdd ? 8 : 12} xl={permAdd ? 8 : 12} sx={{ mb: 3 }}>
           <SubCard
             title={
               <Grid item xs={12} container alignItems={'center'} justifyContent={'space-between'} flexDirection={'row'}>
                 <Typography variant='h5'>Lịch sử sản xuất</Typography>
-                <div>
-                  <IconButton color='inherit' size='small' onClick={() => addItem()}>
-                    <AddCircleOutlineIcon fontSize='inherit' />
-                  </IconButton>
-                  {/* <IconButton color='inherit' size='small' onClick={() => setTypeList(!typeList)}>
+
+                {permAdd && (
+                  <div>
+                    <IconButton color='inherit' size='small' onClick={() => addItem()}>
+                      <AddCircleOutlineIcon fontSize='inherit' />
+                    </IconButton>
+                    {/* <IconButton color='inherit' size='small' onClick={() => setTypeList(!typeList)}>
                     {typeList ? <FormatListNumberedRtlIcon fontSize='inherit' /> : <AppsIcon fontSize='inherit' />}
                   </IconButton> */}
-                </div>
+                  </div>
+                )}
               </Grid>
             }
           >
@@ -329,55 +334,57 @@ export default function ModalProductionHistory(Props: Props) {
             />
           </SubCard>
         </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={4} xl={4} sx={{ mb: 3 }}>
-          <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} lịch sử sản xuất`}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid container spacing={gridSpacingForm}>
-                <Grid item xs={12} sm={12} md={12} lg={12}>
-                  <MyDatePicker
-                    name='date'
-                    control={control}
-                    label='Ngày'
-                    errors={errors}
-                    variant='outlined'
-                    //   defaultValue={dayjs()}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12}>
-                  <MyAutocomplete
-                    name={`status`}
-                    control={control}
-                    errors={errors}
-                    options={OPTIONS_STATUS_HISTORY_PROD ?? []}
-                    // title='Nội dung'
-                    label='Nội dung'
-                    placeholder='Chọn nội dung'
-                    size='small'
-                    fullWidth
-                    require
-                    onChange={(_, v) => {
-                      /* eslint-disable @typescript-eslint/no-explicit-any */
-                      const selectedValue = v as any // Ép kiểu cho giá trị v
-                      /* eslint-enable @typescript-eslint/no-explicit-any */
-                      setValue(`status`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
-                    }}
-                  />
-                </Grid>
-                {permEdit && (
-                  <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
-                    <SubmitButton
-                      variant='contained'
-                      sx={{ float: 'right' }}
-                      loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
-                    >
-                      {idUpdate ? 'Cập nhật' : 'Thêm'}
-                    </SubmitButton>
+        {permAdd && (
+          <Grid item xs={12} sm={12} md={12} lg={4} xl={4} sx={{ mb: 3 }}>
+            <SubCard title={`${idUpdate ? 'Cập nhật' : 'Thêm'} lịch sử sản xuất`}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Grid container spacing={gridSpacingForm}>
+                  {/* <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <MyDatePicker
+                      name='date'
+                      control={control}
+                      label='Ngày'
+                      errors={errors}
+                      variant='outlined'
+                      //   defaultValue={dayjs()}
+                    />
+                  </Grid> */}
+                  <Grid item xs={12} sm={12} md={12} lg={12}>
+                    <MyAutocomplete
+                      name={`status`}
+                      control={control}
+                      errors={errors}
+                      options={OPTIONS_STATUS_HISTORY_PROD ?? []}
+                      // title='Nội dung'
+                      label='Nội dung'
+                      placeholder='Chọn nội dung'
+                      size='small'
+                      fullWidth
+                      require
+                      onChange={(_, v) => {
+                        /* eslint-disable @typescript-eslint/no-explicit-any */
+                        const selectedValue = v as any // Ép kiểu cho giá trị v
+                        /* eslint-enable @typescript-eslint/no-explicit-any */
+                        setValue(`status`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
+                      }}
+                    />
                   </Grid>
-                )}
-              </Grid>
-            </form>
-          </SubCard>
-        </Grid>
+                  {permAdd && (
+                    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
+                      <SubmitButton
+                        variant='contained'
+                        sx={{ float: 'right' }}
+                        loading={isSubmitting} // Hiển thị trạng thái tải khi đang submit
+                      >
+                        {idUpdate ? 'Cập nhật' : 'Thêm'}
+                      </SubmitButton>
+                    </Grid>
+                  )}
+                </Grid>
+              </form>
+            </SubCard>
+          </Grid>
+        )}
       </Grid>
     </CustomDialog>
   )

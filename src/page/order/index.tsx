@@ -305,19 +305,19 @@ const OrderPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<OrderType, number>) => params.row?.customer?.name || ''
       },
 
-      {
-        field: 'customerPhone',
-        headerName: 'Số điện thoại',
-        editable: permEdit,
-        preProcessEditCellProps: (params: GridRenderEditCellParams) => {
-          const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
-          return {
-            ...params.props,
-            error: !isValidPhone
-          }
-        },
-        renderEditCell: TextEditCell
-      },
+      // {
+      //   field: 'customerPhone',
+      //   headerName: 'Số điện thoại',
+      //   editable: permEdit,
+      //   preProcessEditCellProps: (params: GridRenderEditCellParams) => {
+      //     const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
+      //     return {
+      //       ...params.props,
+      //       error: !isValidPhone
+      //     }
+      //   },
+      //   renderEditCell: TextEditCell
+      // },
 
       {
         field: 'customerAddress',
@@ -407,7 +407,7 @@ const OrderPage = React.memo(() => {
       },
 
       { field: 'rate', headerName: 'Đánh giá sx', editable: permEdit, renderEditCell: TextEditCell },
-      { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
+      // { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
 
       // { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
 
@@ -525,37 +525,6 @@ const OrderPage = React.memo(() => {
       }
     ]
   }
-
-  // Bảng chi tiết – tương ứng group "Theo dõi đơn sửa"
-  const repairColumns: GridColDef[] = [
-    {
-      field: 'reasonRepair',
-      headerName: 'Đơn sửa', // order_edit
-      width: 200
-    },
-    {
-      field: 'statusOrder',
-      headerName: 'Trạng thái', // statusWorking2
-      width: 150
-    },
-    {
-      field: 'dateDelivery',
-      headerName: 'Ngày xưởng giao lại', // order_edit_date_push
-      width: 180,
-      renderCell: (params: GridRenderCellParams) => (params.value ? dayjs(params.value).format('DD/MM/YYYY') : '')
-    },
-    {
-      field: 'noteRepair',
-      headerName: 'Ghi chú', // order_edit_date_note
-      width: 200
-    },
-    {
-      field: 'dateReceive',
-      headerName: 'Ngày xưởng nhận', // dateReceive2
-      width: 180,
-      renderCell: (params: GridRenderCellParams) => (params.value ? dayjs(params.value).format('DD/MM/YYYY') : '')
-    }
-  ]
 
   const renderColumn = (colDef: { field: string; headerName: string }) => {
     switch (colDef.field) {
@@ -819,7 +788,9 @@ const OrderPage = React.memo(() => {
             }}
             pinnedColumns={{ right: ['actions'] }}
             getDetailPanelContent={(row) => <InvoiceRepairDetailPanel data={row.invoiceRepairs || []} />}
-            getDetailPanelHeight={(row) => (row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 160)}
+            getDetailPanelHeight={(row) =>
+              row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 160
+            }
           />
         </div>
         {/* <FormAddEditWorker
