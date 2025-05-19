@@ -26,9 +26,21 @@ export const reportApi = createApi({
         responseType: 'blob' // 👈 Cực kỳ quan trọng!
       }),
       transformResponse: (response: any) => response
+    }),
+    getListReportOrder: builder.query({
+      query: (params) => ({
+        url: NetWork.reportOrder,
+        method: GET,
+        params: params
+      })
     })
   })
 })
 
 // Export hooks for usage in functional components
-export const { useExportDetailOrderQuery, useLazyExportDetailOrderQuery, useLazyExportBySaleOrderQuery } = reportApi
+export const {
+  useExportDetailOrderQuery,
+  useLazyExportDetailOrderQuery,
+  useLazyExportBySaleOrderQuery,
+  useGetListReportOrderQuery
+} = reportApi

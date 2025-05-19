@@ -28,7 +28,7 @@ import dayjs from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { handleMutation, useHasPermission } from '../../app/hooks'
+import { formatNumber, handleMutation, useHasPermission } from '../../app/hooks'
 import { useGetListCustomerQuery } from '../../app/services/customer'
 import {
   useDeleteOrderMutation,
@@ -422,7 +422,14 @@ const OrderPage = React.memo(() => {
       }, //QL
 
       { field: 'rate', headerName: 'Đánh giá sx', editable: checkQL, renderEditCell: TextEditCell }, //QL
-      { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
+      {
+        field: 'discount',
+        headerName: 'Tiền discount',
+        editable: permEdit,
+        renderEditCell: TextEditCell,
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.discount ? formatNumber(Number(params.row.discount)) : ''
+      },
 
       {
         field: 'actions',

@@ -13,7 +13,6 @@ import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useGetListCustomerQuery } from '../../app/services/customer'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../components/ui-component/cards/MainCard'
@@ -21,8 +20,10 @@ import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
 import { CustomerType } from '../../types/customer'
 import FilterTableAdvanced from './FilterTableAdvanced'
-import { useLazyExportDetailOrderQuery } from '../../app/services/report'
+import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import Toast from '../../components/toast'
+import { removeNullOrEmpty } from '../../help'
+import { formatNumber } from '../../app/hooks'
 
 const ReportTotalPage = React.memo(() => {
   //   const navigate = useNavigate()
@@ -42,28 +43,31 @@ const ReportTotalPage = React.memo(() => {
   })
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    searchKey: initialSearchKey,
-    dateFrom: initialStartDate,
-    dateTo: initialEndDate
+    searchKey: initialSearchKey
   })
   const [rowsData, setRowsData] = React.useState<CustomerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
+  const selectedMonth = month || dayjs()
+  const monthCV = selectedMonth.format('MM-YYYY') // không cần momentÇ
   const {
-    data: dataApiCustomer,
+    data: dataApiOrder,
     isLoading
     // refetch
-  } = useGetListCustomerQuery({
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-    ...filters
-  })
+  } = useGetListReportOrderQuery(
+    removeNullOrEmpty({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      ...filters,
+      month: monthCV
+    })
+  )
 
   const [exportExcelDetail] = useLazyExportDetailOrderQuery()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiCustomer?.data?.totalCount || 0
+  const rowTotal = dataApiOrder?.data?.length || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -98,8 +102,6 @@ const ReportTotalPage = React.memo(() => {
 
   const exportExcel = async () => {
     try {
-      const selectedMonth = month || dayjs()
-      const monthCV = selectedMonth.format('MM-YYYY') // không cần moment
       const result = await exportExcelDetail({ month: monthCV }).unwrap()
 
       const blob = new Blob([result], {
@@ -164,68 +166,68 @@ const ReportTotalPage = React.memo(() => {
     )
   }
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      sale: 'Nguyễn Văn A',
-      date: '2025-04-10',
-      code: 'ORD001',
-      kg: 12,
-      money: 240,
-      discount: 10,
-      moneyShip: 15,
-      wigFee: 5,
-      paypalFree: 3,
-      moneyTotal: 253,
-      refunMoney: 150,
-      amountReceived: 253,
-      wantage: 0,
-      payment: 'Chuyển khoản',
-      receivingAccount: 'VCB - 123456789',
-      status: 'done'
-    },
-    {
-      id: 2,
-      order: 2,
-      sale: 'Trần Thị B',
-      date: '2025-04-12',
-      code: 'ORD002',
-      kg: 8.5,
-      money: 170,
-      discount: 5,
-      moneyShip: 10,
-      wigFee: 0,
-      paypalFree: 2,
-      moneyTotal: 177,
-      refunMoney: 100,
-      amountReceived: 177,
-      wantage: 0,
-      payment: 'Tiền mặt',
-      receivingAccount: 'Techcombank - 987654321',
-      status: 'done'
-    },
-    {
-      id: 3,
-      order: 3,
-      sale: 'Lê Văn C',
-      date: '2025-04-14',
-      code: 'ORD003',
-      kg: 5,
-      money: 100,
-      discount: 0,
-      moneyShip: 8,
-      wigFee: 2,
-      paypalFree: 1,
-      moneyTotal: 109,
-      refunMoney: 50,
-      amountReceived: 100,
-      wantage: 9,
-      payment: 'Paypal',
-      receivingAccount: 'Paypal - levan@example.com',
-      status: 'partial'
-    }
-  ]
+  // const fakeData = [
+  //   {
+  //     id: 1,
+  //     order: 1,
+  //     sale: 'Nguyễn Văn A',
+  //     date: '2025-04-10',
+  //     code: 'ORD001',
+  //     kg: 12,
+  //     money: 240,
+  //     discount: 10,
+  //     moneyShip: 15,
+  //     wigFee: 5,
+  //     paypalFree: 3,
+  //     moneyTotal: 253,
+  //     refunMoney: 150,
+  //     amountReceived: 253,
+  //     wantage: 0,
+  //     payment: 'Chuyển khoản',
+  //     receivingAccount: 'VCB - 123456789',
+  //     status: 'done'
+  //   },
+  //   {
+  //     id: 2,
+  //     order: 2,
+  //     sale: 'Trần Thị B',
+  //     date: '2025-04-12',
+  //     code: 'ORD002',
+  //     kg: 8.5,
+  //     money: 170,
+  //     discount: 5,
+  //     moneyShip: 10,
+  //     wigFee: 0,
+  //     paypalFree: 2,
+  //     moneyTotal: 177,
+  //     refunMoney: 100,
+  //     amountReceived: 177,
+  //     wantage: 0,
+  //     payment: 'Tiền mặt',
+  //     receivingAccount: 'Techcombank - 987654321',
+  //     status: 'done'
+  //   },
+  //   {
+  //     id: 3,
+  //     order: 3,
+  //     sale: 'Lê Văn C',
+  //     date: '2025-04-14',
+  //     code: 'ORD003',
+  //     kg: 5,
+  //     money: 100,
+  //     discount: 0,
+  //     moneyShip: 8,
+  //     wigFee: 2,
+  //     paypalFree: 1,
+  //     moneyTotal: 109,
+  //     refunMoney: 50,
+  //     amountReceived: 100,
+  //     wantage: 9,
+  //     payment: 'Paypal',
+  //     receivingAccount: 'Paypal - levan@example.com',
+  //     status: 'partial'
+  //   }
+  // ]
 
   const data = {
     columns: [
@@ -234,37 +236,72 @@ const ReportTotalPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'sale', headerName: 'Tên khách hàng' },
+      { field: 'customerName', headerName: 'Tên khách hàng' },
       {
-        field: 'date',
+        field: 'dateOrder',
         headerName: 'Ngày',
 
         renderCell: (params: GridRenderCellParams<any, number>) =>
           params.row.date ? moment(params.row.date).format('DD/MM/YYYY') : ''
       },
       { field: 'code', headerName: 'Đơn số' },
-      { field: 'kg', headerName: 'Số kg' },
-      { field: 'money', headerName: 'Tiền hàng (USD)' },
-      { field: 'discount', headerName: 'Discount' },
-      { field: 'moneyShip', headerName: 'Tiền ship (USD)' },
-      { field: 'wigFee', headerName: 'Wig Fee/ Fast production' },
-      { field: 'paypalFree', headerName: 'Paypal Free' },
-      { field: 'moneyTotal', headerName: 'Tổng tiền đơn (USD)' },
+      {
+        field: 'totalWeight',
+        headerName: 'Số kg',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.totalWeight ? formatNumber(Number(params.row.totalWeight)) : ''
+      },
+      {
+        field: 'totalPrice',
+        headerName: 'Tiền hàng (USD)',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.totalPrice ? formatNumber(Number(params.row.totalPrice)) : ''
+      },
+      {
+        field: 'discount',
+        headerName: 'Discount',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.discount ? formatNumber(Number(params.row.discount)) : ''
+      },
+      {
+        field: 'feeShip',
+        headerName: 'Tiền ship (USD)',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.feeShip ? formatNumber(Number(params.row.feeShip)) : ''
+      },
+      {
+        field: 'feeWig',
+        headerName: 'Wig Fee/ Fast production',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.feeWig ? formatNumber(Number(params.row.feeWig)) : ''
+      },
+      {
+        field: 'feePaypal',
+        headerName: 'Paypal Free',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.feePaypal ? formatNumber(Number(params.row.feePaypal)) : ''
+      },
+      {
+        field: 'totalOrder',
+        headerName: 'Tổng tiền đơn (USD)',
+        renderCell: (params: GridRenderCellParams<any, number>) =>
+          params.row.totalOrder ? formatNumber(Number(params.row.totalOrder)) : ''
+      },
 
       {
         field: 'refunMoney1',
-        headerName: 'Lần 1',
-        renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        headerName: 'Lần 1'
+        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
       },
       {
         field: 'refunMoney2',
-        headerName: 'Lần 2',
-        renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        headerName: 'Lần 2'
+        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
       },
       {
         field: 'refunMoney3',
-        headerName: 'Lần 3',
-        renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        headerName: 'Lần 3'
+        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
       },
       { field: 'amountReceived', headerName: 'Số tiền thực nhận' },
       { field: 'wantage', headerName: 'Số tiền khách thiếu (USD)' },
@@ -272,8 +309,8 @@ const ReportTotalPage = React.memo(() => {
       { field: 'receivingAccount', headerName: 'Tài khoản nhận' },
       {
         field: 'status',
-        headerName: 'Tài khoản nhận',
-        renderCell: (params: GridRenderCellParams<any, number>) => 'Đã trả hết'
+        headerName: 'Tài khoản nhận'
+        // renderCell: (params: GridRenderCellParams<any, number>) => 'Đã trả hết'
       }
     ]
   }
@@ -306,16 +343,16 @@ const ReportTotalPage = React.memo(() => {
 
       children: [
         { field: 'order' },
-        { field: 'sale' },
-        { field: 'date' },
+        { field: 'customerName' },
+        { field: 'dateOrder' },
         { field: 'code' },
-        { field: 'kg' },
-        { field: 'money' },
+        { field: 'totalWeight' },
+        { field: 'totalPrice' },
         { field: 'discount' },
-        { field: 'moneyShip' },
-        { field: 'wigFee' },
-        { field: 'paypalFree' },
-        { field: 'moneyTotal' }
+        { field: 'feeShip' },
+        { field: 'feeWig' },
+        { field: 'feePaypal' },
+        { field: 'totalOrder' }
       ]
     },
     {
@@ -372,13 +409,14 @@ const ReportTotalPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      dataApiOrder?.data?.map((row: any, index: number) => ({
         ...row,
+        id: index,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [fakeData])
+  }, [dataApiOrder])
 
   return (
     <>
