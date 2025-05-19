@@ -80,6 +80,20 @@ export const statisticApi = createApi({
       }),
       transformResponse: (response: ReponseData2<StaticStatusEmployeeType>) => response
     }),
+    getStaticOrderTotalMonth: builder.query({
+      query: (params) => ({
+        url: NetWork.staticOrderTotalMonth,
+        method: GET,
+        params: params
+      })
+    }),
+    getStaticOrderMonth: builder.query({
+      query: (params) => ({
+        url: NetWork.staticOrderMonth,
+        method: GET,
+        params: params
+      })
+    })
   })
 })
 
@@ -92,5 +106,7 @@ export const {
   useGetStaticSalaryAdvanceQuery,
   useGetStaticEmployeeByMonthQuery,
   useGetStaticOrderDetailQuery,
-  useGetStaticOrderTotalQuery
+  useGetStaticOrderTotalQuery,
+  useGetStaticOrderMonthQuery,
+  useGetStaticOrderTotalMonthQuery
 } = statisticApi

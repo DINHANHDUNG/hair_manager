@@ -31,7 +31,6 @@ import { authStore, customTheme } from '../../../../../app/selectedStore'
 import ChangePassword from '../../../../dialog/ChangePassword'
 import MainCard from '../../../../ui-component/cards/MainCard'
 import Transitions from '../../../../ui-component/extended/Transitions'
-import ROUTES from '../../../../../routers/helpersRouter/constantRouter'
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -317,7 +316,11 @@ const ProfileSection = () => {
           </Transitions>
         )}
       </Popper>
-      <ChangePassword checkCurrent={true} handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
+      <ChangePassword
+        checkCurrent={true}
+        handleClose={() => setOpenModalChangePass(false)}
+        open={openModalChangePass}
+      />
     </>
   )
 }

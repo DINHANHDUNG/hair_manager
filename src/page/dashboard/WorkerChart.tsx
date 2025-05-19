@@ -1,10 +1,10 @@
 import { Bar } from 'react-chartjs-2'
-import { useGetStaticEmployeeByMonthQuery } from '../../app/services/statistic'
+import { useGetStaticOrderMonthQuery } from '../../app/services/statistic'
 import { StaticEmployeeByMonthType } from '../../types/statistic'
 
 export const WorkerChart = () => {
-  const { data: dataStaticEmployeeByMonth } = useGetStaticEmployeeByMonthQuery({})
-  const dataAPI = dataStaticEmployeeByMonth?.data || []
+  const { data: dataStaticOrderByMonth } = useGetStaticOrderMonthQuery({})
+  const dataAPI = dataStaticOrderByMonth?.data || []
   const labels = [
     'Tháng 1',
     'Tháng 2',

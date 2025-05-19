@@ -1,4 +1,4 @@
-import { InputLabel, TextField } from '@mui/material'
+import { InputLabel } from '@mui/material'
 import { Box } from '@mui/system'
 import { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
@@ -40,13 +40,6 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
       })
     }
   }, [open, value])
-
-  const handleChangeState = (newValue: string, key: string) => {
-    setState((prevState) => ({
-      ...prevState,
-      [key]: newValue || ''
-    }))
-  }
 
   const handleDateRangeChange = (newValue: DateRange<Dayjs> | undefined) => {
     setState((prevState) => ({

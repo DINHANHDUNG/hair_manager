@@ -1,8 +1,12 @@
 // assets
 import { IconDashboard } from '@tabler/icons-react'
+import {
+  Perm_DASHBOARD_ALL_View,
+  Perm_DASHBOARD_Menu_View,
+  Perm_DASHBOARD_ORDER_SALE_View,
+  Perm_DASHBOARD_ORDER_View
+} from '../../help/permission'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { PERMISSION } from '../../constants'
-import { Perm_DASHBOARD_ALL_View, Perm_DASHBOARD_Menu_View, Perm_DASHBOARD_ORDER_SALE_View, Perm_DASHBOARD_ORDER_View } from '../../help/permission'
 
 // constant
 const icons = { IconDashboard }

@@ -1,16 +1,16 @@
-import { Alert, Grid, IconButton, InputAdornment } from '@mui/material'
-import { CustomDialog } from './CustomDialog'
-import { gridSpacingForm } from '../../constants'
-import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
-import { VALIDATE } from '../../common/validate'
-import { useChange_pass_accMutation, useChange_pass_staffMutation } from '../../app/services/auth'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { Alert, Grid, IconButton, InputAdornment } from '@mui/material'
 import { useEffect, useState } from 'react'
-import Toast from '../toast'
+import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
+import * as yup from 'yup'
+import { useChange_pass_accMutation, useChange_pass_staffMutation } from '../../app/services/auth'
+import { VALIDATE } from '../../common/validate'
+import { gridSpacingForm } from '../../constants'
 import SubmitButton from '../button/SubmitButton'
 import MyTextField from '../input/MyTextField'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import Toast from '../toast'
+import { CustomDialog } from './CustomDialog'
 
 interface Props {
   open: boolean
@@ -48,7 +48,10 @@ const validationSchema = yup.object({
 
 export default function ChangePassword({ open, handleClose, accountId, checkCurrent }: Props) {
   const [changePass, { isLoading, isSuccess, isError, error }] = useChange_pass_staffMutation() //Đổi mk nhân viên
-  const [staffChangePass, { isLoading: loadingStaff, isSuccess: isSuccessStaff, isError: isErrorStaff, error: errorStaff }] = useChange_pass_accMutation() //Đổi mk nhân viên
+  const [
+    staffChangePass,
+    { isLoading: loadingStaff, isSuccess: isSuccessStaff, isError: isErrorStaff, error: errorStaff }
+  ] = useChange_pass_accMutation() //Đổi mk nhân viên
   // useChange_pass_accMutation //Đổi mk tải khoản đang đăng nhập
   const [showPassword, setShowPassword] = useState(false)
   const {

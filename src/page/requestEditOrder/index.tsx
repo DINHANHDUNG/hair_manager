@@ -48,16 +48,11 @@ const RequestEditOrderPage = React.memo(() => {
   })
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<InvoiceRepairType>()
   const [orderId, setOrderId] = React.useState<number | undefined>()
-  console.log('====================================')
-  console.log(orderId, itemSelectedEdit)
-  console.log('====================================')
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    searchKey: initialSearchKey,
+    searchKey: initialSearchKey
     // key: initialKey
   })
   const [rowsData, setRowsData] = React.useState<InvoiceRepairType[]>()
-  console.log('rowsData', rowsData)
-
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
   // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticInvoiceRepairDetailQuery({})
@@ -311,7 +306,7 @@ const RequestEditOrderPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiInvoiceRepair?.data?.rows?.map((row: any, index: number) => ({
+      dataApiInvoiceRepair?.data?.rows?.map((row: InvoiceRepairType, index: number) => ({
         ...row,
         stt: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []

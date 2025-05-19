@@ -14,14 +14,13 @@ import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { handleMutation } from '../../app/hooks'
-import { useGetListEmployeeQuery } from '../../app/services/employee'
 import { useGetListOrderQuery, useUpdateOrderCancelApprovalMutation } from '../../app/services/order'
 import { OPTIONS_ORDER_KEY } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import LoadingModal from '../../components/ui-component/LoadingModal'
 import { gridSpacing } from '../../constants'
-import { convertDateToApi, removeNullOrEmpty } from '../../help'
+import { removeNullOrEmpty } from '../../help'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { EmployeeType } from '../../types/employee'
 import { OrderType } from '../../types/order'
@@ -151,7 +150,7 @@ const CancelOrderPage = React.memo(() => {
             <Chip
               label={status ? 'Duyệt' : 'Từ chối'}
               sx={{
-                backgroundColor: status ?  '#4CAF50' : '#F44336',
+                backgroundColor: status ? '#4CAF50' : '#F44336',
                 color: '#ffffff',
                 fontWeight: 500
               }}
