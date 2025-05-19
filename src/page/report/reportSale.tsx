@@ -137,8 +137,8 @@ const ReportTotalSalePage = React.memo(() => {
       order: 1,
       sale: 'Nguyễn Văn A',
       totalOrder: 5,
-      totalKg: 58.2,
-      Totalmoney: 1150,
+      totalWeight: 58.2,
+      totalPrice: 1150,
       TotalAmountReceived: 1100,
       TotalWantage: 50
     },
@@ -147,8 +147,8 @@ const ReportTotalSalePage = React.memo(() => {
       order: 2,
       sale: 'Trần Thị B',
       totalOrder: 3,
-      totalKg: 31.6,
-      Totalmoney: 690,
+      totalWeight: 31.6,
+      totalPrice: 690,
       TotalAmountReceived: 690,
       TotalWantage: 0
     },
@@ -157,8 +157,8 @@ const ReportTotalSalePage = React.memo(() => {
       order: 3,
       sale: 'Lê Văn C',
       totalOrder: 7,
-      totalKg: 74.8,
-      Totalmoney: 1485,
+      totalWeight: 74.8,
+      totalPrice: 1485,
       TotalAmountReceived: 1350,
       TotalWantage: 135
     }
@@ -169,8 +169,8 @@ const ReportTotalSalePage = React.memo(() => {
     order: 'Tổng kết',
     sale: '',
     totalOrder: fakeData.reduce((sum, r) => sum + r.totalOrder, 0),
-    totalKg: fakeData.reduce((sum, r) => sum + r.totalKg, 0),
-    Totalmoney: fakeData.reduce((sum, r) => sum + r.Totalmoney, 0),
+    totalWeight: fakeData.reduce((sum, r) => sum + r.totalWeight, 0),
+    totalPrice: fakeData.reduce((sum, r) => sum + r.totalPrice, 0),
     TotalAmountReceived: fakeData.reduce((sum, r) => sum + r.TotalAmountReceived, 0),
     TotalWantage: fakeData.reduce((sum, r) => sum + r.TotalWantage, 0)
   }
@@ -185,8 +185,8 @@ const ReportTotalSalePage = React.memo(() => {
       { field: 'sale', headerName: 'Tên nhân viên', flex: 1 },
 
       { field: 'totalOrder', headerName: 'Tổng số đơn', flex: 1 },
-      { field: 'totalKg', headerName: 'Tổng kg', flex: 1 },
-      { field: 'Totalmoney', headerName: 'Tổng Tiền đơn (USD)', flex: 1 },
+      { field: 'totalWeight', headerName: 'Tổng kg', flex: 1 },
+      { field: 'totalPrice', headerName: 'Tổng Tiền đơn (USD)', flex: 1 },
       { field: 'TotalAmountReceived', headerName: 'Thực nhận', flex: 1 },
       { field: 'TotalWantage', headerName: 'Chưa nhận (USD)', flex: 1 }
     ]

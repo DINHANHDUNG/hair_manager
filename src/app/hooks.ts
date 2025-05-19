@@ -31,6 +31,10 @@ export const currency = function (number: number) {
   }).format(number)
 }
 
+export function formatNumber(value: number): string {
+  return value.toLocaleString('vi-VN')
+}
+
 export const handleMutation = (props: {
   loading: boolean
   isError: boolean
