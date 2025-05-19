@@ -16,18 +16,23 @@ interface Props {
   open: boolean
   handleClose: () => void
   accountId?: number
+  checkCurrent?: boolean
 }
 
 type Field = 'newPassword' | 'repeatPassword'
 
 type FormValues = {
-  // currentPassword: string
+  currentPassword?: string
   newPassword: string
   repeatPassword: string
 }
 
 const validationSchema = yup.object({
-  // currentPassword: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
+  currentPassword: yup.string().when('$checkCurrent', {
+    is: true,
+    then: (schema) => schema.required(`Trường này là bắt buộc`),
+    otherwise: (schema) => schema.notRequired().max(255, `Độ dài không được quá 255`)
+  }),
   newPassword: yup
     .string()
     .max(255, 'Độ dài không được quá 255')
@@ -41,8 +46,9 @@ const validationSchema = yup.object({
     .oneOf([yup.ref('newPassword')], 'Mật khẩu xác nhận không khớp')
 })
 
-export default function ChangePassword({ open, handleClose, accountId }: Props) {
+export default function ChangePassword({ open, handleClose, accountId, checkCurrent }: Props) {
   const [changePass, { isLoading, isSuccess, isError, error }] = useChange_pass_staffMutation() //Đổi mk nhân viên
+  const [staffChangePass, { isLoading: loadingStaff, isSuccess: isSuccessStaff, isError: isErrorStaff, error: errorStaff }] = useChange_pass_accMutation() //Đổi mk nhân viên
   // useChange_pass_accMutation //Đổi mk tải khoản đang đăng nhập
   const [showPassword, setShowPassword] = useState(false)
   const {
@@ -52,7 +58,8 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
     setError,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
-    resolver: yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema),
+    context: { checkCurrent: checkCurrent }
   })
 
   const handleClickShowPassword = () => {
@@ -65,6 +72,10 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
 
   // Xử lý khi form được submit
   const onSubmit: SubmitHandler<FormValues> = (value) => {
+    if (checkCurrent) {
+      staffChangePass({ ...value, accountId: accountId })
+      return
+    }
     changePass({ ...value, accountId: accountId })
   }
 
@@ -112,33 +123,35 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
       </Grid>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={gridSpacingForm}>
-          {/* <Grid item xs={12} sm={6} md={6} lg={4}>
-            <MyTextField
-              name='currentPassword'
-              control={control}
-              label='Mật khẩu cũ'
-              errors={errors}
-              variant='outlined'
-              type={showPassword ? 'text' : 'password'}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <IconButton
-                      aria-label='toggle password visibility'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge='end'
-                      size='large'
-                    >
-                      {!showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-          </Grid> */}
+          {checkCurrent && (
+            <Grid item xs={12} sm={checkCurrent ? 4 : 6} md={checkCurrent ? 4 : 6} lg={checkCurrent ? 4 : 6}>
+              <MyTextField
+                name='currentPassword'
+                control={control}
+                label='Mật khẩu cũ'
+                errors={errors}
+                variant='outlined'
+                type={showPassword ? 'text' : 'password'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge='end'
+                        size='large'
+                      >
+                        {!showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Grid>
+          )}
 
-          <Grid item xs={12} sm={6} md={6} lg={6}>
+          <Grid item xs={12} sm={checkCurrent ? 4 : 6} md={checkCurrent ? 4 : 6} lg={checkCurrent ? 4 : 6}>
             <MyTextField
               name='newPassword'
               control={control}
@@ -163,7 +176,7 @@ export default function ChangePassword({ open, handleClose, accountId }: Props) 
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={6}>
+          <Grid item xs={12} sm={checkCurrent ? 4 : 6} md={checkCurrent ? 4 : 6} lg={checkCurrent ? 4 : 6}>
             <MyTextField
               name='repeatPassword'
               control={control}

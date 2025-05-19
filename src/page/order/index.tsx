@@ -37,7 +37,15 @@ import {
   // useUploadFileOrderMutation
 } from '../../app/services/order'
 import { useGetStaticOrderDetailQuery } from '../../app/services/statistic'
-import { checkBg, checkColor, OPTIONS_STATUS_HISTORY_PROD, OPTIONS_STATUS_ORDER } from '../../common/contants'
+import {
+  checkBg,
+  checkColor,
+  OPTIONS_ORDER_KEY,
+  OPTIONS_STATUS_HISTORY_PROD,
+  OPTIONS_STATUS_ORDER,
+  OPTIONS_STATUS_QL_ORDER,
+  OPTIONS_STATUS_SALE_ORDER
+} from '../../common/contants'
 import { VALIDATE } from '../../common/validate'
 import { CardContentBoxSection } from '../../components/cardContentBoxSection'
 import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
@@ -47,7 +55,7 @@ import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing, PERMISSION } from '../../constants'
 import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
-import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_Edit } from '../../help/permission'
+import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_View } from '../../help/permission'
 import { ErrorType } from '../../types'
 import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
@@ -71,7 +79,8 @@ const OrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
   const checkQL = useHasPermission([PERMISSION.QUANLY])
-  const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_Edit)
+  const checkSale = useHasPermission([PERMISSION.SALE])
+  const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_View)
   const permInvoiceAdd = useHasPermission(Perm_Invoice_Add)
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -257,8 +266,11 @@ const OrderPage = React.memo(() => {
   }
 
   const onRowClick = (params: GridRowParams) => {
-    console.log('params', params.row)
     handleClickDetail()
+  }
+
+  const changeSttOrder = (id: number, status: string) => {
+    updateOrder({ id: id, statusOrder: status })
   }
 
   const getChangedFields = (newRow: any, oldRow: any) => {
@@ -266,14 +278,17 @@ const OrderPage = React.memo(() => {
   }
 
   const processRowUpdate = React.useCallback((newRow: any, oldRow: any, params: any) => {
-    console.log('params', params)
-
     // So sánh hoặc xử lý dữ liệu tại đây
     if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
       // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
-      console.log('Updated row:', newRow)
       const changedFields = getChangedFields(newRow, oldRow)
       const payload = { ...newRow }
+
+      // if (changedFields?.includes('statusOrder') && payload.statusOrder === OPTIONS_ORDER_KEY.CANCEL) {
+      //   //Call api xoá
+      //   deleteOrder({ ids: [Number(newRow.id)] })
+      //   return newRow
+      // }
 
       if (changedFields?.includes('customerId')) {
         payload.customerId = newRow.customerId ? Number(newRow.customerId) : null
@@ -295,21 +310,21 @@ const OrderPage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'code', headerName: 'Mã đơn hàng', editable: permEdit, renderEditCell: TextEditCell },
+      { field: 'code', headerName: 'Mã đơn hàng', editable: checkSale, renderEditCell: TextEditCell }, //Sell
       {
         field: 'customerId',
         headerName: 'Khách hàng',
-        editable: permEdit,
+        editable: checkSale,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={dataOptionCustomer} />
         ),
         renderCell: (params: GridRenderCellParams<OrderType, number>) => params.row?.customer?.name || ''
-      },
+      }, //Sell
 
       {
         field: 'customerPhone',
         headerName: 'Số điện thoại',
-        editable: permEdit,
+        editable: checkSale,
         preProcessEditCellProps: (params: GridRenderEditCellParams) => {
           const isValidPhone = VALIDATE.phoneRelaxed // ví dụ: bắt đầu bằng 0 và 10 số
           return {
@@ -318,14 +333,14 @@ const OrderPage = React.memo(() => {
           }
         },
         renderEditCell: TextEditCell
-      },
+      }, //Sell
 
       {
         field: 'customerAddress',
         headerName: 'Địa chỉ',
-        editable: permEdit,
+        editable: checkSale,
         renderEditCell: TextEditCell
-      },
+      }, //Sell
 
       {
         field: 'historyProductions',
@@ -352,14 +367,14 @@ const OrderPage = React.memo(() => {
             />
           )
         }
-      },
+      }, //QL
 
       {
         field: 'statusOrder',
         headerName: 'Tình trạng đơn hàng',
-        editable: permEdit,
+        editable: checkQL || checkSale,
         renderEditCell: (params: GridRenderEditCellParams) => (
-          <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
+          <AutocompleteEditCell {...params} options={checkQL ? OPTIONS_STATUS_QL_ORDER : OPTIONS_STATUS_SALE_ORDER} />
         ),
         renderCell: (params: GridRenderCellParams) => {
           const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
@@ -378,12 +393,12 @@ const OrderPage = React.memo(() => {
             />
           )
         }
-      },
+      }, //QL
 
       {
         field: 'dateReceive',
         headerName: 'Ngày xưởng nhận đơn',
-        editable: permEdit,
+        editable: checkQL,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -392,59 +407,23 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateEstimateDelivery',
         headerName: 'Ngày dự kiến xuất',
-        editable: permEdit,
+        editable: checkQL,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateEstimateDelivery ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
-      },
+      }, //QL
 
       {
         field: 'dateDelivery',
         headerName: 'Ngày thực tế giao',
-        editable: permEdit,
+        editable: checkQL,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateDelivery ? dayjs(params.row.dateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
-      },
+      }, //QL
 
-      { field: 'rate', headerName: 'Đánh giá sx', editable: permEdit, renderEditCell: TextEditCell },
+      { field: 'rate', headerName: 'Đánh giá sx', editable: checkQL, renderEditCell: TextEditCell }, //QL
       { field: 'discount', headerName: 'Tiền discount', editable: permEdit, renderEditCell: TextEditCell },
-
-      // { field: 'order_edit', headerName: 'Đơn sửa', editable: permEdit, renderEditCell: TextEditCell },
-
-      // {
-      //   field: 'dateReceive2',
-      //   headerName: 'Ngày xưởng nhận',
-      //   editable: permEdit,
-      //   renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-      //     params.row.dateReceive ? dayjs(params.row.dateReceive).format('DD/MM/YYYY') : '',
-      //   renderEditCell: DateEditCell
-      // },
-
-      // {
-      //   field: 'statusWorking2',
-      //   headerName: 'Trạng thái',
-      //   editable: permEdit,
-      //   renderEditCell: (params: GridRenderEditCellParams) => (
-      //     <AutocompleteEditCell {...params} options={OPTIONS_STATUS_ORDER} />
-      //   )
-      // },
-
-      // {
-      //   field: 'order_edit_date_push',
-      //   headerName: 'Ngày xưởng giao lại',
-      //   editable: permEdit,
-      //   renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-      //     params.row.order_edit_date_push ? dayjs(params.row.order_edit_date_push).format('DD/MM/YYYY') : '',
-      //   renderEditCell: DateEditCell
-      // },
-
-      // {
-      //   field: 'order_edit_note',
-      //   headerName: 'Ghi chú',
-      //   editable: permEdit,
-      //   renderEditCell: TextEditCell
-      // },
 
       {
         field: 'actions',
@@ -479,12 +458,16 @@ const OrderPage = React.memo(() => {
             className='textPrimary'
             color='inherit'
           />,
-          <GridActionsCellItem
-            icon={<HighlightOff />}
-            label='Hủy đơn'
-            // onClick={() => handleView(params.row)}
-            showInMenu
-          />,
+          checkSale ? (
+            <GridActionsCellItem
+              icon={<HighlightOff />}
+              label='Hủy đơn'
+              onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.CANCEL)}
+              showInMenu
+            />
+          ) : (
+            <></>
+          ), //Truyền id và stt cancel
           permInvoiceAdd ? (
             <GridActionsCellItem
               icon={<AddCircle />}
@@ -498,24 +481,36 @@ const OrderPage = React.memo(() => {
           ) : (
             <></>
           ),
-          <GridActionsCellItem
-            icon={<BorderAll />}
-            label='Đã nhận hàng cần sửa'
-            // onClick={() => handleCopy(params.row)}
-            showInMenu
-          />,
-          <GridActionsCellItem
-            icon={<AddTask />}
-            label='Nhận hàng'
-            // onClick={() => handleCopy(params.row)}
-            showInMenu
-          />,
-          <GridActionsCellItem
-            icon={<Verified />}
-            label='Hoàn thành'
-            // onClick={() => handleCopy(params.row)}
-            showInMenu
-          />,
+          checkQL ? (
+            <GridActionsCellItem
+              icon={<BorderAll />}
+              label='Đã nhận hàng cần sửa'
+              onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.RECEIVED_ORDER_REPAIR)}
+              showInMenu
+            />
+          ) : (
+            <></>
+          ),
+          checkSale ? (
+            <GridActionsCellItem
+              icon={<AddTask />}
+              label='Nhận hàng'
+              onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.RECEIVED)}
+              showInMenu
+            />
+          ) : (
+            <></>
+          ),
+          checkSale ? (
+            <GridActionsCellItem
+              icon={<Verified />}
+              label='Hoàn thành'
+              onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.DONE)}
+              showInMenu
+            />
+          ) : (
+            <></>
+          ),
           <GridActionsCellItem
             icon={<FileDownload />}
             label='Tải đơn'
@@ -575,8 +570,6 @@ const OrderPage = React.memo(() => {
   }
 
   const columns: GridColDef[] = React.useMemo(() => {
-    const checkQL = useHasPermission([PERMISSION.QUANLY])
-
     const filteredColumns = data.columns.filter((col) => {
       // Ẩn hai cột này nếu là quản lý
       if (checkQL && ['discount', 'customerPhone'].includes(col.field)) return false

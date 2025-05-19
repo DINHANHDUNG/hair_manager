@@ -2,7 +2,7 @@
 import { IconShoppingCartBolt, IconAB2, IconShoppingCartX } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { PERMISSION } from '../../constants'
-import { Perm_Order_View } from '../../help/permission'
+import { Perm_Order_Cancel_View, Perm_Order_View } from '../../help/permission'
 
 // constant
 const icons = { IconShoppingCartBolt, IconAB2, IconShoppingCartX }
@@ -31,7 +31,7 @@ const order = {
       url: `/${ROUTES.ORDER}/${ROUTES.ORDER_REQUEST}`,
       icon: icons.IconAB2,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: Perm_Order_View
     },
     {
       id: ROUTES.ORDER_CANCEL,
@@ -40,7 +40,7 @@ const order = {
       url: `/${ROUTES.ORDER}/${ROUTES.ORDER_CANCEL}`,
       icon: icons.IconShoppingCartX,
       breadcrumbs: false,
-      premissions: [PERMISSION.ADMIN, PERMISSION.SALE, PERMISSION.QUANLY]
+      premissions: Perm_Order_Cancel_View
     }
   ]
 }
