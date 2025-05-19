@@ -1,6 +1,6 @@
 import { DoDisturbAlt, LibraryAddCheck } from '@mui/icons-material'
 import IconSearch from '@mui/icons-material/Search'
-import { Grid, OutlinedInput } from '@mui/material'
+import { Chip, Grid, OutlinedInput } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -13,14 +13,18 @@ import {
 import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useDeleteEmployeeMutation, useGetListEmployeeQuery } from '../../app/services/employee'
+import { handleMutation } from '../../app/hooks'
+import { useGetListEmployeeQuery } from '../../app/services/employee'
+import { useGetListOrderQuery, useUpdateOrderCancelApprovalMutation } from '../../app/services/order'
+import { OPTIONS_ORDER_KEY } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
-import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
+import LoadingModal from '../../components/ui-component/LoadingModal'
 import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { EmployeeType } from '../../types/employee'
+import { OrderType } from '../../types/order'
 import FormAddEditInvoice from '../order/modalInvoice'
 import FormReject from './FormReject'
 
@@ -33,7 +37,7 @@ const CancelOrderPage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
-  const initialKey = searchParams.get('key') || 'code'
+  const initialKey = searchParams.get('key') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -49,36 +53,27 @@ const CancelOrderPage = React.memo(() => {
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
   const [modalReject, setModalReject] = React.useState(false)
+  const [orderId, setOrderId] = React.useState<number | undefined>()
   // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticEmployeeDetailQuery({})
-
-  const [deleteEmployee, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteEmployeeMutation()
   const {
-    data: dataApiEmployee,
-    isLoading,
+    data: dataApiOrder,
+    isLoading: isLoadingOrder,
     refetch
-  } = useGetListEmployeeQuery(
+  } = useGetListOrderQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
       limit: paginationModel.pageSize,
       ...filters,
-      dateFrom: filters.dateFrom ? convertDateToApi(filters.dateFrom) : '',
-      dateTo: filters.dateTo ? convertDateToApi(filters.dateTo) : ''
+      statusOrder: OPTIONS_ORDER_KEY.CANCEL
     })
   )
+  const [
+    approvalOrder,
+    { isLoading: isLoadingApproval, isSuccess: isSuccessApproval, isError: isErrorApproval, error: errorApproval }
+  ] = useUpdateOrderCancelApprovalMutation()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiEmployee?.data?.totalCount || 0
-
-  const handleDelete = async (id: number) => {
-    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
-      title: 'Xác nhận lại',
-      okText: 'Có',
-      cancelText: 'Hủy'
-    })
-    if (confirmed) {
-      deleteEmployee({ ids: [Number(id)] })
-    }
-  }
+  const rowTotal = dataApiOrder?.data?.totalCount || 0
 
   //End filter
 
@@ -90,8 +85,9 @@ const CancelOrderPage = React.memo(() => {
     setModalInvoice(!modalInvoice)
   }
 
-  const handleModalReject = () => {
+  const handleModalReject = (id?: number) => {
     setModalReject(!modalReject)
+    setOrderId(id)
   }
 
   const handleClickOpenForm = () => {
@@ -114,53 +110,6 @@ const CancelOrderPage = React.memo(() => {
     console.log('params', params.row)
     handleClickDetail()
   }
-
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      code: 'ORD001',
-      amount: 1500000,
-      paidAmount: 1000000,
-      paymentStatus: 'Chưa thanh toán'
-    },
-    {
-      id: 2,
-      order: 2,
-      code: 'ORD002',
-      amount: 2000000,
-      paidAmount: 2000000,
-      paymentStatus: 'Đã thanh toán',
-      reject: ''
-    },
-    {
-      id: 3,
-      order: 3,
-      code: 'ORD003',
-      amount: 1750000,
-      paidAmount: 500000,
-      paymentStatus: 'Thanh toán một phần',
-      reject: ''
-    },
-    {
-      id: 4,
-      order: 4,
-      code: 'ORD004',
-      amount: 1250000,
-      paidAmount: 0,
-      paymentStatus: 'Chưa thanh toán',
-      reject: 'Không thích'
-    },
-    {
-      id: 5,
-      order: 5,
-      code: 'ORD005',
-      amount: 2300000,
-      paidAmount: 2300000,
-      paymentStatus: 'Đã thanh toán',
-      reject: ''
-    }
-  ]
 
   const data = {
     columns: [
@@ -186,25 +135,60 @@ const CancelOrderPage = React.memo(() => {
         flex: 1
       },
       {
-        field: 'reject',
+        field: 'reasonCancel',
         headerName: 'Lý do từ chối',
         flex: 1
+      },
+      {
+        field: 'sttAppr',
+        headerName: 'Trạng thái duyệt',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => {
+          const status = params.row.isDelete
+          if (status === null) return null
+
+          return (
+            <Chip
+              label={status ? 'Duyệt' : 'Từ chối'}
+              sx={{
+                backgroundColor: status ?  '#4CAF50' : '#F44336',
+                color: '#ffffff',
+                fontWeight: 500
+              }}
+              size='small'
+              variant='outlined'
+            />
+          )
+        }
       },
       {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
         getActions: (params: GridRenderCellParams<any, number>) => {
-          return [
-            <GridActionsCellItem icon={<LibraryAddCheck />} label='Approver' className='textPrimary' color='inherit' />,
-            <GridActionsCellItem
-              icon={<DoDisturbAlt />}
-              label='Delete'
-              className='textPrimary'
-              color='inherit'
-              onClick={handleModalReject}
-            />
-          ]
+          return params.row.isDelete === null
+            ? [
+                <GridActionsCellItem
+                  icon={<LibraryAddCheck />}
+                  label='Approver'
+                  className='textPrimary'
+                  color='inherit'
+                  onClick={() =>
+                    approvalOrder({
+                      id: params.row.id,
+                      isDelete: true
+                    })
+                  }
+                />,
+                <GridActionsCellItem
+                  icon={<DoDisturbAlt />}
+                  label='Delete'
+                  className='textPrimary'
+                  color='inherit'
+                  onClick={() => handleModalReject(params.row.id)}
+                />
+              ]
+            : []
         }
       }
     ]
@@ -240,23 +224,6 @@ const CancelOrderPage = React.memo(() => {
     [data.columns, filters]
   )
 
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      if (isSuccess) {
-        Toast({ text: successMessage, variant: 'success' })
-        refetch()
-        // refetchStatic()
-      }
-    }
-  }
-
   React.useEffect(() => {
     // Tạo một object params rỗng
     const params: { [key: string]: string } = {}
@@ -280,19 +247,28 @@ const CancelOrderPage = React.memo(() => {
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
-    handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
-  }, [loadingDelete])
+    if (!isLoadingApproval) {
+      handleMutation({
+        successMessage: 'Thao tác thành công',
+        errorMessage: 'Thao tác không thành công',
+        isError: isErrorApproval,
+        isSuccess: isSuccessApproval,
+        loading: isLoadingApproval,
+        refetch
+      })
+    }
+  }, [isLoadingApproval])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      dataApiOrder?.data?.rows?.map((row: OrderType, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData(updatedRows)
-  }, [fakeData])
+  }, [dataApiOrder])
 
   return (
     <>
@@ -334,7 +310,7 @@ const CancelOrderPage = React.memo(() => {
             // key={rowTotal}
             rows={rows}
             columns={columns}
-            isLoading={isLoading}
+            isLoading={isLoadingOrder}
             paginationModel={paginationModel}
             setPaginationModel={(model) => {
               setPaginationModel(model)
@@ -350,7 +326,7 @@ const CancelOrderPage = React.memo(() => {
         </div>
       </MainCard>
       <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} />
-      <FormReject handleClose={handleModalReject} open={modalReject} />
+      <FormReject orderId={orderId} handleClose={handleModalReject} open={modalReject} />
       {/* <SelectColumn
         handleComfirm={(value) => {
           handleFilterChange('key', value)
@@ -362,6 +338,7 @@ const CancelOrderPage = React.memo(() => {
         anchorRef={anchorRef}
         handleClose={handleClose}
       /> */}
+      <LoadingModal open={isLoadingOrder} />
     </>
   )
 })

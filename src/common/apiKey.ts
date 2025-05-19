@@ -83,7 +83,8 @@ export const NetWork = {
   orderHistory: 'history-production',
   orderHistoryList: (orderId: number) => `history-production/order/${orderId}`,
   orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`,
-
+  
+  orderApproval: (orderId: number) => `order/approval/${orderId}`,
   //invoiceRepair
   invoiceRepair: 'invoice-repair',
   invoiceRepairId: (invoiceRepairId: number) => `invoice-repair/${invoiceRepairId}`,

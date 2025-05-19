@@ -317,7 +317,7 @@ const ProfileSection = () => {
           </Transitions>
         )}
       </Popper>
-      <ChangePassword handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
+      <ChangePassword checkCurrent={true} handleClose={() => setOpenModalChangePass(false)} open={openModalChangePass} />
     </>
   )
 }

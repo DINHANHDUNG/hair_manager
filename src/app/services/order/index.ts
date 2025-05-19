@@ -87,6 +87,17 @@ export const orderApi = createApi({
         { type: 'Order', id: 'LIST' }
       ]
     }),
+    updateOrderCancelApproval: builder.mutation({
+      query: (data) => ({
+        url: NetWork.orderApproval(data.id),
+        method: PUT,
+        data: data
+      }),
+      invalidatesTags: [
+        { type: 'History', id: 'LIST' },
+        { type: 'Order', id: 'LIST' }
+      ]
+    }),
     deleteOrderHistory: builder.mutation({
       query: (data: { ids: Array<number> }) => ({
         url: NetWork.orderHistory,
@@ -112,5 +123,6 @@ export const {
   useAddOrderHistoryMutation,
   useDeleteOrderHistoryMutation,
   useGetListOrderHistoryQuery,
-  useUpdateOrderHistoryMutation
+  useUpdateOrderHistoryMutation,
+  useUpdateOrderCancelApprovalMutation
 } = orderApi

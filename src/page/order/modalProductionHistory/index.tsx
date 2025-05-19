@@ -30,7 +30,7 @@ import TableDataGrid from '../../../components/table-data-grid/TableComponentDat
 import Toast from '../../../components/toast'
 import { ErrorType } from '../../../types'
 import { FieldCOrderHistory, HistoryProductionType, OrderType } from '../../../types/order'
-import { Perm_Order_Add, Perm_Order_Edit } from '../../../help/permission'
+import { Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_Add } from '../../../help/permission'
 
 interface Props {
   open: boolean
@@ -52,7 +52,7 @@ const validationSchema = yup.object({
 
 export default function ModalProductionHistory(Props: Props) {
   const { open, handleClose, itemSelectedEdit } = Props
-  const permAdd = useHasPermission(Perm_Order_Add)
+  const permAdd = useHasPermission(Perm_Order_HistoryPrd_Add)
   const idOrder = itemSelectedEdit?.id
   const dialogs = useDialogs()
   const {

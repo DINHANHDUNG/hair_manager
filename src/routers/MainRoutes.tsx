@@ -9,6 +9,7 @@ import {
   Perm_Customer_View,
   Perm_DASHBOARD_ORDER_SALE_View,
   Perm_DASHBOARD_ORDER_View,
+  Perm_Order_Cancel_View,
   Perm_Order_View,
   Perm_Staff_View
 } from '../help/permission'
@@ -89,7 +90,7 @@ const MainRoutes = {
         },
         {
           path: ROUTES.ORDER_CANCEL,
-          element: <CancelOrderPage />
+          element: createProtectedRoute(<CancelOrderPage />, Perm_Order_Cancel_View)
         }
       ]
     },

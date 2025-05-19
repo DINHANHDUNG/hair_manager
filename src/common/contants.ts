@@ -109,6 +109,7 @@ export const OPTIONS_ORDER_KEY = {
   NEW: 'NEW',
   PROCESSING: 'PROCESSING',
   DELIVERING: 'DELIVERING',
+  RECEIVED_ORDER_REPAIR: 'RECEIVED_ORDER_REPAIR',
   RECEIVED: 'RECEIVED',
   DONE: 'DONE',
   CANCEL: 'CANCEL',
@@ -121,8 +122,21 @@ export const OPTIONS_STATUS_ORDER = [
   { value: OPTIONS_ORDER_KEY.DELIVERING, label: 'Đang giao' },
   { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
   { value: OPTIONS_ORDER_KEY.DONE, label: 'Hoàn thành' },
+  { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Sửa đơn' },
+  { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Huỷ đơn' }
+]
+
+export const OPTIONS_STATUS_SALE_ORDER = [
+  { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
+  { value: OPTIONS_ORDER_KEY.DONE, label: 'Hoàn thành' },
   { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Sửa đơn' },
   { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Huỷ đơn' }
+]
+
+export const OPTIONS_STATUS_QL_ORDER = [
+  { value: OPTIONS_ORDER_KEY.PROCESSING, label: 'Đang sản xuất' },
+  { value: OPTIONS_ORDER_KEY.DELIVERING, label: 'Đang giao' },
+  { value: OPTIONS_ORDER_KEY.RECEIVED_ORDER_REPAIR, label: 'Đã nhận hàng cần sửa' }
 ]
 
 export const OPTIONS_HISTORY_PROD_KEY = {

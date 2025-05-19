@@ -40,8 +40,8 @@ export const handleMutation = (props: {
   refetch: () => void
 }) => {
   if (!props.loading) {
-    props.isError && Toast({ text: props.errorMessage, variant: 'error' })
-    props.isSuccess && Toast({ text: props.successMessage, variant: 'success' }) && props.refetch()
+    props.isError && Toast({ text: props.errorMessage || '', variant: 'error' })
+    props.isSuccess && Toast({ text: props.successMessage || '', variant: 'success' }) && props.refetch()
   }
 }
 
