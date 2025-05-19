@@ -1,13 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import { Box, Button, Grid, IconButton, Stack, Typography } from '@mui/material'
 import { RiAddLine, RiDeleteBin7Line } from '@remixicon/react'
-import ZoomInIcon from '@mui/icons-material/ZoomIn'
-import DownloadIcon from '@mui/icons-material/Download'
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import dayjs from 'dayjs'
 import moment from 'moment'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { handleMutation } from '../../../app/hooks'
 import {
   useAddInvoiceRepairMutation,
   useGetInvoiceRepairByIdQuery,
@@ -16,24 +17,22 @@ import {
 } from '../../../app/services/invoiceRepair'
 import { COLORS } from '../../../common/colors'
 import { FILE_ACCEPT_TYPES, STATUS_SUCCESS } from '../../../common/contants'
+import MyButton from '../../../components/button/MyButton'
+import SubmitButton from '../../../components/button/SubmitButton'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
 import MyTextField from '../../../components/input/MyTextField'
 import ReactDropzone from '../../../components/reactDropzone'
 import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
-import { getUrlImage, handleDownload } from '../../../help/localHelp'
+import { getUrlImage } from '../../../help/localHelp'
 import { requiredString } from '../../../help/validate'
+import { ErrorType } from '../../../types'
 import {
   FieldCInvoiceRepair,
   FormValuesInvoiceRepair,
   ImageUploadInvoiceRepairType,
   InvoiceRepairType
 } from '../../../types/invoiceRepair'
-import MyButton from '../../../components/button/MyButton'
-import SubmitButton from '../../../components/button/SubmitButton'
-import { ErrorType } from '../../../types'
-import { handleMutation } from '../../../app/hooks'
-import dayjs from 'dayjs'
 
 interface Props {
   open: boolean

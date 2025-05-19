@@ -1,7 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close'
-import IconSearch from '@mui/icons-material/Search'
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Grid, IconButton, Typography } from '@mui/material'
 import {
   GridCallbackDetails,
   GridColDef,
@@ -11,24 +9,26 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
-import { useDialogs } from '@toolpad/core'
+import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useGetListCustomerQuery } from '../../app/services/customer'
+import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
-import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
 import { CustomerType } from '../../types/customer'
 import FilterTableAdvanced from './FilterTableAdvanced'
+import { useLazyExportDetailOrderQuery } from '../../app/services/report'
+import Toast from '../../components/toast'
 
 const ReportTotalPage = React.memo(() => {
-  const dialogs = useDialogs()
   //   const navigate = useNavigate()
   //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
@@ -46,21 +46,21 @@ const ReportTotalPage = React.memo(() => {
     dateFrom: initialStartDate,
     dateTo: initialEndDate
   })
-
-  const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CustomerType>()
   const [rowsData, setRowsData] = React.useState<CustomerType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
   const {
     data: dataApiCustomer,
-    isLoading,
-    refetch
+    isLoading
+    // refetch
   } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
     ...filters
   })
+
+  const [exportExcelDetail] = useLazyExportDetailOrderQuery()
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiCustomer?.data?.totalCount || 0
@@ -85,7 +85,7 @@ const ReportTotalPage = React.memo(() => {
     handleClickDetail()
   }
 
-  const anchorRef = React.useRef<HTMLDivElement>(null)
+  // const anchorRef = React.useRef<HTMLDivElement>(null)
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
   const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
 
@@ -96,8 +96,33 @@ const ReportTotalPage = React.memo(() => {
     setOpenFilterAdvanced(false)
   }
 
-  const handleToggleFilterAdvanced = () => {
-    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+  const exportExcel = async () => {
+    try {
+      const selectedMonth = month || dayjs()
+      const monthCV = selectedMonth.format('MM-YYYY') // không cần moment
+      const result = await exportExcelDetail({ month: monthCV }).unwrap()
+
+      const blob = new Blob([result], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
+
+      const url = window.URL.createObjectURL(blob)
+
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `ChiTietDonHang_${monthCV}.xlsx`
+      a.click()
+      window.URL.revokeObjectURL(url)
+      Toast({
+        text: 'Thao tác thành công',
+        variant: 'success'
+      })
+    } catch (error) {
+      Toast({
+        text: 'Đã xảy ra lỗi vui lòng thử lại',
+        variant: 'error'
+      })
+    }
   }
 
   const listRenderFilter = [
@@ -322,19 +347,6 @@ const ReportTotalPage = React.memo(() => {
     [data.columns, filters]
   )
 
-  const handleMutation = (
-    loading: boolean,
-    isError: boolean,
-    isSuccess: boolean,
-    successMessage: string,
-    errorMessage: string
-  ) => {
-    if (!loading) {
-      isError && Toast({ text: errorMessage, variant: 'error' })
-      isSuccess && Toast({ text: successMessage, variant: 'success' }) && refetch()
-    }
-  }
-
   React.useEffect(() => {
     // Tạo một object params rỗng
     const params: { [key: string]: string } = {}
@@ -356,7 +368,7 @@ const ReportTotalPage = React.memo(() => {
 
     setSearchParams(params)
   }, [paginationModel, filters, setSearchParams])
-  
+
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
@@ -372,25 +384,12 @@ const ReportTotalPage = React.memo(() => {
     <>
       <MainCard title={'Báo cáo chi tiết đơn hàng'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
-            <OutlinedInput
-              size='small'
-              id='search-input'
-              startAdornment={<IconSearch sx={{ mr: 1 }} />}
-              placeholder='Tìm kiếm'
-              value={filters?.['searchKey']}
-              onChange={(e) => handleFilterChange('searchKey', e.target.value)}
-              fullWidth
-            />
-            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
-              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
-                <TuneOutlinedIcon fontSize='medium' />
-              </IconButton>
-            </Tooltip>
+          <Grid item xs={12} sm={4} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
+            <MonthPickerField value={month} setValue={setMonth} />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Grid item xs={12} sm={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
-              <Button variant='outlined' sx={{ mr: 1 }}>
+              <Button variant='outlined' sx={{ mr: 1 }} onClick={exportExcel}>
                 Xuất excel
               </Button>
             </div>

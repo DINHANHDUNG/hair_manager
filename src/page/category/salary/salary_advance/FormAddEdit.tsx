@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { convertDataLabel, useAppSelector } from '../../../../app/hooks'
+import { authStore } from '../../../../app/selectedStore'
 import { useGetListEmployeeQuery } from '../../../../app/services/employee'
 import {
   useAddSalaryAdvanceMutation,
@@ -27,7 +28,6 @@ import Toast from '../../../../components/toast'
 import { gridSpacingForm, PERMISSION } from '../../../../constants'
 import { OptionType } from '../../../../types'
 import { SalaryAdvanceType } from '../../../../types/salaryAdvance'
-import { authStore } from '../../../../app/selectedStore'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -86,9 +86,7 @@ const validationSchema = yup.object({
 
 export default function FormAddEditSalaryAdvance({ open, handleClose, handleSave, itemSelectedEdit }: Props) {
   const user = useAppSelector(authStore)?.user
-  const checkPremision = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some(
-    (e) => user?.role === e
-  )
+  const checkPremision = [PERMISSION.ADMIN, PERMISSION.KETOAN]?.some((e) => user?.role === e)
   const [addSalaryAdvance, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddSalaryAdvanceMutation()
   const {

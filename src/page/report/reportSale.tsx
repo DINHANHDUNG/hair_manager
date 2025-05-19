@@ -3,7 +3,6 @@ import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import { GridCallbackDetails, GridColDef, GridRowParams, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
-import { useDialogs } from '@toolpad/core'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -13,11 +12,15 @@ import MainCard from '../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
 import FilterTableAdvanced from './FilterTableAdvanced'
+import dayjs, { Dayjs } from 'dayjs'
+import Toast from '../../components/toast'
+import { useLazyExportBySaleOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
+import MonthPickerField from '../../components/dateTime/MonthPickerField'
 
 const ReportTotalSalePage = React.memo(() => {
-  const dialogs = useDialogs()
-
   //   const navigate = useNavigate()
+
+  const [exportExcelDetail] = useLazyExportBySaleOrderQuery()
   //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -37,13 +40,15 @@ const ReportTotalSalePage = React.memo(() => {
     dateFrom: initialStartDate,
     dateTo: initialEndDate
   })
-
+  const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [rowsData, setRowsData] = React.useState<any[]>()
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
-  const [openFilter, setOpenFilter] = React.useState(false)
-  const anchorRef = React.useRef<HTMLDivElement>(null)
+  // const [openFilter, setOpenFilter] = React.useState(false)
+  // const anchorRef = React.useRef<HTMLDivElement>(null)
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
   const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
 
@@ -53,9 +58,34 @@ const ReportTotalSalePage = React.memo(() => {
     }
     setOpenFilterAdvanced(false)
   }
+ 
+  const exportExcel = async () => {
+    try {
+      const selectedMonth = month || dayjs()
+      const monthCV = selectedMonth.format('MM-YYYY') // không cần moment
+      const result = await exportExcelDetail({ month: monthCV }).unwrap()
 
-  const handleToggleFilterAdvanced = () => {
-    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+      const blob = new Blob([result], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
+
+      const url = window.URL.createObjectURL(blob)
+
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `ChiTietDonHang_Sale${monthCV}.xlsx`
+      a.click()
+      window.URL.revokeObjectURL(url)
+      Toast({
+        text: 'Thao tác thành công',
+        variant: 'success'
+      })
+    } catch (error) {
+      Toast({
+        text: 'Đã xảy ra lỗi vui lòng thử lại',
+        variant: 'error'
+      })
+    }
   }
 
   const listRenderFilter = [
@@ -70,8 +100,8 @@ const ReportTotalSalePage = React.memo(() => {
 
   const {
     data: dataApiCustomer,
-    isLoading,
-    refetch
+    isLoading
+    // refetch
   } = useGetListCustomerQuery({
     page: paginationModel.page + 1,
     limit: paginationModel.pageSize,
@@ -237,7 +267,7 @@ const ReportTotalSalePage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row: any, index: number) => ({
+      fakeData?.map((row, index: number) => ({
         ...row,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
@@ -245,44 +275,32 @@ const ReportTotalSalePage = React.memo(() => {
     setRowsData([...updatedRows, totalSummaryRow])
   }, [fakeData])
 
-  const prevOpen = React.useRef(openFilter)
+  // const prevOpen = React.useRef(openFilter)
   const prevOpenAdvanced = React.useRef(openFilterAdvanced)
   React.useEffect(() => {
-    if (prevOpen.current === true && openFilter === false) {
-      anchorRef?.current?.focus()
-    }
+    // if (prevOpen.current === true && openFilter === false) {
+    //   anchorRef?.current?.focus()
+    // }
 
     if (prevOpenAdvanced.current === true && openFilterAdvanced === false) {
       anchorAdvancedRef?.current?.focus()
     }
 
-    prevOpen.current = openFilter
+    // prevOpen.current = openFilter
     prevOpenAdvanced.current = openFilterAdvanced
-  }, [openFilter, openFilterAdvanced])
+    // }, [openFilter, openFilterAdvanced])
+  }, [openFilterAdvanced])
 
   return (
     <>
       <MainCard title={'Báo cáo doanh thu theo sale'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
-            <OutlinedInput
-              size='small'
-              id='search-input'
-              startAdornment={<IconSearch sx={{ mr: 1 }} />}
-              placeholder='Tìm kiếm'
-              value={filters?.['searchKey']}
-              onChange={(e) => handleFilterChange('searchKey', e.target.value)}
-              fullWidth
-            />
-            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
-              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
-                <TuneOutlinedIcon fontSize='medium' />
-              </IconButton>
-            </Tooltip>
+          <Grid item xs={12} sm={4} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
+            <MonthPickerField value={month} setValue={setMonth} />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Grid item xs={12} sm={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
-              <Button variant='outlined' sx={{ mr: 1 }}>
+              <Button variant='outlined' sx={{ mr: 1 }} onClick={exportExcel}>
                 Xuất excel
               </Button>
             </div>
@@ -322,6 +340,7 @@ const ReportTotalSalePage = React.memo(() => {
         <FilterTableAdvanced
           /* eslint-disable @typescript-eslint/no-explicit-any */
           handleComfirm={(value: any) => {
+            /* eslint-enable @typescript-eslint/no-explicit-any */
             setFilters((prevFilters) => ({
               ...prevFilters,
               ['dateFrom']: value.date?.[0],

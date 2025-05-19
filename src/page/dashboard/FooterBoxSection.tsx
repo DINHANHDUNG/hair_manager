@@ -8,7 +8,7 @@ export const FooterBoxSection = ({
   colorRight
 }: {
   elementLeft: React.ReactNode | string
-  elementRight: React.ReactNode | string
+  elementRight?: React.ReactNode | string
   colorRight?: string
 }) => {
   return (

@@ -76,6 +76,12 @@ export const NetWork = {
   //StaticOrder
   staticOrderTotal: 'statistic/order-total',
   staticOrderDetail: 'statistic/order-detail',
+  staticOrderTotalMonth: 'statistic/total-order-by-month',
+  staticOrderMonth: 'statistic/order-by-month',
+
+  //report
+  exportDetailOrder: 'report/export-detail-order',
+  exportBySaleOrder: 'report/export-by-sale',
 
   //Order
   order: 'order',

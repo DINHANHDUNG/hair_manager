@@ -167,6 +167,16 @@ const CustomerPage = React.memo(() => {
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
       // { field: 'gender', headerName: 'Giới tính', flex: 1 },
       { field: 'note', headerName: 'Ghi chú', flex: 1 },
+      {
+        field: 'staff',
+        headerName: 'Nhân viên',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<CustomerType, number>) => {
+          const name = params.row?.account?.staff?.name || ''
+          const username = params.row?.account?.username || ''
+          return name + (username ? ` (${username})` : '')
+        }
+      },
 
       {
         field: 'actions',

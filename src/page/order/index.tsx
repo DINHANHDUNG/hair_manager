@@ -7,7 +7,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
+import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
@@ -59,11 +59,10 @@ import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPr
 import { ErrorType } from '../../types'
 import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
+import InvoiceRepairDetailPanel from './InvoiceRepairDetailPanel'
 import FormAddNewOrder from './modalAddNew'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
-import { DataGridPro } from '@mui/x-data-grid-pro'
-import InvoiceRepairDetailPanel from './InvoiceRepairDetailPanel'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,

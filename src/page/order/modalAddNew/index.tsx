@@ -29,8 +29,8 @@ interface Props {
 export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }: Props) {
   const idOrder = itemSelectedEdit?.id
 
-  console.log('idOrder', idOrder);
-  
+  console.log('idOrder', idOrder)
+
   const {
     data: fetchData,
     isLoading,
@@ -266,8 +266,8 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
                   onChange={(_, v) => {
                     /* eslint-disable @typescript-eslint/no-explicit-any */
                     const selectedValue = v as any // Ép kiểu cho giá trị v
-                    console.log('selectedValue', selectedValue);
-                    
+                    console.log('selectedValue', selectedValue)
+
                     /* eslint-enable @typescript-eslint/no-explicit-any */
                     setValue(`customerId`, selectedValue ? selectedValue?.value?.toString() : null) // set đúng giá trị của `value`
                     // setValue('customerName', selectedValue?.name || '')

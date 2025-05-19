@@ -26,7 +26,7 @@ export interface StateFilterTableAdvanced {
 }
 
 export default function FilterTableAdvanced({ open, anchorRef, handleClose, handleComfirm, value }: Props) {
-  const today = dayjs()
+  // const today = dayjs()
 
   const [state, setState] = useState<StateFilterTableAdvanced>({
     dateReceive: [null, null],

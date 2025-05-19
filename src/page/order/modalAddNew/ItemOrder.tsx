@@ -9,7 +9,6 @@ import { OPTIONS_UNIT } from '../../../common/contants'
 import MyAutocomplete from '../../../components/select/MyAutocomplete'
 import { FormValuesOrder } from '../../../types/order'
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 interface Props {
   errors: FieldErrors<FormValuesOrder>
   control: Control<FormValuesOrder, any>

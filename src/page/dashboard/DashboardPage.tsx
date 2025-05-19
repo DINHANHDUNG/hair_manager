@@ -1,41 +1,36 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
-import { IconCoin, IconCoins, IconUser, IconUsersGroup } from '@tabler/icons-react'
-// import dayjs from 'dayjs'
+import { IconCoin, IconUser, IconUsersGroup } from '@tabler/icons-react'
 import * as React from 'react'
-import { currency } from '../../app/hooks'
-import {
-  useGetStaticSalaryAdvanceQuery,
-  useGetStaticStaffTotalQuery,
-  useGetStatisticEmployeeTotalQuery
-} from '../../app/services/statistic'
+import { useGetStaticOrderTotalMonthQuery } from '../../app/services/statistic'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { FooterBoxSection, FooterBoxSection2 } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
+import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
+import { DateRange } from '@mui/x-date-pickers-pro'
+import dayjs, { Dayjs } from 'dayjs'
+import MonthPickerField from '../../components/dateTime/MonthPickerField'
+import moment from 'moment'
 
 const Dashboard = React.memo(() => {
   const theme = useTheme()
   // const today = dayjs()
   const classes = styleDashboard(theme)
-  // const [valueRangeDate, setValueRangeDate] = React.useState<DateRange<Dayjs> | undefined>([
-  //   today.startOf('month'),
-  //   today.endOf('month')
-  // ])
 
-  const { data: dataToTalStaff } = useGetStaticStaffTotalQuery({})
-  const percentageIncreaseStaff = dataToTalStaff?.data?.percentageIncrease
-  const currentMonthStaff = dataToTalStaff?.data?.currentMonth
+  const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
 
-  const { data: dataToTalEmployee } = useGetStatisticEmployeeTotalQuery({})
-  const percentageIncreaseEmployee = dataToTalEmployee?.data?.percentageIncrease
-  const currentMonthEmployee = dataToTalEmployee?.data?.currentMonth
+  const selectedMonth = month || dayjs()
+  const monthCV = moment(selectedMonth.toString()).format('MM-YYYY')
 
-  const { data: dataStaticSalaryAdvance } = useGetStaticSalaryAdvanceQuery({})
-  const totalSalaryAdvance = dataStaticSalaryAdvance?.data?.totalSalaryAdvance || 0 //Đã ứng
-  const totalSalaryRefund = dataStaticSalaryAdvance?.data?.totalSalaryRefund || 0 //Đã hoàn
+  const { data: dataToTal } = useGetStaticOrderTotalMonthQuery({
+    month: monthCV
+  })
+  const totalComplate = dataToTal?.data?.completeOrder
+  const totalOrder = dataToTal?.data?.totalOrder
+  const lateOrder = dataToTal?.data?.lateOrder
 
   const CardContentBoxSection = ({ element }: { element: React.ReactNode }) => {
     return (
@@ -54,6 +49,18 @@ const Dashboard = React.memo(() => {
 
   return (
     <div>
+      {/* <DateRangePickerShortCut
+        value={valueRangeDate}
+        setValue={(newValue) => setValueRangeDate(newValue)}
+        variant='standard'
+      /> */}
+      <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={6} md={8} lg={8}></Grid>
+        <Grid item xs={12} sm={6} md={4} lg={4}>
+          <MonthPickerField value={month} setValue={setMonth} />
+        </Grid>
+      </Grid>
+
       <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
         <CardContentBoxSection
           element={
@@ -65,13 +72,13 @@ const Dashboard = React.memo(() => {
                 textTitle='Tổng số'
               />
               <FooterBoxSection
-                elementLeft={currentMonthEmployee || 0}
-                elementRight={percentageIncreaseEmployee ? percentageIncreaseEmployee.toString() + '%' : 0}
-                colorRight={
-                  percentageIncreaseEmployee && percentageIncreaseEmployee > 0
-                    ? theme.palette.success.dark
-                    : theme.palette.error.dark
-                }
+                elementLeft={totalOrder || 0}
+                // elementRight={percentageIncreaseEmployee ? percentageIncreaseEmployee.toString() + '%' : 0}
+                // colorRight={
+                //   percentageIncreaseEmployee && percentageIncreaseEmployee > 0
+                //     ? theme.palette.success.dark
+                //     : theme.palette.error.dark
+                // }
               />
             </>
           }
@@ -86,13 +93,13 @@ const Dashboard = React.memo(() => {
                 textTitle='Số đơn hoàn thành'
               />
               <FooterBoxSection
-                elementLeft={currentMonthStaff || 0}
-                elementRight={percentageIncreaseStaff ? percentageIncreaseStaff.toString() + '%' : 0}
-                colorRight={
-                  percentageIncreaseStaff && percentageIncreaseStaff > 0
-                    ? theme.palette.success.dark
-                    : theme.palette.error.dark
-                }
+                elementLeft={totalComplate || 0}
+                // elementRight={percentageIncreaseStaff ? percentageIncreaseStaff.toString() + '%' : 0}
+                // colorRight={
+                //   percentageIncreaseStaff && percentageIncreaseStaff > 0
+                //     ? theme.palette.success.dark
+                //     : theme.palette.error.dark
+                // }
               />
             </>
           }
@@ -107,17 +114,17 @@ const Dashboard = React.memo(() => {
                 textTitle='Số đơn chậm'
               />
               <FooterBoxSection2
-                elementLeft={'Chậm 1: 30'}
+                elementLeft={`Chậm 1: ${lateOrder?.lateOrder1 || 0}`}
                 elementRight={'1-3 ngày'}
                 colorRight={theme.palette.error.dark}
               />
               <FooterBoxSection2
-                elementLeft={'Chậm 2: 30'}
+                elementLeft={`Chậm 2: ${lateOrder?.lateOrder2 || 0}`}
                 elementRight={'4-6 ngày'}
                 colorRight={theme.palette.error.dark}
               />
               <FooterBoxSection2
-                elementLeft={'Chậm 1: 90'}
+                elementLeft={`Chậm 3: ${lateOrder?.lateOrder3 || 0}`}
                 elementRight={'>7 ngày'}
                 colorRight={theme.palette.error.dark}
               />
@@ -179,11 +186,6 @@ const Dashboard = React.memo(() => {
         title={
           <Grid container direction='row' alignItems='center' justifyContent='space-between'>
             <Typography variant='subtitle1'>Số lượng đơn</Typography>
-            {/* <DateRangePickerShortCut
-              value={valueRangeDate}
-              setValue={(newValue) => setValueRangeDate(newValue)}
-              variant='standard'
-            /> */}
           </Grid>
         }
       >
