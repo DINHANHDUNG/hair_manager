@@ -83,6 +83,7 @@ export const NetWork = {
   exportDetailOrder: 'report/export-detail-order',
   exportBySaleOrder: 'report/export-by-sale',
   reportOrder: 'order/report-detail-order',
+  reportOrderSale: 'order/report-sale',
   
 
   //Order

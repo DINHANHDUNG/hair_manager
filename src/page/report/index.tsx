@@ -18,12 +18,12 @@ import TableDataGrid from '../../components/table-data-grid/TableComponentDataGr
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
-import { CustomerType } from '../../types/customer'
 import FilterTableAdvanced from './FilterTableAdvanced'
 import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import Toast from '../../components/toast'
 import { removeNullOrEmpty } from '../../help'
 import { formatNumber } from '../../app/hooks'
+import { ReportOrderType } from '../../types/report'
 
 const ReportTotalPage = React.memo(() => {
   //   const navigate = useNavigate()
@@ -34,8 +34,6 @@ const ReportTotalPage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
-  const initialStartDate = searchParams.get('dateFrom') || ''
-  const initialEndDate = searchParams.get('dateTo') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -45,7 +43,7 @@ const ReportTotalPage = React.memo(() => {
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey
   })
-  const [rowsData, setRowsData] = React.useState<CustomerType[]>()
+  const [rowsData, setRowsData] = React.useState<ReportOrderType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
@@ -126,16 +124,6 @@ const ReportTotalPage = React.memo(() => {
       })
     }
   }
-
-  const listRenderFilter = [
-    {
-      key: 'date',
-      label:
-        initialStartDate && initialEndDate
-          ? `${moment(initialStartDate).format('DD/MM/YYYY')} ~ ${moment(initialEndDate).format('DD/MM/YYYY')}`
-          : ''
-    }
-  ]
 
   const RenderFilter = ({ label, key }: { label: string; key: string }) => {
     const handleClose = () => {
@@ -242,7 +230,7 @@ const ReportTotalPage = React.memo(() => {
         headerName: 'Ngày',
 
         renderCell: (params: GridRenderCellParams<any, number>) =>
-          params.row.date ? moment(params.row.date).format('DD/MM/YYYY') : ''
+          params.row.dateOrder ? moment(params.row.dateOrder).format('DD/MM') : ''
       },
       { field: 'code', headerName: 'Đơn số' },
       {
@@ -411,7 +399,7 @@ const ReportTotalPage = React.memo(() => {
     const updatedRows =
       dataApiOrder?.data?.map((row: any, index: number) => ({
         ...row,
-        id: index,
+        id: index + Math.floor(Math.random() * (10.5 + 1)),
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
@@ -433,11 +421,11 @@ const ReportTotalPage = React.memo(() => {
             </div>
           </Grid>
         </Grid>
-        <Grid container spacing={gridSpacing}>
+        {/* <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={12} display={'flex'} flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'}>
             {listRenderFilter.map((val) => RenderFilter({ label: val.label, key: val.key }))}
           </Grid>
-        </Grid>
+        </Grid> */}
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
             rows={rows}
@@ -456,7 +444,7 @@ const ReportTotalPage = React.memo(() => {
               columnGroupingModel: columnGroupingModel
             }}
             // otherProps={{
-            //   getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
+            //   getRowClassName: (params: GridRenderCellParams<ReportOrderType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'
             // }}
           />

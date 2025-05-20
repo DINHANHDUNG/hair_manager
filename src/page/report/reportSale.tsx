@@ -1,26 +1,28 @@
 import CloseIcon from '@mui/icons-material/Close'
-import IconSearch from '@mui/icons-material/Search'
-import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Box, Button, Grid, IconButton } from '@mui/material'
 import { GridCallbackDetails, GridColDef, GridRowParams, GridRowSelectionModel, GridRowsProp } from '@mui/x-data-grid'
+import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useGetListCustomerQuery } from '../../app/services/customer'
+import { useGetListReportOrderSaleQuery, useLazyExportBySaleOrderQuery } from '../../app/services/report'
+import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
+import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { ChipCustom } from '../../components/ui-component/chipCustom'
 import { gridSpacing } from '../../constants'
+import { removeNullOrEmpty } from '../../help'
 import FilterTableAdvanced from './FilterTableAdvanced'
-import dayjs, { Dayjs } from 'dayjs'
-import Toast from '../../components/toast'
-import { useLazyExportBySaleOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
-import MonthPickerField from '../../components/dateTime/MonthPickerField'
+import { formatNumber } from '../../app/hooks'
+import { GridRenderCellParams } from '@mui/x-data-grid'
+import { ReportOrderBySaleType } from '../../types/report'
 
 const ReportTotalSalePage = React.memo(() => {
   //   const navigate = useNavigate()
 
   const [exportExcelDetail] = useLazyExportBySaleOrderQuery()
+
   //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -41,12 +43,26 @@ const ReportTotalSalePage = React.memo(() => {
     dateTo: initialEndDate
   })
   const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const [rowsData, setRowsData] = React.useState<any[]>()
-  /* eslint-enable @typescript-eslint/no-explicit-any */
+  const selectedMonth = month || dayjs()
+  const monthCV = selectedMonth.format('MM-YYYY')
+  const [rowsData, setRowsData] = React.useState<ReportOrderBySaleType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
 
+  const {
+    data: dataApiOrder,
+    isLoading
+    // refetch
+  } = useGetListReportOrderSaleQuery(
+    removeNullOrEmpty({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      ...filters,
+      month: monthCV
+    })
+  )
+
+  const dataReport = (dataApiOrder?.data || []) as ReportOrderBySaleType[]
   // const [openFilter, setOpenFilter] = React.useState(false)
   // const anchorRef = React.useRef<HTMLDivElement>(null)
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
@@ -58,7 +74,7 @@ const ReportTotalSalePage = React.memo(() => {
     }
     setOpenFilterAdvanced(false)
   }
- 
+
   const exportExcel = async () => {
     try {
       const selectedMonth = month || dayjs()
@@ -98,18 +114,8 @@ const ReportTotalSalePage = React.memo(() => {
     }
   ]
 
-  const {
-    data: dataApiCustomer,
-    isLoading
-    // refetch
-  } = useGetListCustomerQuery({
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-    ...filters
-  })
-
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiCustomer?.data?.totalCount || 0
+  const rowTotal = dataReport?.length || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -126,53 +132,19 @@ const ReportTotalSalePage = React.memo(() => {
     console.log(rowSelectionModel, details)
   }
 
-  const onRowClick = (params: GridRowParams) => {
-    console.log('params', params.row)
+  const onRowClick = () => {
     handleClickDetail()
   }
 
-  const fakeData = [
-    {
-      id: 1,
-      order: 1,
-      sale: 'Nguyễn Văn A',
-      totalOrder: 5,
-      totalWeight: 58.2,
-      totalPrice: 1150,
-      TotalAmountReceived: 1100,
-      TotalWantage: 50
-    },
-    {
-      id: 2,
-      order: 2,
-      sale: 'Trần Thị B',
-      totalOrder: 3,
-      totalWeight: 31.6,
-      totalPrice: 690,
-      TotalAmountReceived: 690,
-      TotalWantage: 0
-    },
-    {
-      id: 3,
-      order: 3,
-      sale: 'Lê Văn C',
-      totalOrder: 7,
-      totalWeight: 74.8,
-      totalPrice: 1485,
-      TotalAmountReceived: 1350,
-      TotalWantage: 135
-    }
-  ]
-
   const totalSummaryRow = {
-    id: 4,
+    id: Math.floor(Math.random() * (10.5 + 1)),
     order: 'Tổng kết',
     sale: '',
-    totalOrder: fakeData.reduce((sum, r) => sum + r.totalOrder, 0),
-    totalWeight: fakeData.reduce((sum, r) => sum + r.totalWeight, 0),
-    totalPrice: fakeData.reduce((sum, r) => sum + r.totalPrice, 0),
-    TotalAmountReceived: fakeData.reduce((sum, r) => sum + r.TotalAmountReceived, 0),
-    TotalWantage: fakeData.reduce((sum, r) => sum + r.TotalWantage, 0)
+    quantity: dataReport?.reduce((sum, r) => sum + r.quantity, 0),
+    totalWeight: dataReport?.reduce((sum, r) => sum + r.totalWeight, 0),
+    totalOrder: dataReport?.reduce((sum, r) => sum + r.totalOrder, 0),
+    totalOrderPayment: dataReport?.reduce((sum, r) => sum + r.totalOrderPayment, 0),
+    totalOrderDebt: dataReport?.reduce((sum, r) => sum + r.totalOrderDebt, 0)
   }
 
   const data = {
@@ -182,13 +154,49 @@ const ReportTotalSalePage = React.memo(() => {
         headerName: 'No.',
         width: 30
       },
-      { field: 'sale', headerName: 'Tên nhân viên', flex: 1 },
+      {
+        field: 'sale',
+        headerName: 'Tên nhân viên',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.staffName ? params?.row?.staffName + ` (${params?.row?.username})` : params?.row?.username || ''
+      },
 
-      { field: 'totalOrder', headerName: 'Tổng số đơn', flex: 1 },
-      { field: 'totalWeight', headerName: 'Tổng kg', flex: 1 },
-      { field: 'totalPrice', headerName: 'Tổng Tiền đơn (USD)', flex: 1 },
-      { field: 'TotalAmountReceived', headerName: 'Thực nhận', flex: 1 },
-      { field: 'TotalWantage', headerName: 'Chưa nhận (USD)', flex: 1 }
+      {
+        field: 'quantity',
+        headerName: 'Tổng số đơn',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.quantity ? formatNumber(Number(params.row.quantity)) : ''
+      },
+      {
+        field: 'totalWeight',
+        headerName: 'Tổng kg',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.totalWeight ? formatNumber(Number(params.row.totalWeight)) : ''
+      },
+      {
+        field: 'totalOrder',
+        headerName: 'Tổng Tiền đơn (USD)',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.totalOrder ? formatNumber(Number(params.row.totalOrder)) : ''
+      },
+      {
+        field: 'totalOrderPayment',
+        headerName: 'Thực nhận',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.totalOrderPayment ? formatNumber(Number(params.row.totalOrderPayment)) : ''
+      },
+      {
+        field: 'totalOrderDebt',
+        headerName: 'Chưa nhận (USD)',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams<ReportOrderBySaleType, number>) =>
+          params.row.totalOrderDebt ? formatNumber(Number(params.row.totalOrderDebt)) : ''
+      }
     ]
   }
 
@@ -267,13 +275,14 @@ const ReportTotalSalePage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      fakeData?.map((row, index: number) => ({
+      dataApiOrder?.data?.map((row: ReportOrderBySaleType, index: number) => ({
         ...row,
+        id: index + Math.floor(Math.random() * (10.5 + 1)),
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
     setRowsData([...updatedRows, totalSummaryRow])
-  }, [fakeData])
+  }, [dataApiOrder])
 
   // const prevOpen = React.useRef(openFilter)
   const prevOpenAdvanced = React.useRef(openFilterAdvanced)
