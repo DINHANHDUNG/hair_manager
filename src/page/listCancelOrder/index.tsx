@@ -10,9 +10,8 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
-import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { handleMutation } from '../../app/hooks'
 import { useGetListOrderQuery, useUpdateOrderCancelApprovalMutation } from '../../app/services/order'
 import { OPTIONS_ORDER_KEY } from '../../common/contants'
@@ -21,16 +20,14 @@ import MainCard from '../../components/ui-component/cards/MainCard'
 import LoadingModal from '../../components/ui-component/LoadingModal'
 import { gridSpacing } from '../../constants'
 import { removeNullOrEmpty } from '../../help'
-import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { EmployeeType } from '../../types/employee'
 import { OrderType } from '../../types/order'
 import FormAddEditInvoice from '../order/modalInvoice'
 import FormReject from './FormReject'
 
 const CancelOrderPage = React.memo(() => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
-  const dialogs = useDialogs()
+  // const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
@@ -47,7 +44,7 @@ const CancelOrderPage = React.memo(() => {
     searchKey: initialSearchKey,
     key: initialKey
   })
-  const [rowsData, setRowsData] = React.useState<EmployeeType[]>()
+  const [rowsData, setRowsData] = React.useState<OrderType[]>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
@@ -66,10 +63,8 @@ const CancelOrderPage = React.memo(() => {
       statusOrder: OPTIONS_ORDER_KEY.CANCEL
     })
   )
-  const [
-    approvalOrder,
-    { isLoading: isLoadingApproval, isSuccess: isSuccessApproval, isError: isErrorApproval, error: errorApproval }
-  ] = useUpdateOrderCancelApprovalMutation()
+  const [approvalOrder, { isLoading: isLoadingApproval, isSuccess: isSuccessApproval, isError: isErrorApproval }] =
+    useUpdateOrderCancelApprovalMutation()
 
   const rows: GridRowsProp = rowsData || []
   const rowTotal = dataApiOrder?.data?.totalCount || 0
@@ -89,10 +84,10 @@ const CancelOrderPage = React.memo(() => {
     setOrderId(id)
   }
 
-  const handleClickOpenForm = () => {
-    // setOpenFormAdd(true)
-    navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)
-  }
+  // const handleClickOpenForm = () => {
+  //   // setOpenFormAdd(true)
+  //   navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)
+  // }
 
   const handleFilterChange = (field: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -164,7 +159,7 @@ const CancelOrderPage = React.memo(() => {
         field: 'actions',
         headerName: 'Hành động',
         type: 'actions',
-        getActions: (params: GridRenderCellParams<any, number>) => {
+        getActions: (params: GridRenderCellParams<OrderType, number>) => {
           return params.row.isDelete === null
             ? [
                 <GridActionsCellItem

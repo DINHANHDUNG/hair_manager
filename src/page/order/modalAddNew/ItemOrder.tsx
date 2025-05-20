@@ -122,7 +122,9 @@ export default function ItemOrder(props: Props) {
                     require
                     messageErrors={errors?.products?.[index]?.unit?.message}
                     onChange={(_, v) => {
+                      /* eslint-disable @typescript-eslint/no-explicit-any */
                       const selectedValue = v as any // Ép kiểu cho giá trị v
+                      /* eslint-enable @typescript-eslint/no-explicit-any */
                       setValue(`products.${index}.unit`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
                     }}
                   />

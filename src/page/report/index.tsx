@@ -1,5 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close'
-import { Box, Button, Grid, IconButton, Typography } from '@mui/material'
+import { Button, Grid, Typography } from '@mui/material'
 import {
   GridCallbackDetails,
   GridColDef,
@@ -13,17 +12,16 @@ import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { formatNumber } from '../../app/hooks'
+import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
-import MainCard from '../../components/ui-component/cards/MainCard'
-import { ChipCustom } from '../../components/ui-component/chipCustom'
-import { gridSpacing } from '../../constants'
-import FilterTableAdvanced from './FilterTableAdvanced'
-import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import Toast from '../../components/toast'
+import MainCard from '../../components/ui-component/cards/MainCard'
+import { gridSpacing } from '../../constants'
 import { removeNullOrEmpty } from '../../help'
-import { formatNumber } from '../../app/hooks'
 import { ReportOrderType } from '../../types/report'
+import FilterTableAdvanced from './FilterTableAdvanced'
 
 const ReportTotalPage = React.memo(() => {
   //   const navigate = useNavigate()
@@ -71,12 +69,12 @@ const ReportTotalPage = React.memo(() => {
     setOpenDetail(!openDetail)
   }
 
-  const handleFilterChange = (field: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [field]: value
-    }))
-  }
+  // const handleFilterChange = (field: string, value: string) => {
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     [field]: value
+  //   }))
+  // }
 
   const onRowSelectionChange = (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => {
     console.log(rowSelectionModel, details)
@@ -125,34 +123,34 @@ const ReportTotalPage = React.memo(() => {
     }
   }
 
-  const RenderFilter = ({ label, key }: { label: string; key: string }) => {
-    const handleClose = () => {
-      if (key === 'date') {
-        setFilters((prevFilters) => ({
-          ...prevFilters,
-          ['dateTo']: '',
-          ['dateFrom']: ''
-        }))
-        return
-      }
-      handleFilterChange(key, '')
-    }
-    return (
-      label?.length > 0 && (
-        <ChipCustom
-          size='medium'
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
-              {label}
-              <IconButton color='inherit' size='small' onClick={handleClose}>
-                <CloseIcon fontSize='inherit' />
-              </IconButton>
-            </Box>
-          }
-        />
-      )
-    )
-  }
+  // const RenderFilter = ({ label, key }: { label: string; key: string }) => {
+  //   const handleClose = () => {
+  //     if (key === 'date') {
+  //       setFilters((prevFilters) => ({
+  //         ...prevFilters,
+  //         ['dateTo']: '',
+  //         ['dateFrom']: ''
+  //       }))
+  //       return
+  //     }
+  //     handleFilterChange(key, '')
+  //   }
+  //   return (
+  //     label?.length > 0 && (
+  //       <ChipCustom
+  //         size='medium'
+  //         label={
+  //           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
+  //             {label}
+  //             <IconButton color='inherit' size='small' onClick={handleClose}>
+  //               <CloseIcon fontSize='inherit' />
+  //             </IconButton>
+  //           </Box>
+  //         }
+  //       />
+  //     )
+  //   )
+  // }
 
   // const fakeData = [
   //   {
@@ -229,67 +227,67 @@ const ReportTotalPage = React.memo(() => {
         field: 'dateOrder',
         headerName: 'Ngày',
 
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.dateOrder ? moment(params.row.dateOrder).format('DD/MM') : ''
       },
       { field: 'code', headerName: 'Đơn số' },
       {
         field: 'totalWeight',
         headerName: 'Số kg',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.totalWeight ? formatNumber(Number(params.row.totalWeight)) : ''
       },
       {
         field: 'totalPrice',
         headerName: 'Tiền hàng (USD)',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.totalPrice ? formatNumber(Number(params.row.totalPrice)) : ''
       },
       {
         field: 'discount',
         headerName: 'Discount',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.discount ? formatNumber(Number(params.row.discount)) : ''
       },
       {
         field: 'feeShip',
         headerName: 'Tiền ship (USD)',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.feeShip ? formatNumber(Number(params.row.feeShip)) : ''
       },
       {
         field: 'feeWig',
         headerName: 'Wig Fee/ Fast production',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.feeWig ? formatNumber(Number(params.row.feeWig)) : ''
       },
       {
         field: 'feePaypal',
         headerName: 'Paypal Free',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.feePaypal ? formatNumber(Number(params.row.feePaypal)) : ''
       },
       {
         field: 'totalOrder',
         headerName: 'Tổng tiền đơn (USD)',
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row.totalOrder ? formatNumber(Number(params.row.totalOrder)) : ''
       },
 
       {
         field: 'refunMoney1',
         headerName: 'Lần 1'
-        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
       },
       {
         field: 'refunMoney2',
         headerName: 'Lần 2'
-        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
       },
       {
         field: 'refunMoney3',
         headerName: 'Lần 3'
-        // renderCell: (params: GridRenderCellParams<any, number>) => '200USD'
+        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
       },
       { field: 'amountReceived', headerName: 'Số tiền thực nhận' },
       { field: 'wantage', headerName: 'Số tiền khách thiếu (USD)' },
@@ -298,7 +296,7 @@ const ReportTotalPage = React.memo(() => {
       {
         field: 'status',
         headerName: 'Tài khoản nhận'
-        // renderCell: (params: GridRenderCellParams<any, number>) => 'Đã trả hết'
+        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => 'Đã trả hết'
       }
     ]
   }
@@ -397,7 +395,7 @@ const ReportTotalPage = React.memo(() => {
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiOrder?.data?.map((row: any, index: number) => ({
+      dataApiOrder?.data?.map((row: ReportOrderType, index: number) => ({
         ...row,
         id: index + Math.floor(Math.random() * (10.5 + 1)),
         order: paginationModel.page * paginationModel.pageSize + index + 1

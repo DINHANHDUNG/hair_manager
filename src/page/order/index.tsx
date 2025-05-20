@@ -19,7 +19,7 @@ import {
   GridColumnGroupingModel,
   GridRenderCellParams,
   GridRenderEditCellParams,
-  GridRowParams,
+  // GridRowParams,
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
@@ -264,19 +264,19 @@ const OrderPage = React.memo(() => {
     console.log(rowSelectionModel, details)
   }
 
-  const onRowClick = (params: GridRowParams) => {
+  const onRowClick = () => {
     handleClickDetail()
   }
 
   const changeSttOrder = (id: number, status: string) => {
     updateOrder({ id: id, statusOrder: status })
   }
-
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const getChangedFields = (newRow: any, oldRow: any) => {
     return Object.keys(newRow).find((key) => newRow[key] !== oldRow[key])
   }
 
-  const processRowUpdate = React.useCallback((newRow: any, oldRow: any, params: any) => {
+  const processRowUpdate = React.useCallback((newRow: any, oldRow: any) => {
     // So sánh hoặc xử lý dữ liệu tại đây
     if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
       // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
@@ -301,7 +301,7 @@ const OrderPage = React.memo(() => {
 
     return newRow // Quan trọng: phải return lại row đã cập nhật
   }, [])
-
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   const data = {
     columns: [
       {
@@ -427,7 +427,7 @@ const OrderPage = React.memo(() => {
         headerName: 'Tiền discount',
         editable: permEdit,
         renderEditCell: TextEditCell,
-        renderCell: (params: GridRenderCellParams<any, number>) =>
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.discount ? formatNumber(Number(params.row.discount)) : ''
       },
 
