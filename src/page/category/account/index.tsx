@@ -9,16 +9,13 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
-import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useDeleteStaffMutation } from '../../../app/services/staff'
+import { useSearchParams } from 'react-router-dom'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
 // import DetailStaffDrawer from './DetailStaffDrawer'
 import { IconLockAccess } from '@tabler/icons-react'
-import { handleMutation } from '../../../app/hooks'
 import { useGetListAccountQuery } from '../../../app/services/auth'
 import { OPTIONSPOSITION } from '../../../common/contants'
 import ChangePassword from '../../../components/dialog/ChangePassword'
@@ -26,8 +23,8 @@ import { AccountType } from '../../../types/account'
 import FormAddAccount from './FormAddAccount'
 
 const AccountManagerPage = React.memo(() => {
-  const navigate = useNavigate()
-  const dialogs = useDialogs()
+  // const navigate = useNavigate()
+  // const dialogs = useDialogs()
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -51,7 +48,7 @@ const AccountManagerPage = React.memo(() => {
 
   const [openModalChangePass, setOpenModalChangePass] = React.useState(false)
 
-  const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
+  // const [deleteStaff, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteStaffMutation()
 
   const {
     data: dataListAcccout,
@@ -94,16 +91,16 @@ const AccountManagerPage = React.memo(() => {
     handleClickDetail()
   }
 
-  const handleDelete = async (id: number) => {
-    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
-      title: 'Xác nhận lại',
-      okText: 'Có',
-      cancelText: 'Hủy'
-    })
-    if (confirmed) {
-      deleteStaff({ ids: [Number(id)] })
-    }
-  }
+  // const handleDelete = async (id: number) => {
+  //   const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+  //     title: 'Xác nhận lại',
+  //     okText: 'Có',
+  //     cancelText: 'Hủy'
+  //   })
+  //   if (confirmed) {
+  //     deleteStaff({ ids: [Number(id)] })
+  //   }
+  // }
 
   const data = {
     columns: [
@@ -246,16 +243,16 @@ const AccountManagerPage = React.memo(() => {
     })
   }, [paginationModel, filters, setSearchParams])
 
-  React.useEffect(() => {
-    handleMutation({
-      successMessage: 'Thao tác thành công',
-      errorMessage: 'Thao tác không thành công',
-      isError: isError,
-      isSuccess: isSuccess,
-      loading: loadingDelete,
-      refetch: () => refetch()
-    })
-  }, [loadingDelete])
+  // React.useEffect(() => {
+  //   handleMutation({
+  //     successMessage: 'Thao tác thành công',
+  //     errorMessage: 'Thao tác không thành công',
+  //     isError: isError,
+  //     isSuccess: isSuccess,
+  //     loading: loadingDelete,
+  //     refetch: () => refetch()
+  //   })
+  // }, [loadingDelete])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về

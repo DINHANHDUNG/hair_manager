@@ -84,7 +84,6 @@ export const NetWork = {
   exportBySaleOrder: 'report/export-by-sale',
   reportOrder: 'order/report-detail-order',
   reportOrderSale: 'order/report-sale',
-  
 
   //Order
   order: 'order',
@@ -92,7 +91,7 @@ export const NetWork = {
   orderHistory: 'history-production',
   orderHistoryList: (orderId: number) => `history-production/order/${orderId}`,
   orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`,
-  
+
   orderApproval: (orderId: number) => `order/approval/${orderId}`,
   //invoiceRepair
   invoiceRepair: 'invoice-repair',

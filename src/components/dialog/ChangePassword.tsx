@@ -115,6 +115,28 @@ export default function ChangePassword({ open, handleClose, accountId, checkCurr
     handleMutation(isLoading, isError, isSuccess, 'Thay đổi mật khẩu thành công', 'Thay đổi mật khẩu không thành công')
   }, [isLoading])
 
+  useEffect(() => {
+    if (!loadingStaff && isErrorStaff) {
+      const newError = errorStaff as {
+        data: {
+          errors: string
+          keyError: Field
+          message: string
+          status: string
+        }
+      }
+      newError &&
+        setError(newError?.data?.keyError, { type: 'manual', message: newError?.data?.message } as ErrorOption)
+    }
+    handleMutation(
+      loadingStaff,
+      isErrorStaff,
+      isSuccessStaff,
+      'Thay đổi mật khẩu thành công',
+      'Thay đổi mật khẩu không thành công'
+    )
+  }, [loadingStaff])
+
   return (
     <CustomDialog title={'Đổi mật khẩu'} open={open} onClose={handleClose} maxWidth='md' fullWidth>
       <Grid container spacing={gridSpacingForm}>

@@ -1,20 +1,17 @@
+import CalendarIcon from '@mui/icons-material/CalendarToday'
+import { Box, Popover, TextField } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
-import { PickersDayProps } from '@mui/x-date-pickers'
-import { Dayjs } from 'dayjs'
-import dayjs from 'dayjs'
-import { Box, Button, Popover, TextField } from '@mui/material'
-import { useState } from 'react'
-import CalendarIcon from '@mui/icons-material/CalendarToday'
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
+import { Dayjs } from 'dayjs'
+import { useState } from 'react'
 
 interface Props {
   value: Dayjs | null
   setValue: (val: Dayjs | null) => void
   label?: string
   disabled?: boolean
-  size?: 'small' | 'medium',
+  size?: 'small' | 'medium'
 }
 
 export default function MonthPickerField({ value, setValue, label, disabled, size }: Props) {
@@ -48,10 +45,15 @@ export default function MonthPickerField({ value, setValue, label, disabled, siz
           readOnly: true
         }}
         fullWidth
-        size={size || "small"}
+        size={size || 'small'}
         disabled={disabled}
       />
-      <Popover open={open} anchorEl={anchorEl} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
         <Box p={1}>
           <StaticDatePicker
             displayStaticWrapperAs='desktop'

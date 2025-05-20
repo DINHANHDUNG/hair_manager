@@ -16,6 +16,7 @@ import MySelect from '../../../components/select/MySelect'
 import { gridSpacingForm } from '../../../constants'
 import { ErrorType } from '../../../types'
 import { StaffType } from '../../../types/staff'
+import { AccountType } from '../../../types/account'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -80,7 +81,8 @@ export default function FormAddStaff(Props: Props) {
     }
   )
 
-  const listAccount = dataListAcccout?.data?.rows?.map((e: any) => ({ ...e, value: e?.id, label: e?.username })) || []
+  const listAccount =
+    dataListAcccout?.data?.rows?.map((e: AccountType) => ({ ...e, value: e?.id, label: e?.username })) || []
 
   const [addStaff, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
     useAddStaffMutation()

@@ -13,7 +13,9 @@ const itemOrderSchema = yup.object().shape({
 
 export const validationSchemaOrder = yup.object({
   dateOrder: yup.string().when('$idOrder', {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     is: (val: any) => !val,
+    /* eslint-enable @typescript-eslint/no-explicit-any */
     then: (schema) =>
       schema
         .required(`Trường này là bắt buộc`)

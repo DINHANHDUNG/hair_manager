@@ -1,19 +1,17 @@
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { IconCoin, IconUser, IconUsersGroup } from '@tabler/icons-react'
+import dayjs, { Dayjs } from 'dayjs'
+import moment from 'moment'
 import * as React from 'react'
 import { useGetStaticOrderTotalMonthQuery } from '../../app/services/statistic'
+import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
 import { FooterBoxSection, FooterBoxSection2 } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
-import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
-import { DateRange } from '@mui/x-date-pickers-pro'
-import dayjs, { Dayjs } from 'dayjs'
-import MonthPickerField from '../../components/dateTime/MonthPickerField'
-import moment from 'moment'
 
 const Dashboard = React.memo(() => {
   const theme = useTheme()

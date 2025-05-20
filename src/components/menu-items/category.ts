@@ -1,15 +1,14 @@
 // assets
 import {
-  IconCategory,
-  IconUsersGroup,
-  IconCoinBitcoin,
+  IconBriefcase,
   IconBuilding,
+  IconCategory,
+  IconCoinBitcoin,
   IconUser,
-  IconBriefcase
+  IconUsersGroup
 } from '@tabler/icons-react'
-import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { PERMISSION } from '../../constants'
 import { Perm_Account_View, Perm_Category_View, Perm_Customer_View, Perm_Staff_View } from '../../help/permission'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
 
 // constant
 const icons = {

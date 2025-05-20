@@ -3,6 +3,7 @@ import type { RootState, AppDispatch } from './store'
 import Toast from '../components/toast'
 import { authStore } from './selectedStore'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function isEmpty(obj: any) {
   for (const prop in obj) {
     if (Object.hasOwn(obj, prop)) {
@@ -12,6 +13,7 @@ export function isEmpty(obj: any) {
 
   return true
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch = () => useDispatch<AppDispatch>()

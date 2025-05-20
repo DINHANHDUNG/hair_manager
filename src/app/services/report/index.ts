@@ -1,7 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { NetWork } from '../../../common/apiKey'
 import { GET } from '../../../common/contants'
-import { ReponseData2 } from '../../../types'
 import { axiosBaseQuery } from '../../baseQuery'
 
 export const reportApi = createApi({
@@ -16,7 +15,9 @@ export const reportApi = createApi({
         params,
         responseType: 'blob' // 👈 Cực kỳ quan trọng!
       }),
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       transformResponse: (response: any) => response
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     }),
     exportBySaleOrder: builder.query<Blob, { month: string }>({
       query: (params) => ({
@@ -25,7 +26,9 @@ export const reportApi = createApi({
         params,
         responseType: 'blob' // 👈 Cực kỳ quan trọng!
       }),
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       transformResponse: (response: any) => response
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     }),
     getListReportOrder: builder.query({
       query: (params) => ({

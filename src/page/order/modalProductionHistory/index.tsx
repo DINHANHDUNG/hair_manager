@@ -11,12 +11,9 @@ import { gridSpacingForm } from '../../../constants'
 //Icon
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid'
-import { useDialogs } from '@toolpad/core'
-import dayjs from 'dayjs'
 import { handleMutation, useHasPermission } from '../../../app/hooks'
 import {
   useAddOrderHistoryMutation,
-  useDeleteOrderHistoryMutation,
   useGetListOrderHistoryQuery,
   useUpdateOrderHistoryMutation
 } from '../../../app/services/order'
@@ -50,7 +47,7 @@ export default function ModalProductionHistory(Props: Props) {
   const { open, handleClose, itemSelectedEdit } = Props
   const permAdd = useHasPermission(Perm_Order_HistoryPrd_Add)
   const idOrder = itemSelectedEdit?.id
-  const dialogs = useDialogs()
+  // const dialogs = useDialogs()
   const {
     data: fetchData,
     isLoading,
@@ -70,8 +67,8 @@ export default function ModalProductionHistory(Props: Props) {
     updateOrder,
     { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error: errorUpdate }
   ] = useUpdateOrderHistoryMutation()
-  const [deleteOrder, { isLoading: loadingDelete, isSuccess: isSuccessDelete, isError: isErrorDelete }] =
-    useDeleteOrderHistoryMutation()
+  // const [deleteOrder, { isLoading: loadingDelete, isSuccess: isSuccessDelete, isError: isErrorDelete }] =
+  //   useDeleteOrderHistoryMutation()
 
   // const listData = fetchData?.data as Array<HistoryProductionType>
 
@@ -164,24 +161,24 @@ export default function ModalProductionHistory(Props: Props) {
     // scrollFormAddEdit()
   }
 
-  const handleDelete = async (id: number) => {
-    const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
-      title: 'Xác nhận lại',
-      okText: 'Có',
-      cancelText: 'Hủy'
-    })
-    if (confirmed) {
-      deleteOrder({ ids: [Number(id)] })
-    }
-  }
+  // const handleDelete = async (id: number) => {
+  //   const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
+  //     title: 'Xác nhận lại',
+  //     okText: 'Có',
+  //     cancelText: 'Hủy'
+  //   })
+  //   if (confirmed) {
+  //     deleteOrder({ ids: [Number(id)] })
+  //   }
+  // }
 
-  const editItem = (item: HistoryProductionType) => {
-    setIdUpdate(item.id)
-    setValue('date', dayjs(item.date).toString())
-    setValue('status', item.status)
-    clearErrors()
-    // scrollFormAddEdit()
-  }
+  // const editItem = (item: HistoryProductionType) => {
+  //   setIdUpdate(item.id)
+  //   setValue('date', dayjs(item.date).toString())
+  //   setValue('status', item.status)
+  //   clearErrors()
+  //   // scrollFormAddEdit()
+  // }
 
   const {
     control,
@@ -189,7 +186,7 @@ export default function ModalProductionHistory(Props: Props) {
     setValue,
     reset,
     setError,
-    clearErrors,
+    // clearErrors,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema)
@@ -275,18 +272,18 @@ export default function ModalProductionHistory(Props: Props) {
     }
   }, [loadingUpdate])
 
-  useEffect(() => {
-    handleMutation({
-      successMessage: 'Thao tác thành công',
-      errorMessage: 'Thao tác không thành công',
-      isError: isErrorDelete,
-      isSuccess: isSuccessDelete,
-      loading: loadingDelete,
-      refetch: () => {
-        refetchOrder()
-      }
-    })
-  }, [loadingDelete])
+  // useEffect(() => {
+  //   handleMutation({
+  //     successMessage: 'Thao tác thành công',
+  //     errorMessage: 'Thao tác không thành công',
+  //     isError: isErrorDelete,
+  //     isSuccess: isSuccessDelete,
+  //     loading: loadingDelete,
+  //     refetch: () => {
+  //       refetchOrder()
+  //     }
+  //   })
+  // }, [loadingDelete])
 
   return (
     <CustomDialog title='Lịch sử sản xuất' open={open} onClose={handleClose} maxWidth='lg' fullWidth>

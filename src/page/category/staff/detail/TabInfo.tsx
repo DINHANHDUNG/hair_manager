@@ -5,6 +5,8 @@ import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+import { useAppSelector } from '../../../../app/hooks'
+import { authStore } from '../../../../app/selectedStore'
 import { useUpdateStaffMutation } from '../../../../app/services/staff'
 import { OPTIONGENDER } from '../../../../common/contants'
 import { VALIDATE } from '../../../../common/validate'
@@ -15,9 +17,6 @@ import MySelect from '../../../../components/select/MySelect'
 import Toast from '../../../../components/toast'
 import { gridSpacingForm, PERMISSION } from '../../../../constants'
 import { StaffType } from '../../../../types/staff'
-import { useGetRolesQuery } from '../../../../app/services/auth'
-import { useAppSelector } from '../../../../app/hooks'
-import { authStore } from '../../../../app/selectedStore'
 
 type FormValues = {
   name: string
