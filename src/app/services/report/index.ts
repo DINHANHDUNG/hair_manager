@@ -20,7 +20,7 @@ export const reportApi = createApi({
     }),
     exportBySaleOrder: builder.query<Blob, { month: string }>({
       query: (params) => ({
-        url: NetWork.exportDetailOrder,
+        url: NetWork.exportBySaleOrder,
         method: GET,
         params,
         responseType: 'blob' // 👈 Cực kỳ quan trọng!
@@ -33,6 +33,13 @@ export const reportApi = createApi({
         method: GET,
         params: params
       })
+    }),
+    getListReportOrderSale: builder.query({
+      query: (params) => ({
+        url: NetWork.reportOrderSale,
+        method: GET,
+        params: params
+      })
     })
   })
 })
@@ -42,5 +49,6 @@ export const {
   useExportDetailOrderQuery,
   useLazyExportDetailOrderQuery,
   useLazyExportBySaleOrderQuery,
-  useGetListReportOrderQuery
+  useGetListReportOrderQuery,
+  useGetListReportOrderSaleQuery
 } = reportApi
