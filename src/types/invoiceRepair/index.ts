@@ -50,6 +50,7 @@ export interface ImageUploadInvoiceRepairType {
 //   isActive: boolean
 // }
 export interface FormValuesInvoiceRepair {
+  code: string
   reasonRepair: string
   dateRepair?: string //ngày yêu cầu sửa
   noteRepair?: string

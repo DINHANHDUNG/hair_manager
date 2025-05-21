@@ -12,6 +12,7 @@ import {
   GridColumnOrderChangeParams,
   GridColumnsInitialState,
   GridColumnVisibilityModel,
+  GridDetailPanelToggleCell,
   GridFilterModel,
   GridFooterContainer,
   gridPageCountSelector,
@@ -34,6 +35,15 @@ import { localStorageHelper } from '../../help/localHelp'
 import CustomToolbar from './CustomToolbarDataGrid'
 
 const ODD_OPACITY = 0.2
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const CustomToggleCell = (props: any) => {
+  if (!props.row) return null
+  if (!props.showDetailPanelToggle || props.showDetailPanelToggle(props.row)) {
+    return <GridDetailPanelToggleCell {...props} />
+  }
+  return null
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 interface TableDataGridProps {
   data?: Record<string, unknown> // Dữ liệu không xác định cụ thể, tránh dùng any
@@ -78,6 +88,9 @@ interface TableDataGridProps {
   onProcessRowUpdateError?: (error: any) => void
   getDetailPanelContent?: (row: any) => React.ReactNode
   getDetailPanelHeight?: (row: any) => number
+  getDetailPanelExpandedRowIds?: any
+  showDetailPanelToggle?: (row: any) => boolean
+  isRowExpandable?: (row: GridRowParams) => boolean
   /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
@@ -152,25 +165,6 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
 
   const [columns, setColumns] = React.useState<GridColDef[]>([])
 
-  // const [columnVisibilityModel, setColumnVisibilityModel] = React.useState<GridColumnVisibilityModel>(() => {
-  //   const visibilityModel: GridColumnVisibilityModel = {}
-  //   const visibilityModelLocal: GridColumnVisibilityModel = {}
-  //   /* eslint-disable @typescript-eslint/no-explicit-any */
-  //   const savedVisibilityModel = localStorageHelper.getItem(COLUMN_KEY, []) as any[]
-  //   /* eslint-enable @typescript-eslint/no-explicit-any */
-  //   initialColumns.forEach((col) => {
-  //     // Mặc định tất cả cột đều hiển thị nếu không có thông tin trong `localStorage`
-  //     visibilityModel[col.field] = true
-  //   })
-  //   savedVisibilityModel.forEach((col) => {
-  //     // Mặc định tất cả cột đều hiển thị nếu không có thông tin trong `localStorage`
-  //     visibilityModelLocal[col.field] = !col.hide
-  //   })
-
-  //   // Nếu có dữ liệu lưu trong localStorage, ghi đè trạng thái mặc định
-  //   return { ...visibilityModel, ...visibilityModelLocal }
-  // })
-
   const [columnVisibilityModel, setColumnVisibilityModel] = React.useState<GridColumnVisibilityModel>(() => {
     const visibilityModel: GridColumnVisibilityModel = {}
 
@@ -183,23 +177,6 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   })
 
   const checkColumnsVisiblityModel = () => {
-    // const visibilityModel: GridColumnVisibilityModel = {}
-    // const visibilityModelLocal: GridColumnVisibilityModel = {}
-    // /* eslint-disable @typescript-eslint/no-explicit-any */
-    // const savedVisibilityModel = localStorageHelper.getItem(COLUMN_KEY, []) as any[]
-    // /* eslint-enable @typescript-eslint/no-explicit-any */
-    // initialColumns.forEach((col) => {
-    //   // Mặc định tất cả cột đều hiển thị nếu không có thông tin trong `localStorage`
-    //   visibilityModel[col.field] = true
-    // })
-    // savedVisibilityModel.forEach((col) => {
-    //   // Mặc định tất cả cột đều hiển thị nếu không có thông tin trong `localStorage`
-    //   visibilityModelLocal[col.field] = !col.hide
-    // })
-
-    // // Nếu có dữ liệu lưu trong localStorage, ghi đè trạng thái mặc định
-    // setColumnVisibilityModel({ ...visibilityModel, ...visibilityModelLocal })
-
     const visibilityModel: GridColumnVisibilityModel = {}
     initialColumns.forEach((col) => {
       visibilityModel[col.field] = true
@@ -326,6 +303,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
         noRowsLabel: 'Không có bản ghi nào',
         footerRowSelected: (count) => (checkboxSelection ? `Đã chọn ${count}` : '')
       }}
+      // isRowExpandable={isRowExpandable}
       // disableColumnMenu
       disableColumnReorder={false} //Tắt di chuyển cột
       disableRowSelectionOnClick
@@ -333,11 +311,18 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       onProcessRowUpdateError={onProcessRowUpdateError}
       getDetailPanelContent={getDetailPanelContent ? (params) => <>{getDetailPanelContent(params.row)}</> : undefined}
       getDetailPanelHeight={getDetailPanelHeight ? (params) => getDetailPanelHeight(params.row) : undefined}
+      getRowClassName={(params) => (params.row.invoiceRepairs?.length > 0 ? '' : 'no-expand')}
       // experimentalFeatures={{ newEditingApi: true }}
       sx={{
         // '.MuiDataGrid-columnSeparator': {
         //   display: 'none'
         // },
+        '& .no-expand .MuiDataGrid-detailPanelToggleCell': {
+          display: 'none'
+        },
+        '& .MuiDataGrid-detailPanelToggleCell[data-hasdetail="false"]': {
+          display: 'none' // Ẩn dấu +
+        },
         '&.MuiDataGrid-root': {
           border: 'none'
         },
@@ -393,23 +378,28 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
           }
         }
       }}
-      slots={{
-        // headerFilterMenu: null,
-        footer: hideFooter ? undefined : CustomFooter,
-        toolbar: () =>
-          toolbarEnable ? (
-            toolbar ? (
-              toolbar
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      slots={
+        {
+          // headerFilterMenu: null,
+          detailPanelToggleCell: CustomToggleCell,
+          footer: hideFooter ? undefined : CustomFooter,
+          toolbar: () =>
+            toolbarEnable ? (
+              toolbar ? (
+                toolbar
+              ) : (
+                <CustomToolbar
+                  onSearchChange={(e) => handleSearchChange && handleSearchChange(e)}
+                  searchValue={searchValue || ''}
+                />
+              )
             ) : (
-              <CustomToolbar
-                onSearchChange={(e) => handleSearchChange && handleSearchChange(e)}
-                searchValue={searchValue || ''}
-              />
+              <></>
             )
-          ) : (
-            <></>
-          )
-      }}
+        } as any
+      }
+      /* eslint-enable @typescript-eslint/no-explicit-any */
       // slotProps={{
       //   toolbar: {
       //     searchValue: searchValue,

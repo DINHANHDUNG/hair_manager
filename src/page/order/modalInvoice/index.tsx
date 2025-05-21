@@ -47,6 +47,7 @@ const contentInvoiceRepairsSchema = yup.object().shape({
 
 const validationSchema = yup.object({
   reasonRepair: requiredString('Lý do sửa đơn'),
+  code: requiredString(),
   // noteRepair: requiredString('Lý do sửa đơn'),
   contentInvoiceRepairs: yup.array().of(contentInvoiceRepairsSchema)
 })
@@ -161,9 +162,11 @@ export default function FormAddEditInvoice({ open, handleClose, orderId, itemSel
     const formData = new FormData()
     files.forEach((file) => formData.append('images', file))
     uploadImage(formData).then((res) => {
-      if (res.data.status === STATUS_SUCCESS) {
+      if (res?.data?.status === STATUS_SUCCESS) {
         const uploaded = res.data.data
         setValue(`contentInvoiceRepairs.${index}.imageUploads`, [...currentImages, ...uploaded])
+      } else {
+        Toast({ text: 'Đã xảy ra lỗi vui lòng thử lại', variant: 'error' })
       }
     })
   }
@@ -254,6 +257,18 @@ export default function FormAddEditInvoice({ open, handleClose, orderId, itemSel
         <Grid container spacing={gridSpacingForm}>
           <Grid item xs={12}>
             Ngày yêu cầu sửa đơn: {moment(dateEdit).format('DD/MM/YYYY').toString()}
+          </Grid>
+          <Grid item xs={12}>
+            <MyTextField
+              name={`code`}
+              control={control}
+              errors={errors}
+              title='Nhập mã'
+              variant='outlined'
+              size='small'
+              placeholder='Nhập mã'
+              require
+            />
           </Grid>
           <Grid item xs={12}>
             <MyTextField
