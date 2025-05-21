@@ -62,6 +62,7 @@ import InvoiceRepairDetailPanel from './InvoiceRepairDetailPanel'
 import FormAddNewOrder from './modalAddNew'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
+import { useGridApiRef } from '@mui/x-data-grid-pro'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -74,6 +75,7 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 }))
 
 const OrderPage = React.memo(() => {
+  const apiRef = useGridApiRef()
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
   const checkQL = useHasPermission([PERMISSION.QUANLY])
@@ -595,6 +597,9 @@ const OrderPage = React.memo(() => {
   ]
 
   const onCellDoubleClick = (param: GridCellParams) => {
+    console.log('====================================')
+    console.log('param', param)
+    console.log('====================================')
     if (param.field === 'historyProductions' && permHistoryProductionsView) {
       setItemSelectedEidt(param.row)
       handleModalProductionHistory()
@@ -800,6 +805,8 @@ const OrderPage = React.memo(() => {
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
             // key={rowTotal}
+            // editMode="cell"
+            apiRef={apiRef}
             rows={rows}
             columns={columns}
             isLoading={isLoading}
@@ -817,7 +824,7 @@ const OrderPage = React.memo(() => {
             onProcessRowUpdateError={(error) => {
               console.error('Row update error:', error)
             }}
-            onCellDoubleClick={onCellDoubleClick}
+            onCellClick={onCellDoubleClick}
             otherProps={{
               columnGroupingModel: columnGroupingModel
             }}

@@ -65,6 +65,7 @@ interface TableDataGridProps {
     details: GridCallbackDetails // GridCallbackDetails
   ) => void
   onCellDoubleClick?: (params: GridCellParams, event: React.MouseEvent<HTMLElement>) => void
+  onCellClick?: (params: GridCellParams, event: React.MouseEvent<HTMLElement>) => void
   totalCount?: number
   rowHeight?: number
   pinnedColumns?: GridPinnedColumnFields | undefined
@@ -72,10 +73,12 @@ interface TableDataGridProps {
   hideFooter?: boolean
   pagination?: boolean
   apiRef?: React.MutableRefObject<GridApiPro> | undefined
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   processRowUpdate?: (newRow: any, oldRow: any, params: any) => any | Promise<any>
   onProcessRowUpdateError?: (error: any) => void
   getDetailPanelContent?: (row: any) => React.ReactNode
   getDetailPanelHeight?: (row: any) => number
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
 const autosizeOptions: GridAutosizeOptions = {
@@ -93,6 +96,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   onRowClick,
   onRowDoubleClick,
   onCellDoubleClick,
+  onCellClick,
   onFilterChange,
   pageSizeOptions,
   searchValue,
@@ -273,6 +277,24 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       onRowClick={onRowClick}
       onRowDoubleClick={onRowDoubleClick}
       onCellDoubleClick={onCellDoubleClick}
+      onCellClick={(params, event) => {
+        // Không cho mở edit nếu:
+        if (!params.isEditable || params.field === '__check__') return onCellClick?.(params, event)
+
+        // Tránh trigger khi click vào nút, icon, v.v
+        const target = event.target as HTMLElement
+        const isButton = target.closest('button, svg, path, a, input')
+        if (isButton) return
+
+        const currentCell = apiRef?.current?.getCellMode(params.id, params.field)
+        if (currentCell === 'edit') return
+        // Force mở edit mode
+        apiRef?.current?.startCellEditMode({
+          id: params.id,
+          field: params.field
+        })
+        // onCellClick?.(params, event)
+      }}
       columns={columns}
       disableColumnFilter
       rows={rows}
@@ -280,7 +302,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       // rowsLoadingMode='server'
       // columnVisibilityModel={'server'}
       // columnOrderModel={'server'}
-      // editMode='row'
+      editMode={'cell'}
       filterMode={filterMode || 'server'}
       onFilterModelChange={onFilterChange}
       loading={isLoading}
