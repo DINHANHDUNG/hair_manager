@@ -6,7 +6,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
+import { Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled } from '@mui/material/styles'
 import { Box } from '@mui/system'
@@ -22,6 +22,7 @@ import {
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import { useGridApiRef } from '@mui/x-data-grid-pro'
 import { useDialogs } from '@toolpad/core'
 import dayjs from 'dayjs'
 import moment from 'moment'
@@ -35,7 +36,6 @@ import {
   useUpdateOrderMutation
   // useUploadFileOrderMutation
 } from '../../app/services/order'
-import { useGetStaticOrderDetailQuery } from '../../app/services/statistic'
 import {
   checkBg,
   checkColor,
@@ -46,7 +46,6 @@ import {
   OPTIONS_STATUS_SALE_ORDER
 } from '../../common/contants'
 import { VALIDATE } from '../../common/validate'
-import { CardContentBoxSection } from '../../components/cardContentBoxSection'
 import { AutocompleteEditCell } from '../../components/table-data-grid/cellAutocomplete'
 import { DateEditCell } from '../../components/table-data-grid/cellDate'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
@@ -62,7 +61,6 @@ import InvoiceRepairDetailPanel from './InvoiceRepairDetailPanel'
 import FormAddNewOrder from './modalAddNew'
 import FormAddEditInvoice from './modalInvoice'
 import ModalProductionHistory from './modalProductionHistory'
-import { useGridApiRef } from '@mui/x-data-grid-pro'
 
 const ChipCustom = styled(Chip)(({ theme }) => ({
   color: theme.palette.background.default,
@@ -127,13 +125,13 @@ const OrderPage = React.memo(() => {
   const [modalAddOrder, setModalAddOrder] = React.useState(false)
   const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
 
-  const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticOrderDetailQuery({})
-  const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
-  const countStatusInCustomer = dataStaticStaffDetail?.data?.countStatusInCustomer || 0 //Cho vendor mượn
-  const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
-  const countStatusInHome = dataStaticStaffDetail?.data?.countStatusInHome || 0 //Chờ giao việc
-  const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
-  const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
+  // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticOrderDetailQuery({})
+  // const countStatusFail = dataStaticStaffDetail?.data?.countStatusFail || 0 //Phỏng vấn trượt
+  // const countStatusInCustomer = dataStaticStaffDetail?.data?.countStatusInCustomer || 0 //Cho vendor mượn
+  // const countStatusInCompany = dataStaticStaffDetail?.data?.countStatusInCompany || 0 //Trong công ty
+  // const countStatusInHome = dataStaticStaffDetail?.data?.countStatusInHome || 0 //Chờ giao việc
+  // const countStatusOut = dataStaticStaffDetail?.data?.countStatusOut || 0 //Đã nghỉ việc
+  // const countStatusWaiting = dataStaticStaffDetail?.data?.countStatusWaiting || 0 //Chờ phỏng vấn
 
   const { data: dataApiCustomer } = useGetListCustomerQuery({ isActive: true })
   const dataOptionCustomer = convertDataLabelAutoComplate({
@@ -597,9 +595,6 @@ const OrderPage = React.memo(() => {
   ]
 
   const onCellDoubleClick = (param: GridCellParams) => {
-    console.log('====================================')
-    console.log('param', param)
-    console.log('====================================')
     if (param.field === 'historyProductions' && permHistoryProductionsView) {
       setItemSelectedEidt(param.row)
       handleModalProductionHistory()
@@ -710,7 +705,7 @@ const OrderPage = React.memo(() => {
       isError: isError,
       isSuccess: isSuccess,
       loading: loadingDelete,
-      refetch: () => refetchStatic()
+      refetch: () => null
     })
   }, [loadingDelete])
 
@@ -720,11 +715,11 @@ const OrderPage = React.memo(() => {
 
       handleMutation({
         successMessage: 'Thao tác thành công',
-        errorMessage: newError && !newError?.data?.keyError ? newError?.data?.message : '',
+        errorMessage: newError && !newError?.data?.keyError ? newError?.data?.message : 'Thao tác không thành công',
         isError: isErrorUpdate,
         isSuccess: isSuccessUpdate,
         loading: loadingUpdate,
-        refetch: () => refetchStatic()
+        refetch: () => null
       })
     }
   }, [loadingUpdate])
@@ -745,7 +740,7 @@ const OrderPage = React.memo(() => {
       <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
         {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
       </IconButton>
-      <Collapse in={openStatistics} timeout='auto' unmountOnExit>
+      {/* <Collapse in={openStatistics} timeout='auto' unmountOnExit>
         <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
           <CardContentBoxSection title={'Tổng đợn'} content={countStatusInCompany} />
           <CardContentBoxSection title={'Đơn huỷ'} content={countStatusInCustomer} />
@@ -754,7 +749,7 @@ const OrderPage = React.memo(() => {
           <CardContentBoxSection title={'Chờ giao'} content={countStatusWaiting} />
           <CardContentBoxSection title={'Đã gửi hàng'} content={countStatusInHome} />
         </Grid>
-      </Collapse>
+      </Collapse> */}
       <MainCard title={'Danh sách đơn'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
