@@ -117,20 +117,20 @@ export const OPTIONS_ORDER_KEY = {
 }
 
 export const OPTIONS_STATUS_ORDER = [
-  { value: OPTIONS_ORDER_KEY.NEW, label: 'Đơn mới' },
+  { value: OPTIONS_ORDER_KEY.NEW, label: 'Gửi sản xuất' },
   { value: OPTIONS_ORDER_KEY.PROCESSING, label: 'Đang sản xuất' },
   { value: OPTIONS_ORDER_KEY.DELIVERING, label: 'Đang giao' },
   { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
-  { value: OPTIONS_ORDER_KEY.DONE, label: 'Hoàn thành' },
+  { value: OPTIONS_ORDER_KEY.DONE, label: 'Đã gửi hàng' },
   { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Sửa đơn' },
   { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Huỷ đơn' }
 ]
 
 export const OPTIONS_STATUS_SALE_ORDER = [
   { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
-  { value: OPTIONS_ORDER_KEY.DONE, label: 'Hoàn thành' },
-  { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Sửa đơn' },
-  { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Huỷ đơn' }
+  { value: OPTIONS_ORDER_KEY.DONE, label: 'Đã gửi hàng' },
+  { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Sửa đơn' },
+  { value: OPTIONS_ORDER_KEY.CANCEL, label: 'Huỷ đơn' }
 ]
 
 export const OPTIONS_STATUS_QL_ORDER = [
@@ -160,25 +160,25 @@ export const checkColor = (val: string) => {
     // Order status
     case OPTIONS_ORDER_KEY.NEW:
     case OPTIONS_ORDER_KEY.PROCESSING:
-      return '#000000'
+      return COLORS.black
     case OPTIONS_ORDER_KEY.DELIVERING:
     case OPTIONS_ORDER_KEY.RECEIVED:
     case OPTIONS_ORDER_KEY.DONE:
     case OPTIONS_ORDER_KEY.CANCEL:
     case OPTIONS_ORDER_KEY.REPAIR:
-      return '#ffffff'
+      return COLORS.black
 
     // History production status
     case OPTIONS_HISTORY_PROD_KEY.SHARING:
-      return '#ffffff'
+      return COLORS.black
     case OPTIONS_HISTORY_PROD_KEY.LACE:
-      return '#000000'
+      return COLORS.black
     case OPTIONS_HISTORY_PROD_KEY.COLOR:
-      return '#ffffff'
+      return COLORS.black
     case OPTIONS_HISTORY_PROD_KEY.CLEAN_COLOR:
-      return '#000000'
+      return COLORS.black
     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
-      return '#ffffff'
+      return COLORS.black
 
     default:
       return COLORS.black
@@ -186,34 +186,70 @@ export const checkColor = (val: string) => {
 }
 
 // Hàm checkBg: màu nền
+// export const checkBg = (val: string) => {
+//   switch (val) {
+//     // Order status
+//     case OPTIONS_ORDER_KEY.NEW:
+//       return '#ffffff'
+//     case OPTIONS_ORDER_KEY.PROCESSING:
+//       return '#FFEB3B'
+//     case OPTIONS_ORDER_KEY.DELIVERING:
+//       return '#FF9800'
+//     case OPTIONS_ORDER_KEY.RECEIVED:
+//       return '#2196F3'
+//     case OPTIONS_ORDER_KEY.DONE:
+//       return '#4CAF50'
+//     case OPTIONS_ORDER_KEY.CANCEL:
+//       return '#F44336'
+//     case OPTIONS_ORDER_KEY.REPAIR:
+//       return '#9C27B0'
+
+//     // History production status
+//     case OPTIONS_HISTORY_PROD_KEY.SHARING:
+//       return '#2196F3' // Xanh dương thể hiện trạng thái đang xử lý
+//     case OPTIONS_HISTORY_PROD_KEY.LACE:
+//       return '#FFF9C4' // Vàng nhạt
+//     case OPTIONS_HISTORY_PROD_KEY.COLOR:
+//       return '#FF9800' // Cam - đang làm màu
+//     case OPTIONS_HISTORY_PROD_KEY.CLEAN_COLOR:
+//       return '#E0E0E0' // Xám sáng - đang tẩy màu
+//     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
+//       return '#9C27B0' // Tím - làm mượt
+
+//     default:
+//       return COLORS.black
+//   }
+// }
+
 export const checkBg = (val: string) => {
   switch (val) {
     // Order status
     case OPTIONS_ORDER_KEY.NEW:
-      return '#ffffff'
+      return '#E0F7FA'
     case OPTIONS_ORDER_KEY.PROCESSING:
+      return '#FFF59D'
     case OPTIONS_ORDER_KEY.DELIVERING:
-      return '#FFEB3B'
+      return '#FF7043'
     case OPTIONS_ORDER_KEY.RECEIVED:
-      return '#2196F3'
+      return '#42A5F5'
     case OPTIONS_ORDER_KEY.DONE:
-      return '#4CAF50'
+      return '#66BB6A'
     case OPTIONS_ORDER_KEY.CANCEL:
-      return '#F44336'
+      return '#EF5350'
     case OPTIONS_ORDER_KEY.REPAIR:
-      return '#9C27B0'
+      return '#E1BEE7'
 
     // History production status
     case OPTIONS_HISTORY_PROD_KEY.SHARING:
-      return '#2196F3' // Xanh dương thể hiện trạng thái đang xử lý
+      return '#29B6F6'
     case OPTIONS_HISTORY_PROD_KEY.LACE:
-      return '#FFF9C4' // Vàng nhạt
+      return '#FFF9C4'
     case OPTIONS_HISTORY_PROD_KEY.COLOR:
-      return '#FF9800' // Cam - đang làm màu
+      return '#FFB74D'
     case OPTIONS_HISTORY_PROD_KEY.CLEAN_COLOR:
-      return '#E0E0E0' // Xám sáng - đang tẩy màu
+      return '#E0E0E0'
     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
-      return '#9C27B0' // Tím - làm mượt
+      return '#BA68C8'
 
     default:
       return COLORS.black

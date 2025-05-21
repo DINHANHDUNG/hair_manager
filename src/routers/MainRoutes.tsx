@@ -60,7 +60,7 @@ const MainRoutes = {
       children: [
         {
           path: ROUTES.INDEX,
-          element: <DashboardDefault />
+          element: createProtectedRoute(<DashboardDefault />, Perm_DASHBOARD_ORDER_View)
         },
         {
           path: ROUTES.DASHBOARD_ORDER,
@@ -80,10 +80,6 @@ const MainRoutes = {
           // element: <OrderPage />,
           element: createProtectedRoute(<OrderPage />, Perm_Order_View)
         },
-        // {
-        //   path: ROUTES.ORDER_ADD,
-        //   element: <FormAddEditOrder />
-        // },
         {
           path: ROUTES.ORDER_REQUEST,
           element: <RequestEditOrderPage />

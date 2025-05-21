@@ -6,7 +6,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Button, Collapse, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
 import Chip from '@mui/material/Chip'
 import { styled } from '@mui/material/styles'
@@ -28,7 +27,7 @@ import dayjs from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { formatNumber, handleMutation, useHasPermission } from '../../app/hooks'
+import { handleMutation, useHasPermission } from '../../app/hooks'
 import { useGetListCustomerQuery } from '../../app/services/customer'
 import {
   useDeleteOrderMutation,
@@ -78,6 +77,7 @@ const OrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Order_Add)
   const permEdit = useHasPermission(Perm_Order_Edit)
   const checkQL = useHasPermission([PERMISSION.QUANLY])
+  const checkAD = useHasPermission([PERMISSION.ADMIN])
   const checkSale = useHasPermission([PERMISSION.SALE])
   const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_View)
   const permInvoiceAdd = useHasPermission(Perm_Invoice_Add)
@@ -370,10 +370,36 @@ const OrderPage = React.memo(() => {
 
       {
         field: 'statusOrder',
-        headerName: 'Tình trạng đơn hàng',
+        headerName: 'Trạng thái bán hàng',
         editable: checkQL || checkSale,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={checkQL ? OPTIONS_STATUS_QL_ORDER : OPTIONS_STATUS_SALE_ORDER} />
+        ),
+        renderCell: (params: GridRenderCellParams) => {
+          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+          if (!status) return null
+
+          return (
+            <Chip
+              label={status.label}
+              sx={{
+                backgroundColor: checkBg(status.value),
+                color: checkColor(status.value),
+                fontWeight: 500
+              }}
+              size='small'
+              variant='outlined'
+            />
+          )
+        }
+      }, //QL
+
+      {
+        field: 'statusManufacture',
+        headerName: 'Trạng thái sản xuất',
+        editable: checkQL,
+        renderEditCell: (params: GridRenderEditCellParams) => (
+          <AutocompleteEditCell {...params} options={OPTIONS_STATUS_QL_ORDER} />
         ),
         renderCell: (params: GridRenderCellParams) => {
           const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
@@ -422,14 +448,14 @@ const OrderPage = React.memo(() => {
       }, //QL
 
       { field: 'rate', headerName: 'Đánh giá sx', editable: checkQL, renderEditCell: TextEditCell }, //QL
-      {
-        field: 'discount',
-        headerName: 'Tiền discount',
-        editable: permEdit,
-        renderEditCell: TextEditCell,
-        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-          params.row.discount ? formatNumber(Number(params.row.discount)) : ''
-      },
+      // {
+      //   field: 'discount',
+      //   headerName: 'Tiền discount',
+      //   editable: permEdit,
+      //   renderEditCell: TextEditCell,
+      //   renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+      //     params.row.discount ? formatNumber(Number(params.row.discount)) : ''
+      // },
 
       {
         field: 'actions',
@@ -450,13 +476,13 @@ const OrderPage = React.memo(() => {
           ) : (
             <></>
           ),
-          <GridActionsCellItem
-            icon={<VisibilityOutlinedIcon />} //Dùng cho xem invoid mở file PDF
-            label='Eye'
-            className='textPrimary'
-            color='inherit'
-            // onClick={handleModalEditInfoOrder}
-          />,
+          // <GridActionsCellItem
+          //   icon={<VisibilityOutlinedIcon />} //Dùng cho xem invoid mở file PDF
+          //   label='Eye'
+          //   className='textPrimary'
+          //   color='inherit'
+          //   // onClick={handleModalEditInfoOrder}
+          // />,
           <GridActionsCellItem
             onClick={() => handleDelete(params.row.id)}
             icon={<DeleteOutlinedIcon />}
@@ -577,8 +603,10 @@ const OrderPage = React.memo(() => {
 
   const columns: GridColDef[] = React.useMemo(() => {
     const filteredColumns = data.columns.filter((col) => {
-      // Ẩn hai cột này nếu là quản lý
-      if (checkQL && ['discount', 'customerPhone'].includes(col.field)) return false
+      // Chỉ sale được xem
+      if ((checkQL || checkAD) && ['discount', 'customerPhone'].includes(col.field)) return false
+      if (checkSale && ['statusManufacture'].includes(col.field)) return false
+      if (checkQL && ['statusOrder'].includes(col.field)) return false
       return true
     })
 

@@ -17,7 +17,6 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
@@ -31,6 +30,7 @@ import { authStore, customTheme } from '../../../../../app/selectedStore'
 import ChangePassword from '../../../../dialog/ChangePassword'
 import MainCard from '../../../../ui-component/cards/MainCard'
 import Transitions from '../../../../ui-component/extended/Transitions'
+import { authApi } from '../../../../../app/services/auth'
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -52,6 +52,7 @@ const ProfileSection = () => {
   const anchorRef = useRef<HTMLDivElement>(null)
   const handleLogout = async () => {
     dispatch(logout())
+    dispatch(authApi.util.resetApiState())
   }
 
   const handleClose = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {

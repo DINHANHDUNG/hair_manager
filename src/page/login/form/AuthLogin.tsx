@@ -30,11 +30,12 @@ import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../../app/hooks'
 import { authStore } from '../../../app/selectedStore'
-import { useLoginMutation } from '../../../app/services/auth'
+import { useGetAccountQuery, useLoginMutation } from '../../../app/services/auth'
 import LoadingModal from '../../../components/ui-component/LoadingModal'
 import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { LICENSE_KEY } from '../../../common/contants'
 import CryptoJS from 'crypto-js'
+import { PERMISSION } from '../../../constants'
 
 const AuthLogin = ({ ...others }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -42,22 +43,28 @@ const AuthLogin = ({ ...others }) => {
   const navigate = useNavigate()
   const theme = useTheme()
   const [login, { isLoading, error }] = useLoginMutation()
+  const { data: account, isSuccess } = useGetAccountQuery(undefined, {
+    skip: !auth.accessToken
+  })
   const [checked, setChecked] = useState(true)
 
-  // const [showPassword, setShowPassword] = useState(false)
-  // const handleClickShowPassword = () => {
-  //   setShowPassword(!showPassword)
-  // }
-
-  // const handleMouseDownPassword = (event: React.MouseEvent<HTMLElement>) => {
-  //   event?.preventDefault()
-  // }
+  // useEffect(() => {
+  //   if (auth.accessToken) {
+  //     navigate(`/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`)
+  //   }
+  // }, [auth, navigate])
 
   useEffect(() => {
-    if (auth.accessToken) {
-      navigate(`/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`)
+    if (account && isSuccess) {
+      console.log('account', account)
+
+      if (account?.data?.role === PERMISSION.ADMIN) {
+        navigate(`/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`)
+      } else {
+        navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
+      }
     }
-  }, [auth, navigate])
+  }, [account, isSuccess])
 
   useEffect(() => {
     if (!isLoading && error) {
