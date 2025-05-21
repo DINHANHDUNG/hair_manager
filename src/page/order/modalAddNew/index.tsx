@@ -29,8 +29,6 @@ interface Props {
 export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }: Props) {
   const idOrder = itemSelectedEdit?.id
 
-  console.log('idOrder', idOrder)
-
   const {
     data: fetchData,
     isLoading,
