@@ -147,8 +147,8 @@ const OrderPage = React.memo(() => {
 
   const {
     data: dataApiOrder,
-    isLoading
-    // refetch
+    isLoading,
+    refetch
   } = useGetListOrderQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
@@ -158,7 +158,10 @@ const OrderPage = React.memo(() => {
       dateReceiveTo: filters.dateReceiveTo ? convertDateToApi(filters.dateReceiveTo) : '',
       dateDeliveryFrom: filters.dateDeliveryFrom ? convertDateToApi(filters.dateDeliveryFrom) : '',
       dateDeliveryTo: filters.dateDeliveryTo ? convertDateToApi(filters.dateDeliveryTo) : ''
-    })
+    }),
+    {
+      refetchOnMountOrArgChange: true
+    }
   )
   // const [
   //   uploadFileOrder,
@@ -371,7 +374,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'statusOrder',
         headerName: 'Trạng thái bán hàng',
-        editable: checkQL || checkSale,
+        editable: checkSale,
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={checkQL ? OPTIONS_STATUS_QL_ORDER : OPTIONS_STATUS_SALE_ORDER} />
         ),
@@ -605,8 +608,8 @@ const OrderPage = React.memo(() => {
     const filteredColumns = data.columns.filter((col) => {
       // Chỉ sale được xem
       if ((checkQL || checkAD) && ['discount', 'customerPhone'].includes(col.field)) return false
-      if (checkSale && ['statusManufacture'].includes(col.field)) return false
-      if (checkQL && ['statusOrder'].includes(col.field)) return false
+      // if (checkSale && ['statusManufacture'].includes(col.field)) return false
+      // if (checkQL && ['statusOrder'].includes(col.field)) return false
       return true
     })
 
@@ -824,10 +827,12 @@ const OrderPage = React.memo(() => {
               columnGroupingModel: columnGroupingModel
             }}
             pinnedColumns={{ right: ['actions'] }}
-            getDetailPanelContent={(row) => <InvoiceRepairDetailPanel data={row.invoiceRepairs || []} />}
-            getDetailPanelHeight={(row) =>
-              row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 160
+            getDetailPanelContent={(row) =>
+              row.invoiceRepairs?.length > 0 ? <InvoiceRepairDetailPanel data={row.invoiceRepairs} /> : null
             }
+            getDetailPanelHeight={(row) => (row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 0)}
+
+            // isRowExpandable={(params) => params.row.invoiceRepairs?.length > 0}
           />
         </div>
         {/* <FormAddEditWorker
@@ -852,7 +857,14 @@ const OrderPage = React.memo(() => {
         handleClose={handleClose}
       /> */}
 
-      <FormAddEditInvoice handleClose={handleModalInvoice} open={modalInvoice} orderId={itemSelectedEdit?.id} />
+      <FormAddEditInvoice
+        handleClose={() => {
+          handleModalInvoice()
+          refetch()
+        }}
+        open={modalInvoice}
+        orderId={itemSelectedEdit?.id}
+      />
       <FormAddNewOrder itemSelectedEdit={itemSelectedEdit} handleClose={handleModalAddOrder} open={modalAddOrder} />
       <ModalProductionHistory
         itemSelectedEdit={itemSelectedEdit}
