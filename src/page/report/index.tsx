@@ -12,10 +12,11 @@ import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { formatNumber } from '../../app/hooks'
+import { formatNumber, useCreateSearchParams, useQueryParam } from '../../app/hooks'
 import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
+import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
@@ -26,12 +27,12 @@ import FilterTableAdvanced from './FilterTableAdvanced'
 const ReportTotalPage = React.memo(() => {
   //   const navigate = useNavigate()
   //   const theme = useTheme()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [, setSearchParams] = useSearchParams()
   const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
 
-  const initialPage = parseInt(searchParams.get('page') || '0') || 0
-  const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
-  const initialSearchKey = searchParams.get('searchKey') || ''
+  const initialPage = useQueryParam('page', 0)
+  const initialPageSize = useQueryParam('pageSize', 10)
+  const initialSearchKey = useQueryParam('searchKey', '')
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -63,7 +64,7 @@ const ReportTotalPage = React.memo(() => {
   const [exportExcelDetail] = useLazyExportDetailOrderQuery()
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataApiOrder?.data?.length || 0
+  const rowTotal = dataApiOrder?.data?.totalCount || 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)
@@ -84,6 +85,34 @@ const ReportTotalPage = React.memo(() => {
     console.log('params', params.row)
     handleClickDetail()
   }
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const getChangedFields = (newRow: any, oldRow: any) => {
+    return Object.keys(newRow).find((key) => newRow[key] !== oldRow[key])
+  }
+
+  const processRowUpdate = React.useCallback((newRow: any, oldRow: any) => {
+    // So sánh hoặc xử lý dữ liệu tại đây
+    if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
+      // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
+      const changedFields = getChangedFields(newRow, oldRow)
+      const payload = { ...newRow }
+
+      if (changedFields?.includes('moneyPay1')) {
+        payload.moneyPay1 = newRow.moneyPay1 ? Number(newRow.moneyPay1) : null
+      }
+      if (changedFields?.includes('moneyPay2')) {
+        payload.moneyPay2 = newRow.moneyPay2 ? Number(newRow.moneyPay2) : null
+      }
+      if (changedFields?.includes('moneyPay3')) {
+        payload.moneyPay3 = newRow.moneyPay3 ? Number(newRow.moneyPay3) : null
+      }
+
+      // updateOrder(payload)
+    }
+
+    return newRow
+  }, [])
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // const anchorRef = React.useRef<HTMLDivElement>(null)
   const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
@@ -152,69 +181,6 @@ const ReportTotalPage = React.memo(() => {
   //   )
   // }
 
-  // const fakeData = [
-  //   {
-  //     id: 1,
-  //     order: 1,
-  //     sale: 'Nguyễn Văn A',
-  //     date: '2025-04-10',
-  //     code: 'ORD001',
-  //     kg: 12,
-  //     money: 240,
-  //     discount: 10,
-  //     moneyShip: 15,
-  //     wigFee: 5,
-  //     paypalFree: 3,
-  //     moneyTotal: 253,
-  //     refunMoney: 150,
-  //     amountReceived: 253,
-  //     wantage: 0,
-  //     payment: 'Chuyển khoản',
-  //     receivingAccount: 'VCB - 123456789',
-  //     status: 'done'
-  //   },
-  //   {
-  //     id: 2,
-  //     order: 2,
-  //     sale: 'Trần Thị B',
-  //     date: '2025-04-12',
-  //     code: 'ORD002',
-  //     kg: 8.5,
-  //     money: 170,
-  //     discount: 5,
-  //     moneyShip: 10,
-  //     wigFee: 0,
-  //     paypalFree: 2,
-  //     moneyTotal: 177,
-  //     refunMoney: 100,
-  //     amountReceived: 177,
-  //     wantage: 0,
-  //     payment: 'Tiền mặt',
-  //     receivingAccount: 'Techcombank - 987654321',
-  //     status: 'done'
-  //   },
-  //   {
-  //     id: 3,
-  //     order: 3,
-  //     sale: 'Lê Văn C',
-  //     date: '2025-04-14',
-  //     code: 'ORD003',
-  //     kg: 5,
-  //     money: 100,
-  //     discount: 0,
-  //     moneyShip: 8,
-  //     wigFee: 2,
-  //     paypalFree: 1,
-  //     moneyTotal: 109,
-  //     refunMoney: 50,
-  //     amountReceived: 100,
-  //     wantage: 9,
-  //     payment: 'Paypal',
-  //     receivingAccount: 'Paypal - levan@example.com',
-  //     status: 'partial'
-  //   }
-  // ]
-
   const data = {
     columns: [
       {
@@ -275,27 +241,50 @@ const ReportTotalPage = React.memo(() => {
       },
 
       {
-        field: 'refunMoney1',
-        headerName: 'Lần 1'
-        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
+        field: 'moneyPay1',
+        headerName: 'Lần 1',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row?.isApprove1 && params.row.moneyPay1 ? formatNumber(Number(params.row.moneyPay1)) : '',
+        editable: false,
+        renderEditCell: TextEditCell
+
+        //Danh sách thanh toán giống báo cáo chỉ cho sửa 1 2 3, pttt, tk nhận (Phân quyền chỉ sale)
+        //Check isApprove1 true Thanh toán thì chọn màu
+        //Nếu isApprove1 fasle hoặc null thì cho sửa
+        //Tồn tại id thì sửa không tồn tại thì thêm mới
+
+        //Danh sách phê duyệt (Phân quyền chỉ admin)
+        //Phê duyệt hỏi trước xem đồng ý không
       },
       {
-        field: 'refunMoney2',
-        headerName: 'Lần 2'
-        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
+        field: 'moneyPay2',
+        headerName: 'Lần 2',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row?.isApprove2 && params.row.moneyPay2 ? formatNumber(Number(params.row.moneyPay2)) : ''
       },
       {
-        field: 'refunMoney3',
-        headerName: 'Lần 3'
-        // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => '200USD'
+        field: 'moneyPay3',
+        headerName: 'Lần 3',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row?.isApprove3 && params.row.moneyPay3 ? formatNumber(Number(params.row.moneyPay3)) : ''
       },
-      { field: 'amountReceived', headerName: 'Số tiền thực nhận' },
-      { field: 'wantage', headerName: 'Số tiền khách thiếu (USD)' },
-      { field: 'payment', headerName: 'Phương thức TT' },
-      { field: 'receivingAccount', headerName: 'Tài khoản nhận' },
+      {
+        field: 'moneyReceived',
+        headerName: 'Số tiền thực nhận',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row.moneyReceived ? formatNumber(Number(params.row.moneyReceived)) : ''
+      }, //moneyReceived
+      {
+        field: 'moneyDebt',
+        headerName: 'Số tiền khách thiếu (USD)',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row.moneyDebt ? formatNumber(Number(params.row.moneyDebt)) : ''
+      }, //moneyDebt
+      { field: 'methodPayment', headerName: 'Phương thức TT' }, //methodPayment
+      { field: 'bankAccount', headerName: 'Tài khoản nhận' }, //bankAccount
       {
         field: 'status',
-        headerName: 'Tài khoản nhận'
+        headerName: 'Tình trạng thanh toán' //statusPayment
         // renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => 'Đã trả hết'
       }
     ]
@@ -354,12 +343,12 @@ const ReportTotalPage = React.memo(() => {
         {
           groupId: 'Số tiền đã trả',
           description: 'Số tiền đã trả',
-          children: [{ field: 'refunMoney1' }, { field: 'refunMoney2' }, { field: 'refunMoney3' }]
+          children: [{ field: 'moneyPay1' }, { field: 'moneyPay2' }, { field: 'moneyPay3' }]
         },
-        { field: 'amountReceived' },
-        { field: 'wantage' },
-        { field: 'payment' },
-        { field: 'receivingAccount' },
+        { field: 'moneyReceived' },
+        { field: 'moneyDebt' },
+        { field: 'methodPayment' },
+        { field: 'bankAccount' },
         { field: 'status' }
       ]
     }
@@ -371,33 +360,16 @@ const ReportTotalPage = React.memo(() => {
   )
 
   React.useEffect(() => {
-    // Tạo một object params rỗng
-    const params: { [key: string]: string } = {}
-
-    // Tạo một mảng các trường cần kiểm tra
-    const fields = {
-      page: paginationModel.page.toString(),
-      pageSize: paginationModel.pageSize.toString(),
-      ...filters
-    } as { [key: string]: string } // Sử dụng type assertion
-
-    // Lặp qua các trường và chỉ thêm vào params nếu trường đó hợp lệ
-    Object.keys(fields).forEach((field) => {
-      const value = fields[field]
-      if (value) {
-        params[field] = value
-      }
-    })
-
+    const params = useCreateSearchParams(paginationModel, filters)
     setSearchParams(params)
   }, [paginationModel, filters, setSearchParams])
 
   React.useEffect(() => {
     // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
     const updatedRows =
-      dataApiOrder?.data?.map((row: ReportOrderType, index: number) => ({
+      dataApiOrder?.data?.rows?.map((row: ReportOrderType, index: number) => ({
         ...row,
-        id: index + Math.floor(Math.random() * (10.5 + 1)),
+        id: row.id,
         order: paginationModel.page * paginationModel.pageSize + index + 1
       })) || []
 
@@ -441,6 +413,13 @@ const ReportTotalPage = React.memo(() => {
             otherProps={{
               columnGroupingModel: columnGroupingModel
             }}
+            //Sửa trong bảng
+            onCellClick={() => null}
+            processRowUpdate={processRowUpdate}
+            onProcessRowUpdateError={(error) => {
+              console.error('Row update error:', error)
+            }}
+            pagination
             // otherProps={{
             //   getRowClassName: (params: GridRenderCellParams<ReportOrderType, number>) =>
             //     !params.row.isActive ? 'even' : 'odd'

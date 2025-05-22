@@ -78,3 +78,8 @@ export interface ErrorType<T> {
     status: string
   }
 }
+
+export type FilterAdvancedType = {
+  key: string
+  value: string
+}

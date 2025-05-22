@@ -1,4 +1,5 @@
 export type ReportOrderType = {
+  id: number,
   customerName: string
   dateOrder: string
   code: string
@@ -9,6 +10,16 @@ export type ReportOrderType = {
   feeWig: number
   feePaypal: number
   totalOrder: number
+  moneyPay1: number
+  moneyPay2: number
+  moneyPay3: number
+  methodPayment: string
+  bankAccount: string
+  moneyReceived: number
+  moneyDebt: number
+  isApprove1: number
+  isApprove2: number
+  isApprove3: number
 }
 
 export type ReportOrderBySaleType = {

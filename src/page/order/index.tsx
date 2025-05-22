@@ -831,7 +831,7 @@ const OrderPage = React.memo(() => {
               row.invoiceRepairs?.length > 0 ? <InvoiceRepairDetailPanel data={row.invoiceRepairs} /> : null
             }
             getDetailPanelHeight={(row) => (row.invoiceRepairs?.length > 0 ? row.invoiceRepairs.length * 60 + 100 : 0)}
-
+            pagination
             // isRowExpandable={(params) => params.row.invoiceRepairs?.length > 0}
           />
         </div>
