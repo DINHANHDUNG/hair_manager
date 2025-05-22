@@ -36,7 +36,9 @@ const ROUTES = {
     SALARY_PAY_EMPLOYEE: 'salary-pay/employee',
     ACCOUNT_MANAGER: 'account_manager',
     CUSTOMER_MANAGER: 'customer_manager'
-  }
+  },
+  PAYMENT: 'payment',
+  PAYMENT_APPROVE: 'approve'
 }
 
 export default ROUTES

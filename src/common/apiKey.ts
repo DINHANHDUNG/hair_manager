@@ -97,5 +97,10 @@ export const NetWork = {
   invoiceRepair: 'invoice-repair',
   invoiceRepairId: (invoiceRepairId: number) => `invoice-repair/${invoiceRepairId}`,
   invoiceRepairByOrderId: (invoiceRepairId: number) => `invoice-repair/order/${invoiceRepairId}`,
-  invoiceRepairUpload: 'upload-image/content-invoice-repair'
+  invoiceRepairUpload: 'upload-image/content-invoice-repair',
+
+  //Payment
+  payment: 'order-payment',
+  paymentId: (orderPaymentId: number) => `order-payment/${orderPaymentId}`,
+  paymentApprover: (orderPaymentId: number) => `order-payment/accepted/${orderPaymentId}`
 }

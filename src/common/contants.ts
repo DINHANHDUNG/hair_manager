@@ -155,6 +155,16 @@ export const OPTIONS_STATUS_HISTORY_PROD = [
   { value: OPTIONS_HISTORY_PROD_KEY.SMOOTH, label: 'Đang làm mượt' }
 ]
 
+export const OPTIONS_STATUS_PAYMENT_KEY = {
+  PART: 'PART',
+  DONE: 'DONE'
+}
+
+export const OPTIONS_STATUS_PAYMENT = [
+  { value: OPTIONS_STATUS_PAYMENT_KEY.PART, label: 'Thanh toán 1 phần' },
+  { value: OPTIONS_STATUS_PAYMENT_KEY.DONE, label: 'Thanh toán hết' }
+]
+
 export const checkColor = (val: string) => {
   switch (val) {
     // Order status
@@ -180,46 +190,15 @@ export const checkColor = (val: string) => {
     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
       return COLORS.black
 
+    // Payment status
+    case OPTIONS_STATUS_PAYMENT_KEY.PART:
+    case OPTIONS_STATUS_PAYMENT_KEY.DONE:
+      return COLORS.black
+
     default:
       return COLORS.black
   }
 }
-
-// Hàm checkBg: màu nền
-// export const checkBg = (val: string) => {
-//   switch (val) {
-//     // Order status
-//     case OPTIONS_ORDER_KEY.NEW:
-//       return '#ffffff'
-//     case OPTIONS_ORDER_KEY.PROCESSING:
-//       return '#FFEB3B'
-//     case OPTIONS_ORDER_KEY.DELIVERING:
-//       return '#FF9800'
-//     case OPTIONS_ORDER_KEY.RECEIVED:
-//       return '#2196F3'
-//     case OPTIONS_ORDER_KEY.DONE:
-//       return '#4CAF50'
-//     case OPTIONS_ORDER_KEY.CANCEL:
-//       return '#F44336'
-//     case OPTIONS_ORDER_KEY.REPAIR:
-//       return '#9C27B0'
-
-//     // History production status
-//     case OPTIONS_HISTORY_PROD_KEY.SHARING:
-//       return '#2196F3' // Xanh dương thể hiện trạng thái đang xử lý
-//     case OPTIONS_HISTORY_PROD_KEY.LACE:
-//       return '#FFF9C4' // Vàng nhạt
-//     case OPTIONS_HISTORY_PROD_KEY.COLOR:
-//       return '#FF9800' // Cam - đang làm màu
-//     case OPTIONS_HISTORY_PROD_KEY.CLEAN_COLOR:
-//       return '#E0E0E0' // Xám sáng - đang tẩy màu
-//     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
-//       return '#9C27B0' // Tím - làm mượt
-
-//     default:
-//       return COLORS.black
-//   }
-// }
 
 export const checkBg = (val: string) => {
   switch (val) {
@@ -250,6 +229,12 @@ export const checkBg = (val: string) => {
       return '#E0E0E0'
     case OPTIONS_HISTORY_PROD_KEY.SMOOTH:
       return '#BA68C8'
+
+    // Payment status
+    case OPTIONS_STATUS_PAYMENT_KEY.PART:
+      return '#E1BEE7'
+    case OPTIONS_STATUS_PAYMENT_KEY.DONE:
+      return '#66BB6A'
 
     default:
       return COLORS.black

@@ -12,7 +12,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { formatNumber, useCreateSearchParams, useHasPermission, useQueryParam } from '../../app/hooks'
+import { formatNumber, handleMutation, useCreateSearchParams, useHasPermission, useQueryParam } from '../../app/hooks'
 import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
@@ -22,11 +22,18 @@ import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing, PERMISSION } from '../../constants'
 import { removeNullOrEmpty } from '../../help'
 import { ReportOrderType } from '../../types/report'
-import FilterTableAdvanced from './FilterTableAdvanced'
 import { MoneyEditCell } from '../../components/table-data-grid/moneyEditCell'
 import { checkBg, checkColor, OPTIONS_STATUS_PAYMENT } from '../../common/contants'
+import { useAddPaymentMutation, useUpdatePaymentMutation } from '../../app/services/payment'
+import { ErrorType } from '../../types'
 
-const ReportTotalPage = React.memo(() => {
+const PaymentPage = React.memo(() => {
+  const [addPayment, { isLoading: loadingAdd, isSuccess: isSuccessAdd, isError: isErrorAdd, error }] =
+    useAddPaymentMutation()
+  const [
+    updatePayment,
+    { isLoading: loadingUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate, error: errorUpdate }
+  ] = useUpdatePaymentMutation()
   //   const navigate = useNavigate()
   const checkSale = useHasPermission([PERMISSION.SALE])
   //   const theme = useTheme()
@@ -42,7 +49,7 @@ const ReportTotalPage = React.memo(() => {
     page: initialPage
   })
 
-  const [filters, setFilters] = React.useState<{ [field: string]: string }>({
+  const [filters] = React.useState<{ [field: string]: string }>({
     searchKey: initialSearchKey
   })
   const [rowsData, setRowsData] = React.useState<ReportOrderType[]>()
@@ -53,8 +60,8 @@ const ReportTotalPage = React.memo(() => {
   const monthCV = selectedMonth.format('MM-YYYY') // không cần momentÇ
   const {
     data: dataApiOrder,
-    isLoading
-    // refetch
+    isLoading,
+    refetch
   } = useGetListReportOrderQuery(
     removeNullOrEmpty({
       page: paginationModel.page + 1,
@@ -94,39 +101,68 @@ const ReportTotalPage = React.memo(() => {
   }
 
   const processRowUpdate = React.useCallback((newRow: any, oldRow: any) => {
-    // So sánh hoặc xử lý dữ liệu tại đây
     if (JSON.stringify(newRow) !== JSON.stringify(oldRow)) {
-      // Cập nhật dữ liệu lên server tại đây nếu muốn (ví dụ gọi API update)
       const changedFields = getChangedFields(newRow, oldRow)
       const payload = { ...newRow }
 
+      let moneyField: 'moneyPay1' | 'moneyPay2' | 'moneyPay3' | null = null
+
       if (changedFields?.includes('moneyPay1')) {
+        moneyField = 'moneyPay1'
         payload.moneyPay1 = newRow.moneyPay1 ? Number(newRow.moneyPay1) : null
       }
       if (changedFields?.includes('moneyPay2')) {
+        moneyField = 'moneyPay2'
         payload.moneyPay2 = newRow.moneyPay2 ? Number(newRow.moneyPay2) : null
       }
       if (changedFields?.includes('moneyPay3')) {
+        moneyField = 'moneyPay3'
         payload.moneyPay3 = newRow.moneyPay3 ? Number(newRow.moneyPay3) : null
       }
 
-      // updateOrder(payload)
+      if (!moneyField && (changedFields?.includes('methodPayment') || changedFields?.includes('bankAccount'))) {
+        moneyField = 'moneyPay1'
+      }
+
+      if (moneyField) {
+        const data = {
+          money: Number(newRow[moneyField]) || 0,
+          methodPayment: newRow.methodPayment,
+          bankAccount: newRow.bankAccount,
+          orderId: newRow.id
+        }
+
+        // === Xử lý logic chọn API ===
+        let paymentIdField: 'orderPaymentId1' | 'orderPaymentId2' | 'orderPaymentId3' | null = null
+        if (moneyField === 'moneyPay1') paymentIdField = 'orderPaymentId1'
+        if (moneyField === 'moneyPay2') paymentIdField = 'orderPaymentId2'
+        if (moneyField === 'moneyPay3') paymentIdField = 'orderPaymentId3'
+
+        const paymentId = paymentIdField ? newRow[paymentIdField] : null
+
+        if (paymentId) {
+          updatePayment({ ...data, orderPaymentId: paymentId })
+        } else {
+          addPayment({ ...data })
+        }
+      }
     }
 
     return newRow
   }, [])
+
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // const anchorRef = React.useRef<HTMLDivElement>(null)
-  const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
-  const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
+  // const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
+  // const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
 
-  const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
-      return
-    }
-    setOpenFilterAdvanced(false)
-  }
+  // const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
+  //     return
+  //   }
+  //   setOpenFilterAdvanced(false)
+  // }
 
   const exportExcel = async () => {
     try {
@@ -247,8 +283,8 @@ const ReportTotalPage = React.memo(() => {
         field: 'moneyPay1',
         headerName: 'Lần 1',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row?.isApprove1 && params.row.moneyPay1 ? formatNumber(Number(params.row.moneyPay1)) : '',
-        editable: checkSale,
+          params.row.moneyPay1 ? formatNumber(Number(params.row.moneyPay1)) : '',
+        editable: (params: GridRenderCellParams<ReportOrderType, number>) => params.row?.isApprove1 && checkSale,
         renderEditCell: MoneyEditCell
 
         //Danh sách thanh toán giống báo cáo chỉ cho sửa 1 2 3, pttt, tk nhận (Phân quyền chỉ sale)
@@ -263,16 +299,16 @@ const ReportTotalPage = React.memo(() => {
         field: 'moneyPay2',
         headerName: 'Lần 2',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row?.isApprove2 && params.row.moneyPay2 ? formatNumber(Number(params.row.moneyPay2)) : '',
-        editable: checkSale,
+          params.row.moneyPay2 ? formatNumber(Number(params.row.moneyPay2)) : '',
+        editable: (params: GridRenderCellParams<ReportOrderType, number>) => params.row?.isApprove2 && checkSale,
         renderEditCell: MoneyEditCell
       },
       {
         field: 'moneyPay3',
         headerName: 'Lần 3',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row?.isApprove3 && params.row.moneyPay3 ? formatNumber(Number(params.row.moneyPay3)) : '',
-        editable: checkSale,
+          params.row.moneyPay3 ? formatNumber(Number(params.row.moneyPay3)) : '',
+        editable: (params: GridRenderCellParams<ReportOrderType, number>) => params.row?.isApprove3 && checkSale,
         renderEditCell: MoneyEditCell
       },
       {
@@ -400,9 +436,38 @@ const ReportTotalPage = React.memo(() => {
     setRowsData(updatedRows)
   }, [dataApiOrder])
 
+  React.useEffect(() => {
+    if (!loadingAdd) {
+      const newError = error as ErrorType
+      handleMutation({
+        successMessage: 'Thao tác thành công',
+        errorMessage: newError && !newError?.data?.keyError ? newError?.data?.message : '',
+        isError: isErrorAdd,
+        isSuccess: isSuccessAdd,
+        loading: loadingAdd,
+        refetch
+      })
+    }
+  }, [loadingAdd])
+
+  React.useEffect(() => {
+    if (!loadingUpdate) {
+      const newError = errorUpdate as ErrorType
+
+      handleMutation({
+        successMessage: 'Thao tác thành công',
+        errorMessage: newError ? newError?.data?.message : '',
+        isError: isErrorUpdate,
+        isSuccess: isSuccessUpdate,
+        loading: loadingUpdate,
+        refetch
+      })
+    }
+  }, [loadingUpdate])
+
   return (
     <>
-      <MainCard title={'Báo cáo chi tiết đơn hàng'} sx={{ height: '100%' }}>
+      <MainCard title={'Danh sách thanh toán'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12} sm={4} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <MonthPickerField value={month} setValue={setMonth} />
@@ -452,25 +517,9 @@ const ReportTotalPage = React.memo(() => {
             // }}
           />
         </div>
-
-        <FilterTableAdvanced
-          /* eslint-disable @typescript-eslint/no-explicit-any */
-          handleComfirm={(value: any) => {
-            setFilters((prevFilters) => ({
-              ...prevFilters,
-              ['dateFrom']: value.date?.[0],
-              ['dateTo']: value.date?.[1]
-            }))
-            setOpenFilterAdvanced(false)
-          }}
-          value={filters}
-          open={openFilterAdvanced}
-          anchorRef={anchorAdvancedRef}
-          handleClose={handleCloseFilterAdvanced}
-        />
       </MainCard>
     </>
   )
 })
 
-export default ReportTotalPage
+export default PaymentPage
