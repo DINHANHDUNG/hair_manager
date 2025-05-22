@@ -120,7 +120,7 @@ const ReportTotalSalePage = React.memo(() => {
   ]
 
   const rows: GridRowsProp = rowsData || []
-  const rowTotal = dataReport?.length || 0
+  const rowTotal = 0
 
   const handleClickDetail = () => {
     setOpenDetail(!openDetail)

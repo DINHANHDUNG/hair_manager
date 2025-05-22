@@ -290,6 +290,7 @@ const StaffPage = React.memo(() => {
               getRowClassName: (params: GridRenderCellParams<StaffType, number>) =>
                 !params.row.isActive ? 'even' : 'odd'
             }}
+            pagination
           />
         </div>
         <DetailStaffDrawer

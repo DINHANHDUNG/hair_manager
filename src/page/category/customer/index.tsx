@@ -335,6 +335,7 @@ const CustomerPage = React.memo(() => {
               getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
                 !params.row.isActive ? 'even' : 'odd'
             }}
+            pagination
           />
         </div>
 

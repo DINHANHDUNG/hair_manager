@@ -305,6 +305,7 @@ const AccountManagerPage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
+            pagination
           />
         </div>
         <FormAddAccount

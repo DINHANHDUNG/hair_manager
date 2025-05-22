@@ -320,9 +320,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
         '& .no-expand .MuiDataGrid-detailPanelToggleCell': {
           display: 'none'
         },
-        '& .MuiDataGrid-detailPanelToggleCell[data-hasdetail="false"]': {
-          display: 'none' // Ẩn dấu +
-        },
+        // '& .MuiDataGrid-detailPanelToggleCell[data-hasdetail="false"]': {
+        //   display: 'none' // Ẩn dấu +
+        // },
         '&.MuiDataGrid-root': {
           border: 'none'
         },
@@ -432,7 +432,7 @@ export function CustomPagination() {
   const apiRef = useGridApiContext()
   const page = useGridSelector(apiRef, gridPageSelector)
   const pageCount = useGridSelector(apiRef, gridPageCountSelector)
-
+  console.log('🔥 CustomPagination render - page:', page, 'pageCount:', pageCount)
   return (
     <Pagination
       color='primary'

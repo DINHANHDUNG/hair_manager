@@ -366,6 +366,7 @@ const RequestEditOrderPage = React.memo(() => {
             headerFilters={false}
             totalCount={rowTotal}
             pinnedColumns={{ right: ['actions'] }}
+            pagination
           />
         </div>
       </MainCard>

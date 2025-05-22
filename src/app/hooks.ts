@@ -1,7 +1,9 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import type { RootState, AppDispatch } from './store'
+import { useSearchParams } from 'react-router-dom'
 import Toast from '../components/toast'
+import { FilterAdvancedType } from '../types'
 import { authStore } from './selectedStore'
+import type { AppDispatch, RootState } from './store'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function isEmpty(obj: any) {
@@ -67,4 +69,67 @@ export const useHasPermission = (...permissionGroups: string[][]): boolean => {
 
   // Kiểm tra xem có ít nhất 1 quyền trong roles trùng với các quyền cho phép hay không
   return allowedPermissions.includes(role)
+}
+
+// Hàm tạo params từ paginationModel và filters
+export const useCreateSearchParams = (
+  paginationModel: { page: number; pageSize: number },
+  filters: { [field: string]: string | FilterAdvancedType[] }
+) => {
+  const params: { [key: string]: string } = {}
+  const fields = {
+    page: paginationModel.page.toString(),
+    pageSize: paginationModel.pageSize.toString(),
+    ...filters
+  }
+
+  // Chỉ thêm các trường hợp có giá trị
+  Object.entries(fields).forEach(([key, value]) => {
+    if (typeof value == 'boolean') return (params[key] = value)
+    if (value) {
+      // Xử lý mảng nếu có
+      if (Array.isArray(value)) {
+        params[key] = JSON.stringify(value)
+      } else {
+        params[key] = value // Gán giá trị cho các trường khác
+      }
+    }
+  })
+
+  return params
+}
+
+// Lấy param
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const useQueryParam = (paramName: string, defaultValue: any) => {
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+  const [searchParams] = useSearchParams()
+  const paramValue = searchParams.get(paramName)
+
+  const isJson = (str: string) => {
+    try {
+      JSON.parse(str)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  if (paramValue) {
+    if (isJson(paramValue)) {
+      try {
+        const val = JSON.parse(paramValue)
+        if (typeof val == 'boolean') return val
+        return val || defaultValue
+      } catch (error) {
+        console.error(`Error parsing ${paramName}:`, error)
+        return defaultValue
+      }
+    } else {
+      // Trả về chuỗi gốc nếu không phải là JSON
+      return paramValue
+    }
+  }
+
+  return defaultValue
 }
