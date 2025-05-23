@@ -124,9 +124,10 @@ interface Props {
   sx?: SxProps<Theme>
   variant?: TextFieldVariants
   calendars?: 1 | 2 | 3
+  size?: 'small' | 'medium'
 }
 
-export default function DateRangePickerShortCut({ value, setValue, sx, variant, calendars }: Props) {
+export default function DateRangePickerShortCut({ value, setValue, sx, variant, calendars, size }: Props) {
   return (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
@@ -148,7 +149,11 @@ export default function DateRangePickerShortCut({ value, setValue, sx, variant, 
               items: shortcutsItems
             },
             // field: { clearable: true },
-            textField: { variant: variant || 'outlined', InputProps: { endAdornment: <Calendar fontSize='small' /> } }
+            textField: {
+              variant: variant || 'outlined',
+              InputProps: { endAdornment: <Calendar fontSize='small' /> },
+              size: size || 'medium'
+            }
           }}
         />
       </DemoContainer>

@@ -19,6 +19,7 @@ interface Props {
 // Define the types for the state
 export interface StateFilterTableAdvanced {
   statusOrder: string
+  statusManufacture: string
   code: string
   customerName: string
   dateReceive: DateRange<Dayjs> | undefined
@@ -33,7 +34,8 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
     dateDelivery: [null, null],
     code: '',
     customerName: '',
-    statusOrder: ''
+    statusOrder: '',
+    statusManufacture: ''
   })
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
         code: value?.code || '',
         customerName: value?.customerName || '',
         statusOrder: value?.statusOrder,
+        statusManufacture: value?.statusManufacture,
         dateReceive:
           value.dateReceiveFrom && value.dateReceiveTo
             ? [dayjs(value.dateReceiveFrom), dayjs(value.dateReceiveTo)]
@@ -82,11 +85,26 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
     }))
   }
 
+  const handleStatusManufactureChange = (
+    _: React.SyntheticEvent,
+    newValue: { value: string; label: string } | null
+  ) => {
+    setState((prevState) => ({
+      ...prevState,
+      statusManufacture: newValue?.value || ''
+    }))
+  }
+
   return (
     <PopperComponent clickAway open={open} anchorRef={anchorRef} handleClose={handleClose}>
       <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel htmlFor={`input-DateRangePickerShortCut`}>{`Từ ngày đến ngày (Ngày nhận)`}</InputLabel>
-        <DateRangePickerShortCut value={state.dateReceive} setValue={handleDateRangeChange} variant='outlined' />
+        <DateRangePickerShortCut
+          value={state.dateReceive}
+          setValue={handleDateRangeChange}
+          variant='outlined'
+          size='small'
+        />
       </Box>
       <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel htmlFor={`input-DateRangePickerShortCut`}>{`Từ ngày đến ngày (Ngày giao)`}</InputLabel>
@@ -94,6 +112,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
           value={state.dateDelivery}
           setValue={handleDateRangeDeliveryChange}
           variant='outlined'
+          size='small'
         />
       </Box>
 
@@ -104,6 +123,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
           value={state.code}
           placeholder={'Nhập mã đơn hàng'}
           onChange={(e) => handleChangeState(e.target.value, 'code')}
+          size='small'
         />
       </Box>
 
@@ -114,6 +134,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
           value={state.customerName}
           placeholder={'Nhập tên khách hàng'}
           onChange={(e) => handleChangeState(e.target.value, 'customerName')}
+          size='small'
         />
       </Box>
 
@@ -128,9 +149,9 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
         
       </Box> */}
 
-      <Box sx={{ p: 2, pb: 2 }}>
+      <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>
-          {`Trạng thái đơn hàng`}
+          {`Trạng thái bán hàng`}
         </InputLabel>
         <Autocomplete
           options={OPTIONS_STATUS_ORDER}
@@ -145,6 +166,28 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
               : null
           }
           renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
+          size='small'
+        />
+      </Box>
+
+      <Box sx={{ p: 2, pb: 2 }}>
+        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>
+          {`Trạng thái sản xuất`}
+        </InputLabel>
+        <Autocomplete
+          options={OPTIONS_STATUS_ORDER}
+          getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
+          onChange={handleStatusManufactureChange}
+          value={
+            state.statusManufacture
+              ? {
+                  value: state.statusManufacture,
+                  label: OPTIONS_STATUS_ORDER.find((opt) => opt.value === state.statusManufacture)?.label || ''
+                }
+              : null
+          }
+          renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
+          size='small'
         />
       </Box>
 
@@ -167,6 +210,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
             handleComfirm({
               customerName: '',
               statusOrder: '',
+              statusManufacture: '',
               code: '',
               dateReceive: [null, null],
               dateDelivery: [null, null]

@@ -1,7 +1,6 @@
 // assets
 import { IconShoppingCartBolt, IconAB2, IconShoppingCartX } from '@tabler/icons-react'
 import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { PERMISSION } from '../../constants'
 import { Perm_Order_Cancel_View, Perm_Order_View } from '../../help/permission'
 
 // constant
@@ -13,7 +12,7 @@ const order = {
   id: 'order',
   title: 'Quản lý đơn hàng',
   type: 'group',
-  premissions: [PERMISSION.ADMIN, PERMISSION.KETOAN, PERMISSION.SALE, PERMISSION.QUANLY],
+  premissions: Perm_Order_View,
   children: [
     {
       id: ROUTES.ORDER,

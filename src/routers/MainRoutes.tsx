@@ -11,6 +11,8 @@ import {
   Perm_DASHBOARD_ORDER_View,
   Perm_Order_Cancel_View,
   Perm_Order_View,
+  Perm_Payment_Approver_View,
+  Perm_Payment_Default_View,
   Perm_Staff_View
 } from '../help/permission'
 
@@ -48,6 +50,10 @@ const OrderPage = Loadable(lazy(() => import('../page/order')))
 // const FormAddEditOrder = Loadable(lazy(() => import('../page/order/addNew')))
 const RequestEditOrderPage = Loadable(lazy(() => import('../page/requestEditOrder')))
 const CancelOrderPage = Loadable(lazy(() => import('../page/listCancelOrder')))
+
+//Payment
+const PaymentPage = Loadable(lazy(() => import('../page/payment')))
+const PaymentApproverPage = Loadable(lazy(() => import('../page/paymentApprover')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -108,6 +114,19 @@ const MainRoutes = {
         {
           path: ROUTES.UTILS_CHILD.INPUT,
           element: <UtilsInput />
+        }
+      ]
+    },
+    {
+      path: ROUTES.PAYMENT,
+      children: [
+        {
+          path: ROUTES.DEFAULT,
+          element: createProtectedRoute(<PaymentPage />, Perm_Payment_Default_View)
+        },
+        {
+          path: ROUTES.PAYMENT_APPROVE,
+          element: createProtectedRoute(<PaymentApproverPage />, Perm_Payment_Approver_View)
         }
       ]
     },

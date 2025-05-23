@@ -24,6 +24,7 @@ import {
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp,
+  GridTreeNode,
   MuiEvent,
   useGridApiContext,
   useGridSelector
@@ -91,6 +92,7 @@ interface TableDataGridProps {
   getDetailPanelExpandedRowIds?: any
   showDetailPanelToggle?: (row: any) => boolean
   isRowExpandable?: (row: GridRowParams) => boolean
+  isCellEditable?: ((params: GridCellParams<any, any, any, GridTreeNode>) => boolean) | undefined
   /* eslint-enable @typescript-eslint/no-explicit-any */
 }
 
@@ -131,7 +133,8 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
   onProcessRowUpdateError,
   apiRef,
   getDetailPanelHeight,
-  getDetailPanelContent
+  getDetailPanelContent,
+  isCellEditable
 }) => {
   const theme = useTheme()
 
@@ -312,6 +315,7 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
       getDetailPanelContent={getDetailPanelContent ? (params) => <>{getDetailPanelContent(params.row)}</> : undefined}
       getDetailPanelHeight={getDetailPanelHeight ? (params) => getDetailPanelHeight(params.row) : undefined}
       getRowClassName={(params) => (params.row.invoiceRepairs?.length > 0 ? '' : 'no-expand')}
+      isCellEditable={isCellEditable}
       // experimentalFeatures={{ newEditingApi: true }}
       sx={{
         // '.MuiDataGrid-columnSeparator': {
@@ -432,7 +436,6 @@ export function CustomPagination() {
   const apiRef = useGridApiContext()
   const page = useGridSelector(apiRef, gridPageSelector)
   const pageCount = useGridSelector(apiRef, gridPageCountSelector)
-  console.log('🔥 CustomPagination render - page:', page, 'pageCount:', pageCount)
   return (
     <Pagination
       color='primary'

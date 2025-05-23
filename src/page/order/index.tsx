@@ -97,6 +97,7 @@ const OrderPage = React.memo(() => {
   const initialEndDateDelivery = searchParams.get('dateDeliveryTo') || ''
 
   const initialStatusOrder = searchParams.get('statusOrder') || ''
+  const initialStatusManufacture = searchParams.get('statusManufacture') || ''
   const initialName = searchParams.get('customerName') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
@@ -113,6 +114,7 @@ const OrderPage = React.memo(() => {
     dateDeliveryFrom: initialStartDateDelivery,
     dateDeliveryTo: initialEndDateDelivery,
     statusOrder: initialStatusOrder,
+    statusManufacture: initialStatusManufacture,
     customerName: initialName
   })
   // const fileRef = React.useRef<HTMLInputElement>(null)
@@ -637,6 +639,12 @@ const OrderPage = React.memo(() => {
       label: initialStatusOrder ? OPTIONS_STATUS_ORDER.find((e) => e.value === initialStatusOrder)?.label : ''
     },
     {
+      key: 'statusManufacture',
+      label: initialStatusManufacture
+        ? OPTIONS_STATUS_ORDER.find((e) => e.value === initialStatusManufacture)?.label
+        : ''
+    },
+    {
       key: 'code',
       label: initialCode || ''
     }
@@ -879,6 +887,7 @@ const OrderPage = React.memo(() => {
             ...prevFilters,
             ['customerName']: value.customerName,
             ['statusOrder']: value.statusOrder,
+            ['statusManufacture']: value.statusManufacture,
             ['dateReceiveFrom']: value.dateReceive?.[0],
             ['dateReceiveTo']: value.dateReceive?.[1],
             ['dateDeliveryFrom']: value.dateDelivery?.[0],

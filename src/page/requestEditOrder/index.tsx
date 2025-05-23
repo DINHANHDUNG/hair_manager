@@ -144,7 +144,29 @@ const RequestEditOrderPage = React.memo(() => {
       },
       {
         field: 'statusOrder',
-        headerName: 'Tình trạng sửa',
+        headerName: 'Tình trạng bán hàng',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => {
+          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+          if (!status) return null
+
+          return (
+            <Chip
+              label={status.label}
+              sx={{
+                backgroundColor: checkBg(status.value),
+                color: checkColor(status.value),
+                fontWeight: 500
+              }}
+              size='small'
+              variant='outlined'
+            />
+          )
+        }
+      },
+      {
+        field: 'statusManufacture',
+        headerName: 'Tình trạng sản xuất',
         flex: 1,
         renderCell: (params: GridRenderCellParams) => {
           const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
