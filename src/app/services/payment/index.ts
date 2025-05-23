@@ -46,7 +46,7 @@ export const paymentApi = createApi({
     approverPayment: builder.mutation({
       query: (data) => ({
         url: NetWork.paymentApprover(data.id),
-        method: POST
+        method: PUT
         // data: data
       })
     })
