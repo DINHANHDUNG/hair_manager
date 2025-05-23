@@ -29,7 +29,29 @@ const columns: GridColDef[] = [
   },
   {
     field: 'statusOrder',
-    headerName: 'Trạng thái',
+    headerName: 'Trạng thái bán hàng',
+    width: 150,
+    renderCell: (params: GridRenderCellParams) => {
+      const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+      if (!status) return null
+
+      return (
+        <Chip
+          label={status.label}
+          sx={{
+            backgroundColor: checkBg(status.value),
+            color: checkColor(status.value),
+            fontWeight: 500
+          }}
+          size='small'
+          variant='outlined'
+        />
+      )
+    }
+  },
+  {
+    field: 'statusManufacture',
+    headerName: 'Trạng thái sản xuất',
     width: 150,
     renderCell: (params: GridRenderCellParams) => {
       const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())

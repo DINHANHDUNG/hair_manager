@@ -53,6 +53,7 @@ const CancelOrderPage = Loadable(lazy(() => import('../page/listCancelOrder')))
 
 //Payment
 const PaymentPage = Loadable(lazy(() => import('../page/payment')))
+const PaymentApproverPage = Loadable(lazy(() => import('../page/paymentApprover')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -125,7 +126,7 @@ const MainRoutes = {
         },
         {
           path: ROUTES.PAYMENT_APPROVE,
-          element: createProtectedRoute(<PaymentPage />, Perm_Payment_Approver_View)
+          element: createProtectedRoute(<PaymentApproverPage />, Perm_Payment_Approver_View)
         }
       ]
     },
