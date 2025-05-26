@@ -152,8 +152,18 @@ const RequestEditOrderPage = React.memo(() => {
         field: 'historyProductions',
         headerName: 'Tình trạng sửa',
         width: 200,
-        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) =>
-          params.row?.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+        // renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) =>
+        //   params.row?.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : '',
+        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) => {
+          const status = params.row.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+          const label =
+            (params?.row?.historyProductions?.[0]?.date
+              ? moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString()
+              : '') +
+            ' ' +
+            status
+          return label
+        }
       },
       // {
       //   field: 'statusOrder',

@@ -346,10 +346,19 @@ const OrderPage = React.memo(() => {
       {
         field: 'historyProductions',
         headerName: 'Lịch sử sản xuất',
-        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-          params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+        renderCell: (params: GridRenderCellParams<OrderType, number>) => {
+          const status = params.row.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+          const label =
+            (params?.row?.historyProductions?.[0]?.date
+              ? moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString()
+              : '') +
+            ' ' +
+            status
+          return label
+        }
+
         // renderCell: (params: GridRenderCellParams) => {
-        //   const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+        //   const status = params.row.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
         //   const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
         //   const label =
         //     moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString() + ' ' + checkStatus?.label
