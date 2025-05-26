@@ -458,7 +458,7 @@ const OrderPage = React.memo(() => {
         renderEditCell: DateEditCell
       }, //QL
 
-      { field: 'rate', headerName: 'Đánh giá sx', editable: checkQL, renderEditCell: TextEditCell }, //QL
+      { field: 'rate', headerName: 'Đánh giá sx', editable: false, renderEditCell: TextEditCell }, //QL
       // {
       //   field: 'discount',
       //   headerName: 'Tiền discount',
