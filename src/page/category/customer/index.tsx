@@ -1,36 +1,39 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput } from '@mui/material'
+import { Button, Grid, OutlinedInput, Typography } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
+  GridCellParams,
   GridColDef,
   GridRenderCellParams,
   GridRowParams,
   GridRowSelectionModel,
   GridRowsProp
 } from '@mui/x-data-grid'
+import { IconAB2 } from '@tabler/icons-react'
+import { useDialogs } from '@toolpad/core'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useHasPermission } from '../../../app/hooks'
+import { useDeleteCustomerMutation, useGetListCustomerQuery } from '../../../app/services/customer'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
+import Toast from '../../../components/toast'
 import MainCard from '../../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../../constants'
-import FormAddEditCustomer from './FormAddEdit'
-import { CustomerType } from '../../../types/customer'
-import { useDialogs } from '@toolpad/core'
-import { useDeleteCustomerMutation, useGetListCustomerQuery } from '../../../app/services/customer'
-import Toast from '../../../components/toast'
-import { IconAB2 } from '@tabler/icons-react'
-import ChangeAccountStaff from './ChangeStaff'
-import { useHasPermission } from '../../../app/hooks'
+import { openNewTab } from '../../../help/localHelp'
 import { Perm_Customer_Add, Perm_Customer_Edit } from '../../../help/permission'
+import ROUTES from '../../../routers/helpersRouter/constantRouter'
+import { CustomerType } from '../../../types/customer'
+import ChangeAccountStaff from './ChangeStaff'
+import FormAddEditCustomer from './FormAddEdit'
 
 const CustomerPage = React.memo(() => {
   const dialogs = useDialogs()
   const permAdd = useHasPermission(Perm_Customer_Add)
   const permEdit = useHasPermission(Perm_Customer_Edit)
-  //   const navigate = useNavigate()
+  // const navigate = useNavigate()
   //   const theme = useTheme()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -107,6 +110,19 @@ const CustomerPage = React.memo(() => {
     handleClickDetail()
   }
 
+  const onCellDoubleClick = (param: GridCellParams) => {
+    if (param.field === 'orders') {
+      const code = param?.row?.orders?.[0]?.code
+      code &&
+        openNewTab(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`, {
+          page: 0,
+          pageSize: 10,
+          code: code || '',
+          customerName: param?.row?.name || ''
+        })
+    }
+  }
+
   const handleDelete = async (id: number) => {
     const confirmed = await dialogs.confirm('Bạn có chắc chắn không?', {
       title: 'Xác nhận lại',
@@ -165,8 +181,32 @@ const CustomerPage = React.memo(() => {
       { field: 'phoneNumber', headerName: 'Mã định danh (Whatsapp)', flex: 1 },
       { field: 'email', headerName: 'Email', flex: 1 },
       { field: 'address', headerName: 'Địa chỉ', flex: 1 },
+      {
+        field: 'orders',
+        headerName: 'Đơn hàng',
+        flex: 1,
+        // renderCell: (params: GridRenderCellParams<CustomerType, number>) =>
+        //   params.row?.orders?.length > 0 ? params.row.orders?.[0]?.code : ''
+
+        renderCell: (params: GridRenderCellParams<CustomerType, number>) => {
+          const code = params.row?.orders?.[0]?.code
+          return code ? (
+            <Typography
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}
+            >
+              {code}
+            </Typography>
+          ) : (
+            ''
+          )
+        }
+      },
       // { field: 'gender', headerName: 'Giới tính', flex: 1 },
-      { field: 'note', headerName: 'Ghi chú', flex: 1 },
+      // { field: 'note', headerName: 'Ghi chú', flex: 1 },
       {
         field: 'staff',
         headerName: 'Nhân viên',
@@ -331,6 +371,7 @@ const CustomerPage = React.memo(() => {
             filterMode='server'
             headerFilters={false}
             totalCount={rowTotal}
+            onCellClick={onCellDoubleClick}
             otherProps={{
               getRowClassName: (params: GridRenderCellParams<CustomerType, number>) =>
                 !params.row.isActive ? 'even' : 'odd'

@@ -151,9 +151,9 @@ export default function FormAddEditCustomer({ open, handleClose, handleSave, ite
           {/* <Grid item xs={12} sm={6}>
             <MySelect name='gender' control={control} label='Giới tính' errors={errors} options={OPTIONGENDER} />
           </Grid> */}
-          <Grid item xs={12} sm={12} md={12} lg={12}>
+          {/* <Grid item xs={12} sm={12} md={12} lg={12}>
             <MyTextField name='note' control={control} label='Ghi chú' errors={errors} />
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid container spacing={gridSpacingForm} sx={{ mt: 2 }}>
           <Grid item xs={12} sm={12} md={12} lg={12}>

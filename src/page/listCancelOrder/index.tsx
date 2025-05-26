@@ -12,7 +12,7 @@ import {
 } from '@mui/x-data-grid'
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { handleMutation } from '../../app/hooks'
+import { handleMutation, useHasPermission } from '../../app/hooks'
 import { useGetListOrderQuery, useUpdateOrderCancelApprovalMutation } from '../../app/services/order'
 import { OPTIONS_ORDER_KEY } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
@@ -23,10 +23,11 @@ import { removeNullOrEmpty } from '../../help'
 import { OrderType } from '../../types/order'
 import FormAddEditInvoice from '../order/modalInvoice'
 import FormReject from './FormReject'
+import { Perm_Approver_Order } from '../../help/permission'
 
 const CancelOrderPage = React.memo(() => {
   // const navigate = useNavigate()
-
+  const permApprover = useHasPermission(Perm_Approver_Order)
   // const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -160,7 +161,7 @@ const CancelOrderPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         getActions: (params: GridRenderCellParams<OrderType, number>) => {
-          return params.row.isDelete === null
+          return params.row.isDelete === null && permApprover
             ? [
                 <GridActionsCellItem
                   icon={<LibraryAddCheck />}

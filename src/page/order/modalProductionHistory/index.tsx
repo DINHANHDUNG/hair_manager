@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Chip, Grid, IconButton, Typography } from '@mui/material'
+import { Grid, IconButton, Typography } from '@mui/material'
 import moment from 'moment'
 import { useEffect, useMemo, useState } from 'react'
 import { ErrorOption, SubmitHandler, useForm } from 'react-hook-form'
@@ -14,21 +14,25 @@ import { GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid
 import { handleMutation, useHasPermission } from '../../../app/hooks'
 import {
   useAddOrderHistoryMutation,
+  useGetListInvoiceHistoryQuery,
   useGetListOrderHistoryQuery,
   useUpdateOrderHistoryMutation
 } from '../../../app/services/order'
-import { checkBg, checkColor, OPTIONS_STATUS_HISTORY_PROD } from '../../../common/contants'
-import MyAutocomplete from '../../../components/select/MyAutocomplete'
+import { OPTIONS_STATUS_HISTORY_PROD } from '../../../common/contants'
+import MyAutocompleteFreeSolo from '../../../components/select/MyAutocompleteFreeSolo'
 import TableDataGrid from '../../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../../components/toast'
 import { Perm_Order_HistoryPrd_Add } from '../../../help/permission'
 import { ErrorType } from '../../../types'
+import { InvoiceRepairType } from '../../../types/invoiceRepair'
 import { FieldCOrderHistory, HistoryProductionType, OrderType } from '../../../types/order'
 
 interface Props {
   open: boolean
   handleClose: () => void
   itemSelectedEdit?: OrderType
+  itemSelectedInvoice?: InvoiceRepairType
+  refetch?: () => void
 }
 
 type FormValues = {
@@ -44,9 +48,10 @@ const validationSchema = yup.object({
 })
 
 export default function ModalProductionHistory(Props: Props) {
-  const { open, handleClose, itemSelectedEdit } = Props
+  const { open, handleClose, itemSelectedEdit, itemSelectedInvoice, refetch } = Props
   const permAdd = useHasPermission(Perm_Order_HistoryPrd_Add)
   const idOrder = itemSelectedEdit?.id
+  const idInvoice = itemSelectedInvoice?.id
   // const dialogs = useDialogs()
   const {
     data: fetchData,
@@ -58,6 +63,19 @@ export default function ModalProductionHistory(Props: Props) {
     },
     {
       skip: !idOrder
+    }
+  )
+
+  const {
+    data: fetchDataInvoice,
+    isLoading: isLoadingInvoice,
+    refetch: refetchInvoice
+  } = useGetListInvoiceHistoryQuery(
+    {
+      idInvoice: idInvoice || 0
+    },
+    {
+      skip: !idInvoice
     }
   )
 
@@ -103,21 +121,7 @@ export default function ModalProductionHistory(Props: Props) {
       minWidth: 150,
       renderCell: (params: GridRenderCellParams) => {
         const status = params.row.status || ''
-        const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
-        if (!checkStatus) return null
-
-        return (
-          <Chip
-            label={checkStatus.label}
-            sx={{
-              backgroundColor: checkBg(checkStatus.value),
-              color: checkColor(checkStatus.value),
-              fontWeight: 500
-            }}
-            size='small'
-            // variant='outlined'
-          />
-        )
+        return status
       }
     }
     // {
@@ -196,11 +200,12 @@ export default function ModalProductionHistory(Props: Props) {
     // const date = moment(data.date).startOf('day')
     const date = moment().startOf('day')
     const isoDateStr = date?.toISOString()
+    const newData = { ...data, date: isoDateStr, orderId: idOrder || null, invoiceRepairId: idInvoice || null }
     if (idUpdate && idUpdate > 0) {
-      updateOrder({ ...data, date: isoDateStr, id: idUpdate, orderId: idOrder })
+      updateOrder({ ...newData, id: idUpdate })
       return
     }
-    addOrder({ ...data, date: isoDateStr, orderId: idOrder })
+    addOrder({ ...newData })
   }
 
   useEffect(() => {
@@ -219,6 +224,19 @@ export default function ModalProductionHistory(Props: Props) {
       setRowsData(updatedRows)
     }
   }, [fetchData, isLoading])
+
+  useEffect(() => {
+    if (!isLoadingInvoice) {
+      // Xử lý việc cập nhật lại thứ tự sau khi dữ liệu được tải về
+      const updatedRows =
+        fetchDataInvoice?.data?.map((row: HistoryProductionType, index: number) => ({
+          ...row,
+          order: paginationModel.page * paginationModel.pageSize + index + 1
+        })) || []
+
+      setRowsData(updatedRows)
+    }
+  }, [fetchDataInvoice, isLoadingInvoice])
 
   useEffect(() => {
     if (!loadingAdd) {
@@ -240,7 +258,12 @@ export default function ModalProductionHistory(Props: Props) {
         isError: isErrorAdd,
         isSuccess: isSuccessAdd,
         loading: loadingAdd,
-        refetch: () => refetchOrder()
+        refetch: () => {
+          reset()
+          refetch?.()
+          idOrder && refetchOrder()
+          idInvoice && refetchInvoice()
+        }
       })
     }
   }, [loadingAdd])
@@ -267,6 +290,7 @@ export default function ModalProductionHistory(Props: Props) {
         loading: loadingUpdate,
         refetch: () => {
           refetchOrder()
+          refetch?.()
         }
       })
     }
@@ -286,13 +310,19 @@ export default function ModalProductionHistory(Props: Props) {
   // }, [loadingDelete])
 
   return (
-    <CustomDialog title='Lịch sử sản xuất' open={open} onClose={handleClose} maxWidth='lg' fullWidth>
+    <CustomDialog
+      title={idOrder ? 'Lịch sử sản xuất' : 'Lịch sử sửa đơn'}
+      open={open}
+      onClose={handleClose}
+      maxWidth='lg'
+      fullWidth
+    >
       <Grid container spacing={gridSpacingForm}>
         <Grid item xs={12} sm={12} md={12} lg={permAdd ? 8 : 12} xl={permAdd ? 8 : 12} sx={{ mb: 3 }}>
           <SubCard
             title={
               <Grid item xs={12} container alignItems={'center'} justifyContent={'space-between'} flexDirection={'row'}>
-                <Typography variant='h5'>Lịch sử sản xuất</Typography>
+                <Typography variant='h5'>{idOrder ? 'Lịch sử sản xuất' : 'Lịch sử sửa đơn'}</Typography>
 
                 {permAdd && (
                   <div>
@@ -343,7 +373,7 @@ export default function ModalProductionHistory(Props: Props) {
                     />
                   </Grid> */}
                   <Grid item xs={12} sm={12} md={12} lg={12}>
-                    <MyAutocomplete
+                    <MyAutocompleteFreeSolo
                       name={`status`}
                       control={control}
                       errors={errors}
@@ -358,7 +388,7 @@ export default function ModalProductionHistory(Props: Props) {
                         /* eslint-disable @typescript-eslint/no-explicit-any */
                         const selectedValue = v as any // Ép kiểu cho giá trị v
                         /* eslint-enable @typescript-eslint/no-explicit-any */
-                        setValue(`status`, selectedValue ? selectedValue?.value?.toString() : '') // set đúng giá trị của `value`
+                        setValue(`status`, selectedValue ? selectedValue?.label?.toString() : '') // set đúng giá trị của `value`
                       }}
                     />
                   </Grid>

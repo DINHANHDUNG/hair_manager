@@ -239,6 +239,7 @@ export default function FormAddEditInvoice({ open, handleClose, orderId, itemSel
       setValue('contentInvoiceRepairs', newData?.contentInvoiceRepairs || '')
       setValue('reasonRepair', newData?.reasonRepair || '')
       setValue('noteRepair', newData?.noteRepair || '')
+      setValue('code', newData?.code || '')
       setValue('dateRepair', dayjs(newData?.dateRepair).toISOString())
       // setValue('noteRefund', newData?.noteRefund || '')
       // setValue('statusRefund', newData?.statusRefund)

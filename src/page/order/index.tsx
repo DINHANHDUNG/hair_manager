@@ -2,8 +2,6 @@ import { AddCircle, AddTask, BorderAll, FileDownload, HighlightOff, Verified } f
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import IconSearch from '@mui/icons-material/Search'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import { Button, Grid, IconButton, OutlinedInput, Tooltip } from '@mui/material'
@@ -40,7 +38,6 @@ import {
   checkBg,
   checkColor,
   OPTIONS_ORDER_KEY,
-  OPTIONS_STATUS_HISTORY_PROD,
   OPTIONS_STATUS_ORDER,
   OPTIONS_STATUS_QL_ORDER,
   OPTIONS_STATUS_SALE_ORDER
@@ -122,7 +119,7 @@ const OrderPage = React.memo(() => {
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<OrderType>()
 
   const [openDetail, setOpenDetail] = React.useState(false)
-  const [openStatistics, setOpenStatistics] = React.useState(false)
+  // const [openStatistics, setOpenStatistics] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
   const [modalAddOrder, setModalAddOrder] = React.useState(false)
   const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
@@ -349,28 +346,28 @@ const OrderPage = React.memo(() => {
       {
         field: 'historyProductions',
         headerName: 'Lịch sử sản xuất',
-        // renderCell: (params: GridRenderCellParams<OrderType, number>) =>
-        //   params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
-        renderCell: (params: GridRenderCellParams) => {
-          const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
-          const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
-          const label =
-            moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString() + ' ' + checkStatus?.label
-          if (!checkStatus) return null
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+        // renderCell: (params: GridRenderCellParams) => {
+        //   const status = params.row.historyProductions.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+        //   const checkStatus = OPTIONS_STATUS_HISTORY_PROD.find((e) => e.value === status?.toString())
+        //   const label =
+        //     moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString() + ' ' + checkStatus?.label
+        //   if (!checkStatus) return null
 
-          return (
-            <Chip
-              label={label}
-              sx={{
-                backgroundColor: checkBg(checkStatus.value),
-                color: checkColor(checkStatus.value),
-                fontWeight: 500
-              }}
-              size='small'
-              // variant='outlined'
-            />
-          )
-        }
+        //   return (
+        //     <Chip
+        //       label={label}
+        //       sx={{
+        //         backgroundColor: checkBg(checkStatus.value),
+        //         color: checkColor(checkStatus.value),
+        //         fontWeight: 500
+        //       }}
+        //       size='small'
+        //       // variant='outlined'
+        //     />
+        //   )
+        // }
       }, //QL
 
       {
@@ -748,9 +745,9 @@ const OrderPage = React.memo(() => {
 
   return (
     <>
-      <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
+      {/* <IconButton sx={{ padding: 0 }} onClick={() => setOpenStatistics(!openStatistics)}>
         {openStatistics ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-      </IconButton>
+      </IconButton> */}
       {/* <Collapse in={openStatistics} timeout='auto' unmountOnExit>
         <Grid container spacing={gridSpacing} sx={{ mb: 2 }}>
           <CardContentBoxSection title={'Tổng đợn'} content={countStatusInCompany} />

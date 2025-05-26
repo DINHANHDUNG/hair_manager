@@ -15,7 +15,7 @@ export interface InvoiceRepairType {
   statusOrder: string
   orderId: number
   order: OrderType
-  historyProductions: HistoryProductionType
+  historyProductions: HistoryProductionType[]
   contentInvoiceRepairs: Array<ContentInvoiceRepairType>
 }
 

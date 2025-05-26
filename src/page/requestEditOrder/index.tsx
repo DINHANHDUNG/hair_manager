@@ -6,6 +6,7 @@ import { Grid, OutlinedInput } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
+  GridCellParams,
   GridColDef,
   GridRenderCellParams,
   GridRowParams,
@@ -18,21 +19,20 @@ import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useHasPermission } from '../../app/hooks'
 import { useDeleteInvoiceRepairMutation, useGetListInvoiceRepairQuery } from '../../app/services/invoiceRepair'
-import { checkBg, checkColor, OPTIONS_STATUS_ORDER } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import Toast from '../../components/toast'
 import MainCard from '../../components/ui-component/cards/MainCard'
-import Chip from '../../components/ui-component/extended/Chip'
 import { gridSpacing } from '../../constants'
 import { convertDateToApi, removeNullOrEmpty } from '../../help'
-import { Perm_Invoice_Add, Perm_Invoice_Edit } from '../../help/permission'
+import { Perm_Invoice_Add, Perm_Invoice_Edit, Perm_Order_HistoryPrd_View } from '../../help/permission'
 import { InvoiceRepairType } from '../../types/invoiceRepair'
 import FormAddEditInvoice from '../order/modalInvoice'
+import ModalProductionHistory from '../order/modalProductionHistory'
 
 const RequestEditOrderPage = React.memo(() => {
   const permAdd = useHasPermission(Perm_Invoice_Add)
   const permEdit = useHasPermission(Perm_Invoice_Edit)
-  // const navigate = useNavigate()
+  const permHistoryProductionsView = useHasPermission(Perm_Order_HistoryPrd_View)
 
   const dialogs = useDialogs()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -55,6 +55,7 @@ const RequestEditOrderPage = React.memo(() => {
   const [rowsData, setRowsData] = React.useState<InvoiceRepairType[]>()
   const [openDetail, setOpenDetail] = React.useState(false)
   const [modalInvoice, setModalInvoice] = React.useState(false)
+  const [modalProductionHistory, setModalProductionHistory] = React.useState(false)
   // const { data: dataStaticStaffDetail, refetch: refetchStatic } = useGetStaticInvoiceRepairDetailQuery({})
 
   const [deleteInvoiceRepair, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteInvoiceRepairMutation()
@@ -103,6 +104,11 @@ const RequestEditOrderPage = React.memo(() => {
     setModalInvoice(!modalInvoice)
   }
 
+  const handleModalProductionHistory = () => {
+    if (!modalProductionHistory === false) setItemSelectedEidt({} as InvoiceRepairType)
+    setModalProductionHistory(!modalProductionHistory)
+  }
+
   // const handleClickOpenForm = () => {
   //   // setOpenFormAdd(true)
   //   navigate(`/${ROUTES.ORDER}/${ROUTES.ORDER_ADD}`)
@@ -143,49 +149,56 @@ const RequestEditOrderPage = React.memo(() => {
         flex: 1
       },
       {
-        field: 'statusOrder',
-        headerName: 'Tình trạng bán hàng',
-        flex: 1,
-        renderCell: (params: GridRenderCellParams) => {
-          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
-          if (!status) return null
-
-          return (
-            <Chip
-              label={status.label}
-              sx={{
-                backgroundColor: checkBg(status.value),
-                color: checkColor(status.value),
-                fontWeight: 500
-              }}
-              size='small'
-              variant='outlined'
-            />
-          )
-        }
+        field: 'historyProductions',
+        headerName: 'Tình trạng sửa',
+        width: 200,
+        renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) =>
+          params.row?.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
       },
-      {
-        field: 'statusManufacture',
-        headerName: 'Tình trạng sản xuất',
-        flex: 1,
-        renderCell: (params: GridRenderCellParams) => {
-          const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
-          if (!status) return null
+      // {
+      //   field: 'statusOrder',
+      //   headerName: 'Tình trạng bán hàng',
+      //   flex: 1,
+      //   renderCell: (params: GridRenderCellParams) => {
+      //     const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+      //     if (!status) return null
 
-          return (
-            <Chip
-              label={status.label}
-              sx={{
-                backgroundColor: checkBg(status.value),
-                color: checkColor(status.value),
-                fontWeight: 500
-              }}
-              size='small'
-              variant='outlined'
-            />
-          )
-        }
-      },
+      //     return (
+      //       <Chip
+      //         label={status.label}
+      //         sx={{
+      //           backgroundColor: checkBg(status.value),
+      //           color: checkColor(status.value),
+      //           fontWeight: 500
+      //         }}
+      //         size='small'
+      //         variant='outlined'
+      //       />
+      //     )
+      //   }
+      // },
+      // {
+      //   field: 'statusManufacture',
+      //   headerName: 'Tình trạng sản xuất',
+      //   flex: 1,
+      //   renderCell: (params: GridRenderCellParams) => {
+      //     const status = OPTIONS_STATUS_ORDER.find((e) => e.value === params.value?.toString())
+      //     if (!status) return null
+
+      //     return (
+      //       <Chip
+      //         label={status.label}
+      //         sx={{
+      //           backgroundColor: checkBg(status.value),
+      //           color: checkColor(status.value),
+      //           fontWeight: 500
+      //         }}
+      //         size='small'
+      //         variant='outlined'
+      //       />
+      //     )
+      //   }
+      // },
 
       {
         field: 'dateRequest',
@@ -194,7 +207,11 @@ const RequestEditOrderPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<InvoiceRepairType, number>) =>
           params.row.dateRepair ? moment(params.row.dateRepair).format('DD/MM/YYYY') : ''
       },
-
+      {
+        field: 'noteRepair',
+        headerName: 'Ghi chú',
+        flex: 1
+      },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -264,7 +281,7 @@ const RequestEditOrderPage = React.memo(() => {
       //     ...colDef,
       //     minWidth: 150
       //   }
-      case 'order':
+      case 'stt':
         return {
           ...colDef,
           width: 30
@@ -296,6 +313,13 @@ const RequestEditOrderPage = React.memo(() => {
         refetch()
         // refetchStatic()
       }
+    }
+  }
+
+  const onCellDoubleClick = (param: GridCellParams) => {
+    if (param.field === 'historyProductions' && permHistoryProductionsView) {
+      setItemSelectedEidt(param.row)
+      handleModalProductionHistory()
     }
   }
 
@@ -388,6 +412,7 @@ const RequestEditOrderPage = React.memo(() => {
             headerFilters={false}
             totalCount={rowTotal}
             pinnedColumns={{ right: ['actions'] }}
+            onCellClick={onCellDoubleClick}
             pagination
           />
         </div>
@@ -397,6 +422,12 @@ const RequestEditOrderPage = React.memo(() => {
         open={modalInvoice}
         orderId={orderId}
         itemSelectedEdit={itemSelectedEdit}
+      />
+      <ModalProductionHistory
+        itemSelectedInvoice={itemSelectedEdit}
+        handleClose={handleModalProductionHistory}
+        open={modalProductionHistory}
+        refetch={refetch}
       />
       {/* <SelectColumn
         handleComfirm={(value) => {

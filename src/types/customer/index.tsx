@@ -1,4 +1,5 @@
 import { AccountType } from '../account'
+import { OrderType } from '../order'
 
 export type CustomerType = {
   id: number
@@ -13,4 +14,5 @@ export type CustomerType = {
   note: string
   accountId: number
   account: AccountType
+  orders: OrderType[]
 }
