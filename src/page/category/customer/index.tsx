@@ -117,7 +117,7 @@ const CustomerPage = React.memo(() => {
         openNewTab(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`, {
           page: 0,
           pageSize: 10,
-          code: code || '',
+          // code: code || '',
           customerName: param?.row?.name || ''
         })
     }
