@@ -51,3 +51,10 @@ export const handleDownload = (url: string, fileName?: string) => {
       console.error('Error fetching the file:', error)
     })
 }
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function openNewTab(route: string, query: Record<string, any>) {
+  const params = new URLSearchParams(query).toString()
+  const url = `${route}?${params}`
+  window.open(url, '_blank')
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */

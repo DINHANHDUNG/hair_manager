@@ -3,8 +3,8 @@
 import { PERMISSION } from '../constants'
 
 //Báo cáo
-export const Perm_DASHBOARD_Menu_View = [PERMISSION.ADMIN, PERMISSION.QUANLY]
-export const Perm_DASHBOARD_ALL_View = [PERMISSION.ADMIN, PERMISSION.QUANLY]
+export const Perm_DASHBOARD_Menu_View = [PERMISSION.ADMIN]
+export const Perm_DASHBOARD_ALL_View = [PERMISSION.ADMIN]
 
 export const Perm_DASHBOARD_ORDER_SALE_View = [PERMISSION.ADMIN]
 export const Perm_DASHBOARD_ORDER_View = [PERMISSION.ADMIN]
@@ -43,3 +43,6 @@ export const Perm_Payment_Default_View = [PERMISSION.SALE]
 export const Perm_Payment_Approver_View = [PERMISSION.ADMIN]
 export const Perm_Payment_Add = [PERMISSION.SALE]
 export const Perm_Payment_Edit = [PERMISSION.SALE]
+
+//Phê duyệt đơn huỷ
+export const Perm_Approver_Order = [PERMISSION.ADMIN]

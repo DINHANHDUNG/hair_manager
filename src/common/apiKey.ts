@@ -90,6 +90,7 @@ export const NetWork = {
   orderId: (orderId: number) => `order/${orderId}`,
   orderHistory: 'history-production',
   orderHistoryList: (orderId: number) => `history-production/order/${orderId}`,
+  invoiceHistoryList: (idInvoice: number) => `history-production/invoice-repair/${idInvoice}`,
   orderHistoryId: (historyProduction: number) => `history-production/${historyProduction}`,
 
   orderApproval: (orderId: number) => `order/approval/${orderId}`,

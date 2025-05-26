@@ -58,6 +58,14 @@ export const orderApi = createApi({
       }),
       providesTags: (result) => (result ? [{ type: 'History', id: 'LIST' }] : [])
     }),
+    getListInvoiceHistory: builder.query({
+      query: (params) => ({
+        url: NetWork.invoiceHistoryList(params.idInvoice),
+        method: GET
+        // params: params
+      }),
+      providesTags: (result) => (result ? [{ type: 'History', id: 'LIST' }] : [])
+    }),
     // getOrderHistoryById: builder.query({
     //   query: (params: { orderId: number }) => ({
     //     url: NetWork.orderId(params.orderId),
@@ -124,5 +132,6 @@ export const {
   useDeleteOrderHistoryMutation,
   useGetListOrderHistoryQuery,
   useUpdateOrderHistoryMutation,
-  useUpdateOrderCancelApprovalMutation
+  useUpdateOrderCancelApprovalMutation,
+  useGetListInvoiceHistoryQuery
 } = orderApi

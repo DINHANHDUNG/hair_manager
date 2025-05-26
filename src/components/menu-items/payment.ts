@@ -16,7 +16,7 @@ const payment = {
   children: [
     {
       id: ROUTES.PAYMENT,
-      title: 'Thanh toán',
+      title: 'Nhập chi phí',
       type: 'item',
       url: `/${ROUTES.PAYMENT}/${ROUTES.DEFAULT}`,
       icon: icons.IconCurrencyDollar,
@@ -25,7 +25,7 @@ const payment = {
     },
     {
       id: ROUTES.PAYMENT_APPROVE,
-      title: 'Phê duyệt',
+      title: 'Xác nhận thanh toán',
       type: 'item',
       url: `/${ROUTES.PAYMENT}/${ROUTES.PAYMENT_APPROVE}`,
       icon: icons.IconCheckupList,
