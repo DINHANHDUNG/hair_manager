@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import React from 'react'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import { InvoiceRepairType } from '../../types/invoiceRepair'
+import moment from 'moment'
 
 interface InvoiceRepairDetailPanelProps {
   data: InvoiceRepairType[]
@@ -36,8 +37,16 @@ const columns: GridColDef[] = [
     field: 'historyProductions',
     headerName: 'Tình trạng sửa',
     width: 200,
-    renderCell: (params) =>
-      params.row?.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+    renderCell: (params) => {
+      const status = params.row.historyProductions?.length > 0 ? params.row.historyProductions?.[0]?.status : ''
+      const label =
+        (params?.row?.historyProductions?.[0]?.date
+          ? moment(params?.row?.historyProductions?.[0]?.date).format('DD/MM').toString()
+          : '') +
+        ' ' +
+        status
+      return label
+    }
   },
   // {
   //   field: 'statusOrder',
