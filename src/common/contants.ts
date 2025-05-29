@@ -127,6 +127,7 @@ export const OPTIONS_STATUS_ORDER = [
 ]
 
 export const OPTIONS_STATUS_SALE_ORDER = [
+  { value: OPTIONS_ORDER_KEY.NEW, label: 'Gửi sản xuất' },
   { value: OPTIONS_ORDER_KEY.RECEIVED, label: 'Đã nhận' },
   { value: OPTIONS_ORDER_KEY.DONE, label: 'Đã gửi hàng' },
   { value: OPTIONS_ORDER_KEY.REPAIR, label: 'Sửa đơn' },
@@ -134,6 +135,7 @@ export const OPTIONS_STATUS_SALE_ORDER = [
 ]
 
 export const OPTIONS_STATUS_QL_ORDER = [
+  { value: OPTIONS_ORDER_KEY.NEW, label: 'Gửi sản xuất' },
   { value: OPTIONS_ORDER_KEY.PROCESSING, label: 'Đang sản xuất' },
   { value: OPTIONS_ORDER_KEY.DELIVERING, label: 'Đang giao' },
   { value: OPTIONS_ORDER_KEY.RECEIVED_ORDER_REPAIR, label: 'Đã nhận hàng cần sửa' }

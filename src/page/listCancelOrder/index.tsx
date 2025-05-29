@@ -14,7 +14,7 @@ import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { handleMutation, useHasPermission } from '../../app/hooks'
 import { useGetListOrderQuery, useUpdateOrderCancelApprovalMutation } from '../../app/services/order'
-import { OPTIONS_ORDER_KEY } from '../../common/contants'
+import { checkBg, checkColor, OPTIONS_ORDER_KEY, OPTIONS_STATUS_PAYMENT } from '../../common/contants'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import LoadingModal from '../../components/ui-component/LoadingModal'
@@ -114,20 +114,38 @@ const CancelOrderPage = React.memo(() => {
         width: 30
       },
       { field: 'code', headerName: 'Mã đơn hàng', flex: 1 },
+      // {
+      //   field: 'amount',
+      //   headerName: 'Số tiền cần thanh toán',
+      //   flex: 1
+      // },
+      // {
+      //   field: 'paidAmount',
+      //   headerName: 'Số tiền đã thanh toán',
+      //   flex: 1
+      // },
       {
-        field: 'amount',
-        headerName: 'Số tiền cần thanh toán',
-        flex: 1
-      },
-      {
-        field: 'paidAmount',
-        headerName: 'Số tiền đã thanh toán',
-        flex: 1
-      },
-      {
-        field: 'paymentStatus',
+        field: 'statusPayment',
         headerName: 'Trạng thái thanh toán',
-        flex: 1
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => {
+          const status = params.row.statusPayment || ''
+          const checkStatus = OPTIONS_STATUS_PAYMENT.find((e) => e.value === status?.toString())
+          if (!checkStatus) return ''
+
+          return (
+            <Chip
+              label={checkStatus?.label}
+              sx={{
+                backgroundColor: checkBg(checkStatus?.value),
+                color: checkColor(checkStatus?.value),
+                fontWeight: 500
+              }}
+              size='small'
+              // variant='outlined'
+            />
+          )
+        }
       },
       {
         field: 'reasonCancel',
