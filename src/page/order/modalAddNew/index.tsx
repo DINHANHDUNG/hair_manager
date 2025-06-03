@@ -203,8 +203,8 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
         isSuccess: isSuccessUpdate,
         loading: loadingUpdate,
         refetch: () => {
-          handleClose()
-          reset()
+          // handleClose()
+          // reset()
           refetchOrder()
         }
       })

@@ -217,7 +217,7 @@ export default function FormAddEditInvoice({ open, handleClose, orderId, itemSel
         isSuccess: isSuccessUpdate,
         loading: loadingUpdate,
         refetch: () => {
-          handleClose()
+          // handleClose()
           refetch()
         }
       })
