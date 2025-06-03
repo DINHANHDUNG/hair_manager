@@ -25,7 +25,7 @@ export const validationSchemaOrder = yup.object({
   }),
   customerId: conditionalRequiredString(undefined, '$idOrder', false),
   // customerId: requiredString(),
-  code: conditionalRequiredString(undefined, '$idOrder'),
+  code: conditionalRequiredString(undefined, '$idOrder', false),
   customerAddress: conditionalRequiredString(undefined, '$idOrder', false),
   customerPhone: yup.string().when('$idOrder', {
     is: false,
