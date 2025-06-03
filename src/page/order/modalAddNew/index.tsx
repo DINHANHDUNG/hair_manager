@@ -58,7 +58,8 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
     handleSubmit,
     setError,
     setValue,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
+    reset
   } = useForm<FormValuesOrder>({
     resolver: yupResolver(validationSchemaOrder),
     context: { idOrder: idOrder ? true : false },
@@ -67,6 +68,8 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
       // customerId: ''
     }
   })
+
+  console.log('errors', errors)
 
   const {
     fields: fieldsItemOrders,
@@ -171,7 +174,10 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
         isError: isErrorAdd,
         isSuccess: isSuccessAdd,
         loading: loadingAdd,
-        refetch: () => handleClose()
+        refetch: () => {
+          reset()
+          handleClose()
+        }
       })
     }
   }, [loadingAdd])
@@ -198,6 +204,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
         loading: loadingUpdate,
         refetch: () => {
           handleClose()
+          reset()
           refetchOrder()
         }
       })
