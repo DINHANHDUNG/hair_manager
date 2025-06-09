@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { handleMutation } from '../../../app/hooks'
 import { useGetListAccountQuery } from '../../../app/services/auth'
 import { useAddStaffMutation, useGetStaffByIdQuery, useUpdateStaffMutation } from '../../../app/services/staff'
-import { OPTIONSPOSITION } from '../../../common/contants'
+import { OPTIONSPOSITION, POSITION_TYPE } from '../../../common/contants'
 import { VALIDATE } from '../../../common/validate'
 import MyButton from '../../../components/button/MyButton'
 import SubmitButton from '../../../components/button/SubmitButton'
@@ -66,7 +66,10 @@ const validationSchema = yup.object({
 
 export default function FormAddStaff(Props: Props) {
   const { open, handleClose, itemSelected } = Props
-  const { data: dataListAcccout } = useGetListAccountQuery({})
+  const { data: dataListAcccout } = useGetListAccountQuery({
+    isUsed: false,
+    role: POSITION_TYPE.sale
+  })
 
   const {
     data: fetchData,
