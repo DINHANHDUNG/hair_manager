@@ -17,11 +17,18 @@ export const OPTIONGENDER = [
   { value: 'OTHER', label: 'Khác' }
 ]
 
+export const POSITION_TYPE = {
+  admin: 'ADMIN',
+  manager: 'QUANLY',
+  sale: 'SALE',
+  accountant: 'KETOAN',
+}
+
 export const OPTIONSPOSITION = [
-  { value: 'ADMIN', label: 'Admin' },
-  { value: 'QUANLY', label: 'Quản lý' },
-  { value: 'SALE', label: 'Sale' },
-  { value: 'KETOAN', label: 'Kế toán' }
+  { value: POSITION_TYPE.admin, label: 'Admin' },
+  { value: POSITION_TYPE.manager, label: 'Quản lý' },
+  { value: POSITION_TYPE.sale, label: 'Sale' },
+  { value: POSITION_TYPE.accountant, label: 'Kế toán' }
 ]
 
 export const OPTIONSTATUSWORK = [

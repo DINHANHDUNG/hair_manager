@@ -1,3 +1,5 @@
+import { POSITION_TYPE } from "../common/contants"
+
 // theme constant
 export const gridSpacing = 3
 export const gridSpacingForm = 2
@@ -13,8 +15,8 @@ export const config = {
 }
 
 export const PERMISSION = {
-  ADMIN: 'ADMIN',
-  KETOAN: 'KETOAN',
-  SALE: 'SALE',
-  QUANLY: 'QUANLY'
+  ADMIN: POSITION_TYPE.admin,
+  KETOAN: POSITION_TYPE.accountant,
+  SALE: POSITION_TYPE.sale,
+  QUANLY: POSITION_TYPE.manager
 }

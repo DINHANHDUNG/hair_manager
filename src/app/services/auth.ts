@@ -55,9 +55,10 @@ export const authApi = createApi({
       }
     }),
     getListAccount: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: NetWork.account,
-        method: GET
+        method: GET,
+        params
       }),
       providesTags: (result) => (result ? [{ type: 'Account', id: 'LIST' }] : [])
     }),
