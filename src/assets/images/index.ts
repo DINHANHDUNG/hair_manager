@@ -5,5 +5,6 @@ export const images = {
   logo: require('./logo.png'),
   logoString: require('./logoString.png'),
   logoToc: require('./logo-toc.jpg'),
-  logoTocNgang: require('./images.jpeg')
+  logoTocNgang: require('./images.jpeg'),
+  logo2: require('./logo2.jpeg'),
 }

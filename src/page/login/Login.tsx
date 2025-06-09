@@ -1,7 +1,7 @@
 import { Grid, Theme } from '@mui/material'
 import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+// import Stack from '@mui/material/Stack'
+// import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Box } from '@mui/system'
 import { Link } from 'react-router-dom'
@@ -33,16 +33,16 @@ const Login = () => {
                         component='img'
                         sx={{
                           height: 100,
-                          width: 100,
+                          // width: 100,
                           maxHeight: { xs: 100, md: 100 },
-                          maxWidth: { xs: 100, md: 100 }
+                          // maxWidth: { xs: 100, md: 100 }
                         }}
                         alt='The house from the offer.'
-                        src={images.logoToc}
+                        src={images.logo2}
                       />
                     </Link>
                   </Grid>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Grid
                       container
                       direction={{ xs: 'column-reverse', md: 'row' }}
@@ -54,13 +54,10 @@ const Login = () => {
                           <Typography color='secondary.main' gutterBottom variant={downMD ? 'h3' : 'h2'}>
                             Hair Management
                           </Typography>
-                          {/* <Typography variant='caption' fontSize='16px' textAlign={{ xs: 'center', md: 'inherit' }}>
-                            Hair management
-                          </Typography> */}
                         </Stack>
                       </Grid>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <AuthLogin />
                   </Grid>
