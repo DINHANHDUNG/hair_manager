@@ -33,7 +33,7 @@ const LogoSection = () => {
           maxWidth: { xs: '100%', md: '100%' }
         }}
         alt='Logo'
-        src={images.logoTocNgang}
+        src={images.logo2}
       />
     </ButtonBase>
   )
