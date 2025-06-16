@@ -50,7 +50,7 @@ import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing, PERMISSION } from '../../constants'
 import { convertDataLabelAutoComplate, convertDateToApi, removeNullOrEmpty } from '../../help'
-import { Perm_Invoice_Add, Perm_Order_Add, Perm_Order_Edit, Perm_Order_HistoryPrd_View } from '../../help/permission'
+import { Perm_ALL_View, Perm_Invoice_Add, Perm_Order_Add, Perm_Order_HistoryPrd_View } from '../../help/permission'
 import { ErrorType } from '../../types'
 import { FieldCOrder, OrderType } from '../../types/order'
 import FilterTableAdvanced from './FilterTableAdvanced'
@@ -71,8 +71,9 @@ const ChipCustom = styled(Chip)(({ theme }) => ({
 
 const OrderPage = React.memo(() => {
   const apiRef = useGridApiRef()
+  const permView = useHasPermission(Perm_ALL_View)
   const permAdd = useHasPermission(Perm_Order_Add)
-  const permEdit = useHasPermission(Perm_Order_Edit)
+  // const permEdit = useHasPermission(Perm_Order_Edit)
   const checkQL = useHasPermission([PERMISSION.QUANLY])
   const checkAD = useHasPermission([PERMISSION.ADMIN])
   const checkSale = useHasPermission([PERMISSION.SALE])
@@ -473,7 +474,7 @@ const OrderPage = React.memo(() => {
         headerName: 'Hành động',
         type: 'actions',
         getActions: (params: GridRenderCellParams<OrderType, number>) => [
-          permEdit ? (
+          permView ? (
             <GridActionsCellItem
               icon={<EditOutlinedIcon />}
               label='Edit'
