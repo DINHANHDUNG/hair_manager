@@ -27,14 +27,14 @@ interface Props {
 
 type FormValues = {
   username: string
-  staffId: string
+  staffId?: string
   password: string
   role: string
 }
 
 const validationSchema = yup.object({
   username: yup.string().max(255, 'Độ dài không được quá 255').required('Trường này là bắt buộc'),
-  staffId: yup.string().required('Trường này là bắt buộc'),
+  staffId: yup.string(),
   password: yup
     .string()
     .required('Trường này là bắt buộc')
@@ -59,7 +59,7 @@ export default function FormAddAccount(Props: Props) {
   const {
     control,
     handleSubmit,
-    setValue,
+    // setValue,
     reset,
     setError,
     formState: { errors, isSubmitting }

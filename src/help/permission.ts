@@ -2,6 +2,7 @@
 
 import { PERMISSION } from '../constants'
 
+export const Perm_ALL_View = [PERMISSION.ADMIN, PERMISSION.SALE, PERMISSION.QUANLY, PERMISSION.KETOAN]
 //Báo cáo
 export const Perm_DASHBOARD_Menu_View = [PERMISSION.ADMIN]
 export const Perm_DASHBOARD_ALL_View = [PERMISSION.ADMIN]

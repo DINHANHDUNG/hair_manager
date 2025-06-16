@@ -3,7 +3,7 @@ import { Grid } from '@mui/material'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { ErrorOption, SubmitHandler, useFieldArray, useForm, useWatch } from 'react-hook-form'
-import { handleMutation } from '../../../app/hooks'
+import { handleMutation, useHasPermission } from '../../../app/hooks'
 import { useGetListCustomerQuery } from '../../../app/services/customer'
 import { useAddOrderMutation, useGetOrderByIdQuery, useUpdateOrderMutation } from '../../../app/services/order'
 import MyButton from '../../../components/button/MyButton'
@@ -20,6 +20,7 @@ import { ErrorType } from '../../../types'
 import { FieldCOrder, FormValuesOrder, OrderType } from '../../../types/order'
 import ItemOrder from './ItemOrder'
 import { validationSchemaOrder } from './validationSchema'
+import { Perm_Order_Add, Perm_Order_Edit } from '../../../help/permission'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -28,7 +29,9 @@ interface Props {
 
 export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }: Props) {
   const idOrder = itemSelectedEdit?.id
-
+  const permAdd = useHasPermission(Perm_Order_Add)
+  const permEdit = useHasPermission(Perm_Order_Edit)
+  const checkSubmit = idOrder ? permEdit : permAdd
   const {
     data: fetchData,
     isLoading,
@@ -335,7 +338,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
             <MyButton variant='outlined' sx={{ float: 'right', ml: 1 }} onClick={handleClose}>
               HỦY
             </MyButton>
-            <SubmitButton variant='outlined' sx={{ float: 'right' }} loading={isSubmitting}>
+            <SubmitButton variant='outlined' sx={{ float: 'right' }} loading={isSubmitting} disabled={!checkSubmit}>
               LƯU
             </SubmitButton>
           </Grid>

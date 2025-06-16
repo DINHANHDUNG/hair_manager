@@ -35,7 +35,7 @@ type FormValues = {
   // addressOrigin?: string
   // ethnic?: string
   role: string
-  accountId: string
+  accountId?: string
 }
 
 const validationSchema = yup.object({
@@ -61,7 +61,7 @@ const validationSchema = yup.object({
     // .max(11)
     .matches(VALIDATE.phoneRelaxed, 'Vui lòng nhập đúng định dạng'),
   role: yup.string().required('Trường này là bắt buộc').typeError('Vui lòng chọn quyền'),
-  accountId: yup.string().required('Trường này là bắt buộc')
+  accountId: yup.string()
 })
 
 export default function FormAddStaff(Props: Props) {
