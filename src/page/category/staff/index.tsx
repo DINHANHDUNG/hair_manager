@@ -136,7 +136,7 @@ const StaffPage = React.memo(() => {
         field: 'account',
         headerName: 'Tài khoản',
         flex: 1,
-        renderCell: (params: GridRenderCellParams<StaffType, number>) => params.row.account.username
+        renderCell: (params: GridRenderCellParams<StaffType, number>) => params?.row?.account?.username || ''
       },
       {
         field: 'actions',

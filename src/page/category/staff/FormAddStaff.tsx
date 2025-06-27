@@ -108,11 +108,12 @@ export default function FormAddStaff(Props: Props) {
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     // const date = moment(data.birthDay).startOf('day')
     // const isoDateStr = date?.toISOString()
+    const newData = { ...data, accountId: data.accountId ? Number(data.accountId) : null }
     if (itemSelected?.id) {
-      editStaff({ ...data, id: itemSelected?.id, accountId: Number(data.accountId) })
+      editStaff({ ...newData, id: itemSelected?.id })
       return
     }
-    addStaff({ ...data, accountId: Number(data.accountId) })
+    addStaff({ ...newData })
   }
 
   useEffect(() => {
