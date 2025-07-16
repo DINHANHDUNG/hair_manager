@@ -118,6 +118,9 @@ const OrderPage = React.memo(() => {
     customerName: initialName,
     rate: initialRate
   })
+  console.log('====================================')
+  console.log(filters)
+  console.log('====================================')
   // const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<OrderType[]>()
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<OrderType>()

@@ -180,7 +180,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
         />
       </Box>
 
-      <Box sx={{ p: 2, pb: 2 }}>
+      <Box sx={{ p: 2, pb: 0 }}>
         <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>
           {`Trạng thái sản xuất`}
         </InputLabel>
