@@ -38,6 +38,7 @@ import {
   checkBg,
   checkColor,
   OPTIONS_ORDER_KEY,
+  OPTIONS_ORDER_SLOW,
   OPTIONS_STATUS_ORDER,
   OPTIONS_STATUS_QL_ORDER,
   OPTIONS_STATUS_SALE_ORDER
@@ -96,6 +97,7 @@ const OrderPage = React.memo(() => {
 
   const initialStatusOrder = searchParams.get('statusOrder') || ''
   const initialStatusManufacture = searchParams.get('statusManufacture') || ''
+  const initialRate = searchParams.get('rate') || ''
   const initialName = searchParams.get('customerName') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
@@ -113,7 +115,8 @@ const OrderPage = React.memo(() => {
     dateDeliveryTo: initialEndDateDelivery,
     statusOrder: initialStatusOrder,
     statusManufacture: initialStatusManufacture,
-    customerName: initialName
+    customerName: initialName,
+    rate: initialRate
   })
   // const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<OrderType[]>()
@@ -652,6 +655,10 @@ const OrderPage = React.memo(() => {
         : ''
     },
     {
+      key: 'rate',
+      label: initialRate ? OPTIONS_ORDER_SLOW.find((e) => e.value === initialRate)?.label : ''
+    },
+    {
       key: 'code',
       label: initialCode || ''
     }
@@ -895,6 +902,7 @@ const OrderPage = React.memo(() => {
             ['customerName']: value.customerName,
             ['statusOrder']: value.statusOrder,
             ['statusManufacture']: value.statusManufacture,
+            ['rate']: value.rate,
             ['dateReceiveFrom']: value.dateReceive?.[0],
             ['dateReceiveTo']: value.dateReceive?.[1],
             ['dateDeliveryFrom']: value.dateDelivery?.[0],

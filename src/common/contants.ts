@@ -21,7 +21,7 @@ export const POSITION_TYPE = {
   admin: 'ADMIN',
   manager: 'QUANLY',
   sale: 'SALE',
-  accountant: 'KETOAN',
+  accountant: 'KETOAN'
 }
 
 export const OPTIONSPOSITION = [
@@ -110,6 +110,18 @@ export const OPTIONS_UNIT = [
   { value: OPTIONS_UNIT_KEY.BUNDLES, label: OPTIONS_UNIT_KEY.BUNDLES },
   { value: OPTIONS_UNIT_KEY.PIECE, label: OPTIONS_UNIT_KEY.PIECE },
   { value: OPTIONS_UNIT_KEY.KG, label: OPTIONS_UNIT_KEY.KG }
+]
+
+export const OPTIONS_ORDER_SLOW_KEY = {
+  LATEORDER1: 'lateOrder1',
+  LATEORDER2: 'lateOrder2',
+  LATEORDER3: 'lateOrder3'
+}
+
+export const OPTIONS_ORDER_SLOW = [
+  { value: OPTIONS_ORDER_SLOW_KEY.LATEORDER1, label: 'Chậm 1' },
+  { value: OPTIONS_ORDER_SLOW_KEY.LATEORDER2, label: 'Chậm 2' },
+  { value: OPTIONS_ORDER_SLOW_KEY.LATEORDER3, label: 'Chậm 3' }
 ]
 
 export const OPTIONS_ORDER_KEY = {
