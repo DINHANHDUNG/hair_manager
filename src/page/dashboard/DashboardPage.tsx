@@ -4,17 +4,17 @@ import { IconCoin, IconUser, IconUsersGroup } from '@tabler/icons-react'
 import dayjs, { Dayjs } from 'dayjs'
 import moment from 'moment'
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useGetStaticOrderTotalMonthQuery } from '../../app/services/statistic'
+import { OPTIONS_ORDER_KEY } from '../../common/contants'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
 import MainCard from '../../components/ui-component/cards/MainCard'
 import { gridSpacing } from '../../constants'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
 import { FooterBoxSection, FooterBoxSection2 } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
-import { useNavigate } from 'react-router-dom'
-import ROUTES from '../../routers/helpersRouter/constantRouter'
-import { OPTIONS_ORDER_KEY } from '../../common/contants'
 
 const Dashboard = React.memo(() => {
   const navigate = useNavigate()
@@ -50,16 +50,21 @@ const Dashboard = React.memo(() => {
   }
 
   const handleOrder = () => {
-    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
-    // ?page=0&pageSize=10&statusOrder=DONE
+    navigate(
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+    )
   }
 
   const handleOrderDone = () => {
-    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&statusOrder=${OPTIONS_ORDER_KEY.DONE}`)
+    navigate(
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&statusOrder=${OPTIONS_ORDER_KEY.DONE}&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+    )
   }
 
   const handleOrderRate = (value: string) => {
-    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&rate=lateOrder${value}`)
+    navigate(
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&rate=lateOrder${value}&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+    )
   }
 
   return (
