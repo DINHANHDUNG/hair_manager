@@ -14,7 +14,9 @@ import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { formatNumber, useCreateSearchParams, useHasPermission, useQueryParam } from '../../app/hooks'
 import { useGetListReportOrderQuery, useLazyExportDetailOrderQuery } from '../../app/services/report'
+import { checkBg, checkColor, OPTIONS_STATUS_PAYMENT } from '../../common/contants'
 import MonthPickerField from '../../components/dateTime/MonthPickerField'
+import { MoneyEditCell } from '../../components/table-data-grid/moneyEditCell'
 import TableDataGrid from '../../components/table-data-grid/TableComponentDataGrid'
 import { TextEditCell } from '../../components/table-data-grid/textEditCell'
 import Toast from '../../components/toast'
@@ -23,11 +25,8 @@ import { gridSpacing, PERMISSION } from '../../constants'
 import { removeNullOrEmpty } from '../../help'
 import { ReportOrderType } from '../../types/report'
 import FilterTableAdvanced from './FilterTableAdvanced'
-import { MoneyEditCell } from '../../components/table-data-grid/moneyEditCell'
-import { checkBg, checkColor, OPTIONS_STATUS_PAYMENT } from '../../common/contants'
 
 const ReportTotalPage = React.memo(() => {
-  //   const navigate = useNavigate()
   const checkSale = useHasPermission([PERMISSION.SALE])
   //   const theme = useTheme()
   const [, setSearchParams] = useSearchParams()

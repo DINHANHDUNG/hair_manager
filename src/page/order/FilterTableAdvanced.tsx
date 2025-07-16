@@ -3,7 +3,7 @@ import { Box } from '@mui/system'
 import { DateRange } from '@mui/x-date-pickers-pro'
 import dayjs, { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { OPTIONS_STATUS_ORDER } from '../../common/contants'
+import { OPTIONS_ORDER_SLOW, OPTIONS_STATUS_ORDER } from '../../common/contants'
 import MyButton from '../../components/button/MyButton'
 import DateRangePickerShortCut from '../../components/dateTime/DateRangePickerShortCut'
 import PopperComponent from '../../components/popper'
@@ -20,6 +20,7 @@ interface Props {
 export interface StateFilterTableAdvanced {
   statusOrder: string
   statusManufacture: string
+  rate: string
   code: string
   customerName: string
   dateReceive: DateRange<Dayjs> | undefined
@@ -35,7 +36,8 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
     code: '',
     customerName: '',
     statusOrder: '',
-    statusManufacture: ''
+    statusManufacture: '',
+    rate: ''
   })
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
         customerName: value?.customerName || '',
         statusOrder: value?.statusOrder,
         statusManufacture: value?.statusManufacture,
+        rate: value?.rate,
         dateReceive:
           value.dateReceiveFrom && value.dateReceiveTo
             ? [dayjs(value.dateReceiveFrom), dayjs(value.dateReceiveTo)]
@@ -92,6 +95,13 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
     setState((prevState) => ({
       ...prevState,
       statusManufacture: newValue?.value || ''
+    }))
+  }
+
+  const handleRateChange = (_: React.SyntheticEvent, newValue: { value: string; label: string } | null) => {
+    setState((prevState) => ({
+      ...prevState,
+      rate: newValue?.value || ''
     }))
   }
 
@@ -192,6 +202,27 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
       </Box>
 
       <Box sx={{ p: 2, pb: 2 }}>
+        <InputLabel sx={{ mb: 1 }} htmlFor={`input-Autocomplete`}>
+          {`Đánh giá sản xuất`}
+        </InputLabel>
+        <Autocomplete
+          options={OPTIONS_ORDER_SLOW}
+          getOptionLabel={(option) => (typeof option === 'string' ? option : option.label || '')}
+          onChange={handleRateChange}
+          value={
+            state.rate
+              ? {
+                  value: state.rate,
+                  label: OPTIONS_ORDER_SLOW.find((opt) => opt.value === state.rate)?.label || ''
+                }
+              : null
+          }
+          renderInput={(params) => <TextField {...params} placeholder={'Vui lòng chọn'} />}
+          size='small'
+        />
+      </Box>
+
+      <Box sx={{ p: 2, pb: 2 }}>
         <MyButton
           size='small'
           variant='contained'
@@ -211,6 +242,7 @@ export default function FilterTableAdvanced({ open, anchorRef, handleClose, hand
               customerName: '',
               statusOrder: '',
               statusManufacture: '',
+              rate: '',
               code: '',
               dateReceive: [null, null],
               dateDelivery: [null, null]

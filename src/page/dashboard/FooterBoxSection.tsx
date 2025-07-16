@@ -5,17 +5,22 @@ import * as React from 'react'
 export const FooterBoxSection = ({
   elementLeft,
   elementRight,
-  colorRight
+  colorRight,
+  handleValueLeft
 }: {
   elementLeft: React.ReactNode | string
   elementRight?: React.ReactNode | string
   colorRight?: string
+  handleValueLeft?: () => void
 }) => {
   return (
     <Grid item container direction='row' alignItems='center' justifyContent='space-between' sx={{ mt: 1 }}>
-      <Typography sx={{ fontWeight: '700', fontSize: 30 }} variant='subtitle1'>
-        {elementLeft}
-      </Typography>
+      <span style={{ cursor: 'pointer' }} onClick={handleValueLeft}>
+        <Typography sx={{ fontWeight: '700', fontSize: 30 }} variant='subtitle1'>
+          {elementLeft}
+        </Typography>
+      </span>
+
       <MuiTypography
         sx={{ fontWeight: '500', fontSize: 20, mb: 0 }}
         color={colorRight || 'primary'}
@@ -31,17 +36,21 @@ export const FooterBoxSection = ({
 export const FooterBoxSection2 = ({
   elementLeft,
   elementRight,
-  colorRight
+  colorRight,
+  handleValueLeft
 }: {
   elementLeft: React.ReactNode | string
   elementRight: React.ReactNode | string
   colorRight?: string
+  handleValueLeft?: () => void
 }) => {
   return (
     <Grid item container direction='row' alignItems='center' justifyContent='space-between' sx={{ mt: 0.5 }}>
-      <Typography sx={{ fontWeight: '700', fontSize: 13 }} variant='subtitle1'>
-        {elementLeft}
-      </Typography>
+      <span style={{ cursor: 'pointer' }} onClick={handleValueLeft}>
+        <Typography sx={{ fontWeight: '700', fontSize: 13 }} variant='subtitle1'>
+          {elementLeft}
+        </Typography>
+      </span>
       <MuiTypography
         sx={{ fontWeight: '500', fontSize: 10, mb: 0 }}
         color={colorRight || 'primary'}

@@ -12,8 +12,12 @@ import { FooterBoxSection, FooterBoxSection2 } from './FooterBoxSection'
 import { HeaderBoxSection } from './HeaderBoxSection'
 import { WorkerChart } from './WorkerChart'
 import { styleDashboard } from './dashboardPage.style'
+import { useNavigate } from 'react-router-dom'
+import ROUTES from '../../routers/helpersRouter/constantRouter'
+import { OPTIONS_ORDER_KEY } from '../../common/contants'
 
 const Dashboard = React.memo(() => {
+  const navigate = useNavigate()
   const theme = useTheme()
   // const today = dayjs()
   const classes = styleDashboard(theme)
@@ -45,6 +49,19 @@ const Dashboard = React.memo(() => {
     )
   }
 
+  const handleOrder = () => {
+    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}`)
+    // ?page=0&pageSize=10&statusOrder=DONE
+  }
+
+  const handleOrderDone = () => {
+    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&statusOrder=${OPTIONS_ORDER_KEY.DONE}`)
+  }
+
+  const handleOrderRate = (value: string) => {
+    navigate(`/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&rate=lateOrder${value}`)
+  }
+
   return (
     <div>
       {/* <DateRangePickerShortCut
@@ -71,6 +88,7 @@ const Dashboard = React.memo(() => {
               />
               <FooterBoxSection
                 elementLeft={totalOrder || 0}
+                handleValueLeft={handleOrder}
                 // elementRight={percentageIncreaseEmployee ? percentageIncreaseEmployee.toString() + '%' : 0}
                 // colorRight={
                 //   percentageIncreaseEmployee && percentageIncreaseEmployee > 0
@@ -92,6 +110,7 @@ const Dashboard = React.memo(() => {
               />
               <FooterBoxSection
                 elementLeft={totalComplate || 0}
+                handleValueLeft={handleOrderDone}
                 // elementRight={percentageIncreaseStaff ? percentageIncreaseStaff.toString() + '%' : 0}
                 // colorRight={
                 //   percentageIncreaseStaff && percentageIncreaseStaff > 0
@@ -115,16 +134,19 @@ const Dashboard = React.memo(() => {
                 elementLeft={`Chậm 1: ${lateOrder?.lateOrder1 || 0}`}
                 elementRight={'1-3 ngày'}
                 colorRight={theme.palette.error.dark}
+                handleValueLeft={() => handleOrderRate('1')}
               />
               <FooterBoxSection2
                 elementLeft={`Chậm 2: ${lateOrder?.lateOrder2 || 0}`}
                 elementRight={'4-6 ngày'}
                 colorRight={theme.palette.error.dark}
+                handleValueLeft={() => handleOrderRate('2')}
               />
               <FooterBoxSection2
                 elementLeft={`Chậm 3: ${lateOrder?.lateOrder3 || 0}`}
                 elementRight={'>7 ngày'}
                 colorRight={theme.palette.error.dark}
+                handleValueLeft={() => handleOrderRate('3')}
               />
             </>
           }
