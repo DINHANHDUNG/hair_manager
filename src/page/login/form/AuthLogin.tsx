@@ -36,6 +36,7 @@ import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { LICENSE_KEY } from '../../../common/contants'
 import CryptoJS from 'crypto-js'
 import { PERMISSION } from '../../../constants'
+import { KEY_PASS, KEY_USER } from '../../../utils/keyLocal'
 
 const AuthLogin = ({ ...others }) => {
   const { enqueueSnackbar } = useSnackbar()
@@ -56,8 +57,6 @@ const AuthLogin = ({ ...others }) => {
 
   useEffect(() => {
     if (account && isSuccess) {
-      console.log('account', account)
-
       if (account?.data?.role === PERMISSION.ADMIN) {
         navigate(`/${ROUTES.DASHBOARD}/${ROUTES.INDEX}`)
       } else {
@@ -76,8 +75,8 @@ const AuthLogin = ({ ...others }) => {
   }, [error, enqueueSnackbar, isLoading])
 
   useEffect(() => {
-    const encryptedUsername = localStorage.getItem('username')
-    const encryptedPassword = localStorage.getItem('password')
+    const encryptedUsername = localStorage.getItem(KEY_USER)
+    const encryptedPassword = localStorage.getItem(KEY_PASS)
 
     if (encryptedUsername && encryptedPassword) {
       const decryptedUsername = CryptoJS.AES.decrypt(encryptedUsername, LICENSE_KEY).toString(CryptoJS.enc.Utf8)
@@ -106,11 +105,11 @@ const AuthLogin = ({ ...others }) => {
       if (checked) {
         const encryptedUsername = CryptoJS.AES.encrypt(values.username, LICENSE_KEY).toString()
         const encryptedPassword = CryptoJS.AES.encrypt(values.password, LICENSE_KEY).toString()
-        localStorage.setItem('username', encryptedUsername)
-        localStorage.setItem('password', encryptedPassword)
+        localStorage.setItem(KEY_USER, encryptedUsername)
+        localStorage.setItem(KEY_PASS, encryptedPassword)
       } else {
-        localStorage.removeItem('username')
-        localStorage.removeItem('password')
+        localStorage.removeItem(KEY_USER)
+        localStorage.removeItem(KEY_PASS)
       }
 
       setSubmitting(false)

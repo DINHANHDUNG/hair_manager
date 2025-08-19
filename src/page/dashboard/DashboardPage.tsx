@@ -51,19 +51,19 @@ const Dashboard = React.memo(() => {
 
   const handleOrder = () => {
     navigate(
-      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&dateReceiveFrom=${dayjs(month).date(1)}&dateReceiveTo=${dayjs(month).date(31)}`
     )
   }
 
   const handleOrderDone = () => {
     navigate(
-      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&statusOrder=${OPTIONS_ORDER_KEY.DONE}&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&statusOrder=${OPTIONS_ORDER_KEY.DONE}&dateReceiveFrom=${dayjs(month).date(1)}&dateReceiveTo=${dayjs(month).date(31)}`
     )
   }
 
   const handleOrderRate = (value: string) => {
     navigate(
-      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&rate=lateOrder${value}&dateReceiveFrom=${dayjs().date(1)}&dateReceiveTo=${dayjs().date(31)}`
+      `/${ROUTES.ORDER}/${ROUTES.DEFAULT}?page=0&pageSize=10&rate=lateOrder${value}&dateReceiveFrom=${dayjs(month).date(1)}&dateReceiveTo=${dayjs(month).date(31)}`
     )
   }
 
