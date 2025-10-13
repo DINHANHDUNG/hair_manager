@@ -20,6 +20,9 @@ export type ReportOrderType = {
   isApprove1: number
   isApprove2: number
   isApprove3: number
+  money: number
+  noPayment: number
+  totalMoney: number
 }
 
 export type ReportOrderBySaleType = {

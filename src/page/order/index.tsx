@@ -1,4 +1,4 @@
-import { AddCircle, AddTask, BorderAll, FileDownload, HighlightOff, Verified } from '@mui/icons-material'
+import { AddCircle, AddTask, FileDownload, HighlightOff, Verified } from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
@@ -118,9 +118,6 @@ const OrderPage = React.memo(() => {
     customerName: initialName,
     rate: initialRate
   })
-  console.log('====================================')
-  console.log(filters)
-  console.log('====================================')
   // const fileRef = React.useRef<HTMLInputElement>(null)
   const [rowsData, setRowsData] = React.useState<OrderType[]>()
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<OrderType>()
@@ -450,7 +447,7 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateEstimateDelivery',
         headerName: 'Ngày dự kiến xuất',
-        editable: checkQL,
+        editable: checkAD,
         renderCell: (params: GridRenderCellParams<OrderType, number>) =>
           params.row.dateEstimateDelivery ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY') : '',
         renderEditCell: DateEditCell
@@ -531,16 +528,16 @@ const OrderPage = React.memo(() => {
           ) : (
             <></>
           ),
-          checkQL ? (
-            <GridActionsCellItem
-              icon={<BorderAll />}
-              label='Đã nhận hàng cần sửa'
-              onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.RECEIVED_ORDER_REPAIR)}
-              showInMenu
-            />
-          ) : (
-            <></>
-          ),
+          // checkQL ? (
+          //   <GridActionsCellItem
+          //     icon={<BorderAll />}
+          //     label='Đã nhận hàng cần sửa'
+          //     onClick={() => changeSttOrder(params.row.id, OPTIONS_ORDER_KEY.RECEIVED_ORDER_REPAIR)}
+          //     showInMenu
+          //   />
+          // ) : (
+          //   <></>
+          // ),
           checkSale ? (
             <GridActionsCellItem
               icon={<AddTask />}
