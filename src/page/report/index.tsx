@@ -245,6 +245,7 @@ const ReportTotalPage = React.memo(() => {
       {
         field: 'moneyPay1',
         headerName: 'Lần 1',
+        headerClassName: 'bold-header',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row?.isApprove1 && params.row.moneyPay1 ? formatNumber(Number(params.row.moneyPay1)) : '',
         editable: checkSale,
@@ -261,19 +262,20 @@ const ReportTotalPage = React.memo(() => {
       {
         field: 'moneyPay2',
         headerName: 'Lần 2',
+        headerClassName: 'bold-header',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
           params.row?.isApprove2 && params.row.moneyPay2 ? formatNumber(Number(params.row.moneyPay2)) : '',
         editable: checkSale,
         renderEditCell: MoneyEditCell
       },
-      {
-        field: 'moneyPay3',
-        headerName: 'Lần 3',
-        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row?.isApprove3 && params.row.moneyPay3 ? formatNumber(Number(params.row.moneyPay3)) : '',
-        editable: checkSale,
-        renderEditCell: MoneyEditCell
-      },
+      // {
+      //   field: 'moneyPay3',
+      //   headerName: 'Lần 3',
+      //   renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+      //     params.row?.isApprove3 && params.row.moneyPay3 ? formatNumber(Number(params.row.moneyPay3)) : '',
+      //   editable: checkSale,
+      //   renderEditCell: MoneyEditCell
+      // },
       {
         field: 'moneyReceived',
         headerName: 'Số tiền thực nhận',

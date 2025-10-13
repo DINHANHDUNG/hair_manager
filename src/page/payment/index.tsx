@@ -37,6 +37,7 @@ const PaymentPage = React.memo(() => {
   ] = useUpdatePaymentMutation()
   //   const navigate = useNavigate()
   const checkSale = useHasPermission([PERMISSION.SALE])
+  const checkAD = useHasPermission([PERMISSION.ADMIN])
   //   const theme = useTheme()
   const [, setSearchParams] = useSearchParams()
   const [month, setMonth] = React.useState<Dayjs | null>(dayjs())
@@ -242,6 +243,7 @@ const PaymentPage = React.memo(() => {
       {
         field: 'moneyPay1',
         headerName: 'Lần 1',
+        headerClassName: 'bold-header',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => {
           const isApprove = params.row.isApprove1
           const momney = params.row.moneyPay1
@@ -263,6 +265,7 @@ const PaymentPage = React.memo(() => {
       {
         field: 'moneyPay2',
         headerName: 'Lần 2',
+        headerClassName: 'bold-header',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => {
           const isApprove = params.row.isApprove2
           const momney = params.row.moneyPay2
@@ -281,26 +284,47 @@ const PaymentPage = React.memo(() => {
         editable: checkSale,
         renderEditCell: MoneyEditCell
       },
+      // {
+      //   field: 'moneyPay3',
+      //   headerName: 'Lần 3',
+      //   renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => {
+      //     const isApprove = params.row.isApprove3
+      //     const momney = params.row.moneyPay3
+      //     return momney ? (
+      //       <Typography
+      //         variant={isApprove ? 'subtitle1' : 'caption'}
+      //         color={isApprove ? 'green' : 'black'}
+      //         fontSize={14}
+      //       >
+      //         {formatNumber(Number(momney))}
+      //       </Typography>
+      //     ) : (
+      //       ''
+      //     )
+      //   },
+      //   editable: checkSale,
+      //   renderEditCell: MoneyEditCell
+      // },
       {
-        field: 'moneyPay3',
-        headerName: 'Lần 3',
-        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => {
-          const isApprove = params.row.isApprove3
-          const momney = params.row.moneyPay3
-          return momney ? (
-            <Typography
-              variant={isApprove ? 'subtitle1' : 'caption'}
-              color={isApprove ? 'green' : 'black'}
-              fontSize={14}
-            >
-              {formatNumber(Number(momney))}
-            </Typography>
-          ) : (
-            ''
-          )
-        },
-        editable: checkSale,
-        renderEditCell: MoneyEditCell
+        field: 'totalMoney',
+        headerName: 'Số tiền đơn hàng',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row.totalMoney ? formatNumber(Number(params.row.totalMoney)) : '',
+        hide: !checkAD // chỉ hiển thị nếu là admin
+      },
+      {
+        field: 'noPayment',
+        headerName: 'Số lần thanh toán',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row.noPayment ? formatNumber(Number(params.row.noPayment)) : '',
+        hide: !checkAD
+      },
+      {
+        field: 'money',
+        headerName: 'Tổng tiền đã thanh toán (USD)',
+        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
+          params.row.money ? formatNumber(Number(params.row.money)) : '',
+        hide: !checkAD
       },
       {
         field: 'moneyReceived',
@@ -396,6 +420,9 @@ const PaymentPage = React.memo(() => {
           description: 'Số tiền đã trả',
           children: [{ field: 'moneyPay1' }, { field: 'moneyPay2' }, { field: 'moneyPay3' }]
         },
+        { field: 'money' },
+        { field: 'noPayment' },
+        { field: 'totalMoney' },
         { field: 'moneyReceived' },
         { field: 'moneyDebt' },
         { field: 'methodPayment' },

@@ -1,7 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import IconSearch from '@mui/icons-material/Search'
-import { Button, Grid, OutlinedInput, Typography } from '@mui/material'
+import { Box, Button, Grid, IconButton, OutlinedInput, Tooltip, Typography } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -28,6 +28,12 @@ import ROUTES from '../../../routers/helpersRouter/constantRouter'
 import { CustomerType } from '../../../types/customer'
 import ChangeAccountStaff from './ChangeStaff'
 import FormAddEditCustomer from './FormAddEdit'
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
+import { ChipCustom } from '../../../components/ui-component/chipCustom'
+import CloseIcon from '@mui/icons-material/Close'
+import FilterTableAdvanced from './FilterTableAdvanced'
+import { useGetListStaffQuery } from '../../../app/services/staff'
+import { StaffType } from '../../../types/staff'
 
 const CustomerPage = React.memo(() => {
   const dialogs = useDialogs()
@@ -40,6 +46,7 @@ const CustomerPage = React.memo(() => {
   const initialPage = parseInt(searchParams.get('page') || '0') || 0
   const initialPageSize = parseInt(searchParams.get('pageSize') || '10') || 10
   const initialSearchKey = searchParams.get('searchKey') || ''
+  const initialStaffId = searchParams.get('staffId') || ''
 
   const [paginationModel, setPaginationModel] = React.useState({
     pageSize: initialPageSize,
@@ -47,8 +54,11 @@ const CustomerPage = React.memo(() => {
   })
 
   const [filters, setFilters] = React.useState<{ [field: string]: string }>({
-    searchKey: initialSearchKey
+    searchKey: initialSearchKey,
+    staffId: initialStaffId
   })
+
+  console.log('filters', filters)
 
   const [itemSelectedEdit, setItemSelectedEidt] = React.useState<CustomerType>()
   const [rowsData, setRowsData] = React.useState<CustomerType[]>()
@@ -57,6 +67,8 @@ const CustomerPage = React.memo(() => {
   const [openFormAdd, setOpenFormAdd] = React.useState(false)
   const [openFormChangeStaff, setOpenFormChangeStaff] = React.useState(false)
 
+  const [openFilterAdvanced, setOpenFilterAdvanced] = React.useState(false)
+  const anchorAdvancedRef = React.useRef<HTMLDivElement>(null)
   const {
     data: dataApiCustomer,
     isLoading,
@@ -66,6 +78,10 @@ const CustomerPage = React.memo(() => {
     limit: paginationModel.pageSize,
     ...filters
   })
+
+  const { data: dataApiStaff } = useGetListStaffQuery({})
+  const listStaff =
+    dataApiStaff?.data?.rows?.map((e: StaffType) => ({ ...e, value: e.id.toString(), label: e.name })) || []
 
   const [deleteCustomer, { isLoading: loadingDelete, isSuccess, isError }] = useDeleteCustomerMutation()
 
@@ -134,41 +150,16 @@ const CustomerPage = React.memo(() => {
     }
   }
 
-  // const fakeData = [
-  //   {
-  //     id: 1,
-  //     order: 1,
-  //     name: 'Nguyễn Văn A',
-  //     phoneNumber: '84901234567',
-  //     email: 'nguyenvana@example.com',
-  //     address: '123 Đường Lê Lợi, Quận 1, TP.HCM',
-  //     gender: 'Nam',
-  //     note: 'Khách hàng lâu năm',
-  //     isActive: true
-  //   },
-  //   {
-  //     id: 2,
-  //     order: 2,
-  //     name: 'Trần Thị B',
-  //     phoneNumber: '84907654321',
-  //     email: 'tranthib@example.com',
-  //     address: '456 Đường Cách Mạng Tháng 8, Quận 10, TP.HCM',
-  //     gender: 'Nữ',
-  //     note: 'Ưu tiên liên hệ buổi sáng',
-  //     isActive: false
-  //   },
-  //   {
-  //     id: 3,
-  //     order: 3,
-  //     name: 'Lê Văn C',
-  //     phoneNumber: '84888888888',
-  //     email: 'levanc@example.com',
-  //     address: '789 Đường Trường Chinh, Tân Bình, TP.HCM',
-  //     gender: 'Nam',
-  //     note: 'Khách mới',
-  //     isActive: true
-  //   }
-  // ]
+  const handleCloseFilterAdvanced = (event: MouseEvent | TouchEvent | React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (anchorAdvancedRef.current && anchorAdvancedRef.current.contains(event.target as Node)) {
+      return
+    }
+    setOpenFilterAdvanced(false)
+  }
+
+  const handleToggleFilterAdvanced = () => {
+    setOpenFilterAdvanced((prevOpen) => !prevOpen)
+  }
 
   const data = {
     columns: [
@@ -294,6 +285,31 @@ const CustomerPage = React.memo(() => {
     [data.columns, filters]
   )
 
+  const listRenderFilter = [
+    { key: 'staffId ', label: listStaff?.find((opt: StaffType) => opt?.id?.toString() === initialStaffId)?.label || '' }
+  ]
+
+  const RenderFilter = ({ label, key }: { label: string; key: string }) => {
+    const handleClose = () => {
+      handleFilterChange(key, '')
+    }
+    return (
+      label?.length > 0 && (
+        <ChipCustom
+          size='medium'
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 0 }}>
+              {label}
+              <IconButton color='inherit' size='small' onClick={handleClose}>
+                <CloseIcon fontSize='inherit' />
+              </IconButton>
+            </Box>
+          }
+        />
+      )
+    )
+  }
+
   const handleMutation = (
     loading: boolean,
     isError: boolean,
@@ -312,7 +328,8 @@ const CustomerPage = React.memo(() => {
     setSearchParams({
       page: paginationModel.page.toString(),
       pageSize: paginationModel.pageSize.toString(),
-      searchKey: filters.searchKey
+      searchKey: filters.searchKey,
+      staffId: filters.staffId
     })
   }, [paginationModel, filters, setSearchParams])
 
@@ -331,11 +348,21 @@ const CustomerPage = React.memo(() => {
     handleMutation(loadingDelete, isError, isSuccess, 'Thao tác thành công', 'Thao tác không thành công')
   }, [loadingDelete])
 
+  const prevOpenAdvanced = React.useRef(openFilterAdvanced)
+  React.useEffect(() => {
+    if (prevOpenAdvanced.current === true && openFilterAdvanced === false) {
+      anchorAdvancedRef?.current?.focus()
+    }
+
+    // prevOpen.current = openFilter
+    prevOpenAdvanced.current = openFilterAdvanced
+  }, [openFilterAdvanced])
+
   return (
     <>
       <MainCard title={'Danh sách khách hàng'} sx={{ height: '100%' }}>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ mb: 2 }}>
             <OutlinedInput
               size='small'
               id='search-input'
@@ -345,6 +372,12 @@ const CustomerPage = React.memo(() => {
               onChange={(e) => handleFilterChange('searchKey', e.target.value)}
               fullWidth
             />
+
+            <Tooltip title='Lọc nâng cao' ref={anchorAdvancedRef}>
+              <IconButton color='inherit' size='small' onClick={handleToggleFilterAdvanced}>
+                <TuneOutlinedIcon fontSize='medium' />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             {permAdd && (
@@ -356,7 +389,11 @@ const CustomerPage = React.memo(() => {
             )}
           </Grid>
         </Grid>
-
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={12} display={'flex'} flexWrap={'wrap'} flexDirection={'row'} alignItems={'center'}>
+            {listRenderFilter.map((val) => RenderFilter({ label: val?.label || '', key: val?.key }))}
+          </Grid>
+        </Grid>
         <div style={{ width: '100%', overflow: 'auto', marginTop: '20px' }}>
           <TableDataGrid
             rows={rows}
@@ -398,6 +435,22 @@ const CustomerPage = React.memo(() => {
             refetch()
             handleCloseFormChangeStaff()
           }}
+        />
+
+        <FilterTableAdvanced
+          /* eslint-disable @typescript-eslint/no-explicit-any */
+          listStaff={listStaff}
+          handleComfirm={(value: any) => {
+            setFilters((prevFilters) => ({
+              ...prevFilters,
+              ['staffId']: value.staffId
+            }))
+            setOpenFilterAdvanced(false)
+          }}
+          value={filters}
+          open={openFilterAdvanced}
+          anchorRef={anchorAdvancedRef}
+          handleClose={handleCloseFilterAdvanced}
         />
       </MainCard>
     </>
