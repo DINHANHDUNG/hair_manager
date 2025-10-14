@@ -243,7 +243,7 @@ const PaymentPage = React.memo(() => {
       {
         field: 'moneyPay1',
         headerName: 'Lần 1',
-        headerClassName: 'bold-header',
+        headerClassName: 'super-app-theme--header',
         renderCell: (params: GridRenderCellParams<ReportOrderType, number>) => {
           const isApprove = params.row.isApprove1
           const momney = params.row.moneyPay1
@@ -305,27 +305,7 @@ const PaymentPage = React.memo(() => {
       //   editable: checkSale,
       //   renderEditCell: MoneyEditCell
       // },
-      {
-        field: 'totalMoney',
-        headerName: 'Số tiền đơn hàng',
-        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row.totalMoney ? formatNumber(Number(params.row.totalMoney)) : '',
-        hide: !checkAD // chỉ hiển thị nếu là admin
-      },
-      {
-        field: 'noPayment',
-        headerName: 'Số lần thanh toán',
-        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row.noPayment ? formatNumber(Number(params.row.noPayment)) : '',
-        hide: !checkAD
-      },
-      {
-        field: 'money',
-        headerName: 'Tổng tiền đã thanh toán (USD)',
-        renderCell: (params: GridRenderCellParams<ReportOrderType, number>) =>
-          params.row.money ? formatNumber(Number(params.row.money)) : '',
-        hide: !checkAD
-      },
+
       {
         field: 'moneyReceived',
         headerName: 'Số tiền thực nhận',
@@ -420,9 +400,7 @@ const PaymentPage = React.memo(() => {
           description: 'Số tiền đã trả',
           children: [{ field: 'moneyPay1' }, { field: 'moneyPay2' }, { field: 'moneyPay3' }]
         },
-        { field: 'money' },
-        { field: 'noPayment' },
-        { field: 'totalMoney' },
+
         { field: 'moneyReceived' },
         { field: 'moneyDebt' },
         { field: 'methodPayment' },

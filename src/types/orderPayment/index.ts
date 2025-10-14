@@ -7,6 +7,8 @@ export type OrderPaymentType = {
   deletedAt: string
   datePayment: string
   money: number
+  noPayment: number
+  totalMoney: number
   isApprove: boolean
   methodPayment: string
   bankAccount: string

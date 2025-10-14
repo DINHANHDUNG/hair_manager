@@ -321,6 +321,9 @@ const TableDataGrid: React.FC<TableDataGridProps> = ({
         // '.MuiDataGrid-columnSeparator': {
         //   display: 'none'
         // },
+        '& .bold-header': {
+          fontWeight: 'bold'
+        },
         '& .no-expand .MuiDataGrid-detailPanelToggleCell': {
           display: 'none'
         },

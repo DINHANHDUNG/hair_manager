@@ -72,8 +72,6 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
     }
   })
 
-  console.log('errors', errors)
-
   const {
     fields: fieldsItemOrders,
     append: appendItemOrders,

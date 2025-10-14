@@ -99,10 +99,23 @@ const PaymentApproverPage = React.memo(() => {
         renderCell: (params: GridRenderCellParams<OrderPaymentType, number>) =>
           params?.row?.orderId ? params?.row?.order?.code : ''
       },
-
+      {
+        field: 'totalMoney',
+        headerName: 'Số tiền đơn hàng',
+        renderCell: (params: GridRenderCellParams<OrderPaymentType, number>) =>
+          params.row.totalMoney ? formatNumber(Number(params.row.totalMoney)) : ''
+        // hide: !checkAD // chỉ hiển thị nếu là admin
+      },
+      {
+        field: 'noPayment',
+        headerName: 'Số lần thanh toán',
+        renderCell: (params: GridRenderCellParams<OrderPaymentType, number>) =>
+          params.row.noPayment ? formatNumber(Number(params.row.noPayment)) : ''
+        // hide: !checkAD
+      },
       {
         field: 'money',
-        headerName: 'Số tiền',
+        headerName: 'Số tiền thanh toán',
         flex: 1,
         renderCell: (params: GridRenderCellParams<OrderPaymentType, number>) =>
           params.row.money ? formatNumber(Number(params.row.money)) : ''

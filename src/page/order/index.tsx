@@ -447,11 +447,18 @@ const OrderPage = React.memo(() => {
       {
         field: 'dateEstimateDelivery',
         headerName: 'Ngày dự kiến xuất',
-        editable: checkAD,
-        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+        editable: checkAD || checkQL,
+        renderCell: (params: GridRenderCellParams<OrderType, any>) =>
           params.row.dateEstimateDelivery ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY') : '',
-        renderEditCell: DateEditCell
-      }, //QL
+        renderEditCell: (params: GridRenderCellParams<OrderType, any>) => {
+          const value = params.value ?? params.row?.dateEstimateDelivery
+          const isEditable = (checkAD && !!value) || (checkQL && !value)
+          const valuetext = params.row.dateEstimateDelivery
+            ? dayjs(params.row.dateEstimateDelivery).format('DD/MM/YYYY')
+            : ''
+          return isEditable ? <DateEditCell {...params} disabled={!isEditable} /> : valuetext
+        }
+      },
 
       {
         field: 'dateDelivery',
