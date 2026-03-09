@@ -23,7 +23,7 @@ export const validationSchemaOrder = yup.object({
         .matches(VALIDATE.dateRegex, 'Vui lòng nhập đúng định dạng'),
     otherwise: (schema) => schema.notRequired().max(255, `Độ dài không được quá 255`)
   }),
-  customerId: conditionalRequiredString(undefined, '$idOrder', false),
+  // customerId: conditionalRequiredString(undefined, '$idOrder', false),
   // customerId: requiredString(),
   code: conditionalRequiredString(undefined, '$idOrder', false),
   customerAddress: conditionalRequiredString(undefined, '$idOrder', false),

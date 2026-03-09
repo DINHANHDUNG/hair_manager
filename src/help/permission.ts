@@ -39,9 +39,9 @@ export const Perm_Account_Add = [PERMISSION.ADMIN]
 export const Perm_Account_Edit = [PERMISSION.ADMIN]
 
 //Thanh toán
-export const Perm_Payment_View = [PERMISSION.ADMIN, PERMISSION.SALE]
+export const Perm_Payment_View = [PERMISSION.ADMIN, PERMISSION.SALE, PERMISSION.KETOAN]
 export const Perm_Payment_Default_View = [PERMISSION.SALE, PERMISSION.ADMIN]
-export const Perm_Payment_Approver_View = [PERMISSION.ADMIN]
+export const Perm_Payment_Approver_View = [PERMISSION.ADMIN, PERMISSION.KETOAN]
 export const Perm_Payment_Add = [PERMISSION.SALE]
 export const Perm_Payment_Edit = [PERMISSION.SALE]
 
