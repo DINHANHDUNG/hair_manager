@@ -70,6 +70,7 @@ export interface FormValuesOrder {
   dateOrder?: string
   customerId?: string
   customerPhone?: string
+  customerName?: string
   customerAddress?: string
   discount?: string
 

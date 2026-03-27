@@ -182,8 +182,8 @@ export const OPTIONS_STATUS_PAYMENT_KEY = {
 }
 
 export const OPTIONS_STATUS_PAYMENT = [
-  { value: OPTIONS_STATUS_PAYMENT_KEY.PART, label: 'Thanh toán 1 phần' },
-  { value: OPTIONS_STATUS_PAYMENT_KEY.DONE, label: 'Thanh toán hết' }
+  { value: OPTIONS_STATUS_PAYMENT_KEY.PART, label: 'TT 1 phần' },
+  { value: OPTIONS_STATUS_PAYMENT_KEY.DONE, label: 'Hoàn tất' }
 ]
 
 export const checkColor = (val: string) => {

@@ -12,7 +12,7 @@ import MyDatePicker from '../../../components/dateTime/MyDatePicker'
 import { CustomDialog } from '../../../components/dialog/CustomDialog'
 import { InputPropsNumber } from '../../../components/input'
 import MyTextField from '../../../components/input/MyTextField'
-import MyAutocomplete from '../../../components/select/MyAutocomplete'
+// import MyAutocomplete from '../../../components/select/MyAutocomplete'
 import Toast from '../../../components/toast'
 import { gridSpacingForm } from '../../../constants'
 import { convertDataLabelAutoComplate } from '../../../help'
@@ -21,6 +21,7 @@ import { FieldCOrder, FormValuesOrder, OrderType } from '../../../types/order'
 import ItemOrder from './ItemOrder'
 import { validationSchemaOrder } from './validationSchema'
 import { Perm_Order_Add, Perm_Order_Edit } from '../../../help/permission'
+import MyAutocompleteFreeSolo from '../../../components/select/MyAutocompleteFreeSolo'
 interface Props {
   open: boolean
   handleClose: () => void
@@ -118,7 +119,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
       ...value,
       dateOrder: isoDateStr,
       discount: value.discount ? Number(value.discount) : 0,
-      customerId: value.customerId ? Number(value.customerId) : 0,
+      customerId: value.customerId ? Number(value.customerId) : null,
       products: products?.map((e) => ({
         name: e.name,
         size: e.size,
@@ -259,7 +260,7 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
                 />
               </Grid>
               <Grid item xs={12} sm={12} md={6} lg={6}>
-                <MyAutocomplete
+                <MyAutocompleteFreeSolo
                   name={`customerId`}
                   control={control}
                   errors={errors}
@@ -269,7 +270,11 @@ export default function FormAddNewOrder({ open, handleClose, itemSelectedEdit }:
                   size='small'
                   fullWidth
                   require
+                  freeSolo
+                  onInputChange={(v: any) => setValue('customerName', v?.target?.value || '')}
                   onChange={(_, v) => {
+                    console.log(v)
+
                     /* eslint-disable @typescript-eslint/no-explicit-any */
                     const selectedValue = v as any // Ép kiểu cho giá trị v
                     console.log('selectedValue', selectedValue)

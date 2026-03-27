@@ -323,7 +323,8 @@ const OrderPage = React.memo(() => {
         renderEditCell: (params: GridRenderEditCellParams) => (
           <AutocompleteEditCell {...params} options={dataOptionCustomer} />
         ),
-        renderCell: (params: GridRenderCellParams<OrderType, number>) => params.row?.customer?.name || ''
+        renderCell: (params: GridRenderCellParams<OrderType, number>) =>
+          params.row?.customer?.name ? params.row?.customer?.name : params.row?.customerName || ''
       }, //Sell
 
       {

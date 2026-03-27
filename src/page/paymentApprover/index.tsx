@@ -1,6 +1,6 @@
 import { LibraryAddCheck } from '@mui/icons-material'
 import IconSearch from '@mui/icons-material/Search'
-import { Grid, OutlinedInput } from '@mui/material'
+import { Chip, Grid, IconButton, OutlinedInput } from '@mui/material'
 import {
   GridActionsCellItem,
   GridCallbackDetails,
@@ -22,6 +22,7 @@ import { gridSpacing } from '../../constants'
 import { removeNullOrEmpty } from '../../help'
 import { OrderType } from '../../types/order'
 import { OrderPaymentType } from '../../types/orderPayment'
+import { checkBg, checkColor, OPTIONS_ORDER_KEY } from '../../common/contants'
 
 const PaymentApproverPage = React.memo(() => {
   // const navigate = useNavigate()
@@ -162,20 +163,54 @@ const PaymentApproverPage = React.memo(() => {
       {
         field: 'actions',
         headerName: 'Hành động',
-        type: 'actions',
-        getActions: (params: GridRenderCellParams<OrderPaymentType, number>) => {
-          return !params.row.isApprove
-            ? [
-                <GridActionsCellItem
-                  icon={<LibraryAddCheck />}
-                  label='Approver'
-                  className='textPrimary'
-                  color='inherit'
-                  onClick={() => handleApprover(params.row.id)}
-                />
-              ]
-            : []
+        renderCell: (params: GridRenderCellParams<OrderPaymentType, number>) => {
+          if (!params.row.isApprove) {
+            return (
+              <IconButton onClick={() => handleApprover(params.row.id)}>
+                <LibraryAddCheck />
+              </IconButton>
+            )
+          }
+
+          return (
+            <Chip
+              label='Đã chấp nhận'
+              sx={{
+                backgroundColor: checkBg(OPTIONS_ORDER_KEY.DONE),
+                color: checkColor(OPTIONS_ORDER_KEY.DONE),
+                fontWeight: 500
+              }}
+              size='small'
+            />
+          )
         }
+        // type: 'actions',
+        // getActions: (params: GridRenderCellParams<OrderPaymentType, number>) => {
+        //   return !params.row.isApprove ? (
+        //     [
+        //       <GridActionsCellItem
+        //         icon={<LibraryAddCheck />}
+        //         label='Approver'
+        //         className='textPrimary'
+        //         color='inherit'
+        //         onClick={() => handleApprover(params.row.id)}
+        //       />
+        //     ]
+        //   ) : (
+        //     <>
+        //       <Chip
+        //         label={'Đã chấp nhận'}
+        //         sx={{
+        //           backgroundColor: checkBg(OPTIONS_ORDER_KEY.DONE),
+        //           color: checkColor(OPTIONS_ORDER_KEY.DONE),
+        //           fontWeight: 500
+        //         }}
+        //         size='small'
+        //         // variant='outlined'
+        //       />
+        //     </>
+        //   )
+        // }
       }
     ]
   }
